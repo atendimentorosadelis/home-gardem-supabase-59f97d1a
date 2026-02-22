@@ -112,6 +112,38 @@ export type Database = {
           },
         ]
       }
+      article_emotional_conclusions: {
+        Row: {
+          article_id: string
+          conclusion_text: string
+          generated_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          article_id: string
+          conclusion_text: string
+          generated_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string
+          conclusion_text?: string
+          generated_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_emotional_conclusions_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: true
+            referencedRelation: "content_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       article_images: {
         Row: {
           article_id: string

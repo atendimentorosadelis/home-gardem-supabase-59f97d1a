@@ -170,20 +170,21 @@ ESTILO: sensibilidade literária, metáforas, máximo 200 palavras, português b
         const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // Append conclusion to article body
-        const { data: article } = await supabase
-          .from('content_articles')
-          .select('body')
-          .eq('id', article_id)
-          .maybeSingle();
+        // Upsert into the dedicated conclusions table
+        const { error: upsertError } = await supabase
+          .from('article_emotional_conclusions')
+          .upsert({
+            article_id,
+            conclusion_text: emotionalText,
+            generated_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'article_id' });
 
-        if (article) {
-          const updatedBody = (article.body || '') + `\n\n---\n\n${emotionalText}`;
-          await supabase
-            .from('content_articles')
-            .update({ body: updatedBody })
-            .eq('id', article_id);
+        if (upsertError) {
+          console.error('[EmotionalConclusion] Upsert error:', upsertError);
+        } else {
           saved = true;
+          console.log('[EmotionalConclusion] Saved to article_emotional_conclusions table');
         }
       } catch (saveError) {
         console.error('[EmotionalConclusion] Save error:', saveError);
