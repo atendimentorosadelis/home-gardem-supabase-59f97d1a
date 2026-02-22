@@ -1,1 +1,19 @@
 project_id = "xfhtixubllcdockbkbwm"
+
+[functions.get-email-templates]
+verify_jwt = false
+
+[functions.update-email-template]
+verify_jwt = false
+
+[functions.generate-full-article]
+verify_jwt = false
+
+[functions.generate-emotional-conclusion]
+verify_jwt = false
+
+[functions.generate-article-image]
+verify_jwt = false
+
+[functions.generate-all-images]
+verify_jwt = false
