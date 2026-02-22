@@ -354,6 +354,27 @@ export type Database = {
         }
         Relationships: []
       }
+      commemorative_date_settings: {
+        Row: {
+          date_id: string
+          id: string
+          is_enabled: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          date_id: string
+          id?: string
+          is_enabled?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          date_id?: string
+          id?: string
+          is_enabled?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -488,6 +509,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      generation_history: {
+        Row: {
+          article_id: string | null
+          article_title: string | null
+          created_at: string
+          id: string
+          status: string | null
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          article_id?: string | null
+          article_title?: string | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          topic: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string | null
+          article_title?: string | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          topic?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_history_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "content_articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       image_generation_queue: {
         Row: {
