@@ -167,8 +167,17 @@ export function useAdminPermissions() {
   };
 
   useEffect(() => {
-    if (user) { checkSuperAdmin(); fetchAdmins(); }
-    else { setIsLoading(false); setIsSuperAdmin(false); }
+    if (user) {
+      const init = async () => {
+        setIsLoading(true);
+        await checkSuperAdmin();
+        await fetchAdmins();
+      };
+      init();
+    } else {
+      setIsLoading(false);
+      setIsSuperAdmin(false);
+    }
   }, [user, checkSuperAdmin, fetchAdmins]);
 
   return { admins, currentUserPermissions, isLoading, isSuperAdmin, hasPermission, updatePermission, setAllPermissions, toggleSuperAdmin, refetch: fetchAdmins };
