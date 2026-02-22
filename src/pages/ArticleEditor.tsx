@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Instagram, Download } from 'lucide-react';
 import { ImageQueueStatus } from '@/components/dashboard/ImageQueueStatus';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -336,6 +336,114 @@ const CopyForFacebookCard = ({
             {copiedField === 'all' ? 'Tudo Copiado!' : 'Copiar Tudo para Facebook'}
           </Button>
         </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Instagram Story Image Generator Component
+const InstagramStoryCard = ({
+  title, excerpt, coverImage
+}: {
+  title: string; excerpt: string; coverImage: string;
+}) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!title) {
+      toast.error('O artigo precisa ter um título para gerar a imagem.');
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data, error } = await invokeEdgeFunction('generate-instagram-image', {
+        title,
+        excerpt,
+        coverImageUrl: coverImage || null,
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.imageUrl) {
+        setGeneratedImage(data.imageUrl);
+        toast.success('Imagem para Instagram gerada com sucesso!');
+      }
+    } catch (err) {
+      console.error('Instagram image error:', err);
+      toast.error('Erro ao gerar imagem para Instagram.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!generatedImage) return;
+    try {
+      const response = await fetch(generatedImage);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `instagram-story-${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Imagem baixada!');
+    } catch {
+      toast.error('Erro ao baixar imagem.');
+    }
+  };
+
+  const handleCopyUrl = async () => {
+    if (!generatedImage) return;
+    await navigator.clipboard.writeText(generatedImage);
+    toast.success('URL da imagem copiada!');
+  };
+
+  return (
+    <Card className="border-border/50">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Instagram className="h-4 w-4 text-pink-500" />
+          Imagem para Instagram
+        </CardTitle>
+        <CardDescription>Gere uma imagem retrato (Stories/Reels) para postar no Instagram</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Button
+          onClick={handleGenerate}
+          disabled={isGenerating || !title}
+          className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:from-purple-600 hover:via-pink-600 hover:to-orange-500 text-white"
+        >
+          {isGenerating ? (
+            <><Loader2 className="h-4 w-4 animate-spin mr-2" />Gerando imagem...</>
+          ) : (
+            <><Sparkles className="h-4 w-4 mr-2" />Gerar Imagem para Stories</>
+          )}
+        </Button>
+
+        {generatedImage && (
+          <div className="space-y-3">
+            <div className="relative rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+              <img
+                src={generatedImage}
+                alt="Instagram Story"
+                className="w-full max-h-[500px] object-contain mx-auto"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex-1" onClick={handleDownload}>
+                <Download className="h-4 w-4 mr-1" />
+                Baixar
+              </Button>
+              <Button variant="outline" size="sm" className="flex-1" onClick={handleCopyUrl}>
+                <Copy className="h-4 w-4 mr-1" />
+                Copiar URL
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -1189,6 +1297,13 @@ export default function ArticleEditor() {
               category={category}
               slug={slug}
               emotionalConclusion={emotionalConclusion?.conclusion_text || null}
+            />
+
+            {/* Instagram Story Image */}
+            <InstagramStoryCard
+              title={title}
+              excerpt={excerpt}
+              coverImage={coverImage}
             />
 
             {/* Affiliate Banner */}
