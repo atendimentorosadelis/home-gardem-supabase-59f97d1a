@@ -1,0 +1,35 @@
+{
+  "cookies": {
+    "title": "Consentimiento de Cookies",
+    "message": "Usamos cookies para mejorar tu experiencia. Lee nuestra",
+    "policyLink": "Política de Cookies",
+    "accept": "Aceptar",
+    "decline": "Rechazar"
+  },
+  "admin": {
+    "accessDenied": "Acceso Denegado",
+    "noPermission": "No tienes permiso para acceder a esta área.",
+    "backToSite": "Volver al Sitio",
+    "logout": "Cerrar Sesión",
+    "checkingPermissions": "Verificando permisos..."
+  },
+  "nav": {
+    "home": "Inicio",
+    "blog": "Blog",
+    "gardenTips": "Consejos de Jardín",
+    "indoorPlants": "Plantas de Interior",
+    "manuals": "Manuales",
+    "about": "Acerca de",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "title": "Tu Aventura en el Jardín Comienza Aquí",
+    "subtitle": "Consejos, tutoriales y guías completas para crear tu jardín perfecto"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Uso",
+    "cookies": "Política de Cookies"
+  }
+}
