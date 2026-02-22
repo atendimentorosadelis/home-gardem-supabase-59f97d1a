@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image } from 'lucide-react';
 import { ImageQueueStatus } from '@/components/dashboard/ImageQueueStatus';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -194,6 +194,150 @@ const ImageCard = ({ image, label, isGenerating, isUploading, isCover, isSelecta
         {isSelectable && <span className="block text-[10px] text-primary/70">Clique para Editar</span>}
       </p>
     </div>
+  );
+};
+
+// Copy for Facebook Card Component
+const CopyForFacebookCard = ({
+  title, excerpt, body, coverImage, galleryImages, category, slug, emotionalConclusion
+}: {
+  title: string; excerpt: string; body: string; coverImage: string;
+  galleryImages: string[]; category: string; slug: string; emotionalConclusion: string | null;
+}) => {
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const siteUrl = 'https://homegardenmanual.com';
+  const articleUrl = category && slug ? `${siteUrl}/${category}/${slug}` : '';
+
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      toast.success('Copiado!');
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      toast.error('Erro ao copiar');
+    }
+  };
+
+  const copyImageToClipboard = async (imageUrl: string, field: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob })
+      ]);
+      setCopiedField(field);
+      toast.success('Imagem copiada!');
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      // Fallback: copy URL
+      await copyToClipboard(imageUrl, field);
+    }
+  };
+
+  const stripMarkdown = (text: string) => {
+    return text
+      .replace(/#{1,6}\s/g, '')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/^[-*]\s/gm, '• ')
+      .replace(/^\d+\.\s/gm, '')
+      .trim();
+  };
+
+  const allImages = [coverImage, ...galleryImages].filter(Boolean);
+
+  const CopyButton = ({ field, onClick, label }: { field: string; onClick: () => void; label: string }) => (
+    <Button
+      size="sm"
+      variant={copiedField === field ? "default" : "outline"}
+      className="w-full justify-start gap-2 text-xs h-8"
+      onClick={onClick}
+    >
+      {copiedField === field ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+      {copiedField === field ? 'Copiado!' : label}
+    </Button>
+  );
+
+  return (
+    <Card className="border-border/50">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Facebook className="h-4 w-4 text-blue-600" />
+          Copiar para Facebook
+        </CardTitle>
+        <CardDescription>Copie cada parte do artigo para postar nas redes sociais</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {title && (
+          <CopyButton field="title" onClick={() => copyToClipboard(title, 'title')} label="Copiar Título" />
+        )}
+        {excerpt && (
+          <CopyButton field="excerpt" onClick={() => copyToClipboard(excerpt, 'excerpt')} label="Copiar Resumo" />
+        )}
+        {body && (
+          <CopyButton field="body" onClick={() => copyToClipboard(stripMarkdown(body), 'body')} label="Copiar Texto Completo" />
+        )}
+        {emotionalConclusion && (
+          <CopyButton field="conclusion" onClick={() => copyToClipboard(emotionalConclusion, 'conclusion')} label="Copiar Conclusão Emocional" />
+        )}
+        {articleUrl && (
+          <CopyButton field="url" onClick={() => copyToClipboard(articleUrl, 'url')} label="Copiar URL do Artigo" />
+        )}
+
+        {/* Images */}
+        {allImages.length > 0 && (
+          <div className="pt-2 border-t border-border/50 mt-2">
+            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <Image className="h-3 w-3" /> Imagens ({allImages.length})
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {allImages.map((img, idx) => (
+                <div key={idx} className="relative group cursor-pointer" onClick={() => copyImageToClipboard(img, `img-${idx}`)}>
+                  <div className="aspect-square rounded-md overflow-hidden border border-border/50">
+                    <img src={img} alt={`Imagem ${idx + 1}`} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="absolute inset-0 bg-background/80 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    {copiedField === `img-${idx}` ? (
+                      <Check className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Copy className="h-4 w-4 text-foreground" />
+                    )}
+                  </div>
+                  {idx === 0 && <span className="absolute top-0.5 left-0.5 text-[8px] bg-primary text-primary-foreground px-1 rounded">Capa</span>}
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Clique na imagem para copiar</p>
+          </div>
+        )}
+
+        {/* Copy All for Facebook */}
+        <div className="pt-2 border-t border-border/50">
+          <Button
+            size="sm"
+            className="w-full gap-2"
+            onClick={() => {
+              const parts = [
+                title ? `🏡 ${title}` : '',
+                '',
+                excerpt || '',
+                '',
+                emotionalConclusion ? `💚 ${emotionalConclusion}` : '',
+                '',
+                articleUrl ? `📖 Leia mais: ${articleUrl}` : '',
+              ].filter((line, i, arr) => !(line === '' && arr[i - 1] === '')).join('\n').trim();
+              copyToClipboard(parts, 'all');
+            }}
+          >
+            {copiedField === 'all' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copiedField === 'all' ? 'Tudo Copiado!' : 'Copiar Tudo para Facebook'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -1034,6 +1178,18 @@ export default function ArticleEditor() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Copiar para Facebook */}
+            <CopyForFacebookCard
+              title={title}
+              excerpt={excerpt}
+              body={body}
+              coverImage={coverImage}
+              galleryImages={galleryImages}
+              category={category}
+              slug={slug}
+              emotionalConclusion={emotionalConclusion?.conclusion_text || null}
+            />
 
             {/* Affiliate Banner */}
             <Card className="border-border/50">
