@@ -102,8 +102,8 @@ serve(async (req) => {
         continue;
       }
 
-      // Remove id to let new DB generate it, keep everything else
-      const { id, ...articleData } = article;
+      // Remove id and columns that don't exist in the new DB
+      const { id, external_links, ...articleData } = article;
 
       const { error: insertError } = await serviceSupabase
         .from('content_articles')
