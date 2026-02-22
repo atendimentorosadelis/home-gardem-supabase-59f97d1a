@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export interface GeneratedArticle {
   title: string;
@@ -92,7 +92,7 @@ export function useFullArticleGeneration() {
 
   const cancelledRef = useRef(false);
   const isAutoSavingRef = useRef(false);
-  const { toast } = useToast();
+  // Using sonner toast (imported at top level)
 
   // Persist state whenever it changes - persist during generation too!
   useEffect(() => {
@@ -137,19 +137,12 @@ export function useFullArticleGeneration() {
         : step
     ));
 
-    toast({
-      title: 'Geração cancelada',
-      description: 'A geração do artigo foi interrompida.',
-    });
-  }, [toast]);
+    toast.info('Geração cancelada: A geração do artigo foi interrompida.');
+  }, []);
 
   const generateArticle = useCallback(async (topic: string) => {
     if (!topic.trim()) {
-      toast({
-        title: 'Tema obrigatório',
-        description: 'Por favor, informe um tema para o artigo.',
-        variant: 'destructive',
-      });
+      toast.error('Tema obrigatório: Por favor, informe um tema para o artigo.');
       return null;
     }
 
@@ -397,11 +390,7 @@ export function useFullArticleGeneration() {
       if (coverError || !coverData?.success) {
         console.error('Cover image error:', coverError || coverData?.error);
         updateStep('cover', { status: 'error', detail: 'Falha' });
-        toast({
-          title: 'Aviso',
-          description: 'Não foi possível gerar a imagem de capa.',
-          variant: 'destructive',
-        });
+        toast.error('Não foi possível gerar a imagem de capa.');
       } else {
         generatedArticle.coverImage = coverData.imageUrl;
         setArticle({ ...generatedArticle });
@@ -465,10 +454,7 @@ export function useFullArticleGeneration() {
       }
 
       if (!cancelledRef.current) {
-        toast({
-          title: 'Artigo gerado com sucesso!',
-          description: `"${generatedArticle.title}" está pronto para revisão.`,
-        });
+        toast.success(`Artigo gerado com sucesso! "${generatedArticle.title}" está pronto para revisão.`);
       }
 
       // Final update: Save images to the already-saved article
@@ -502,10 +488,7 @@ export function useFullArticleGeneration() {
               articleSlug: generatedArticle.slug,
             });
 
-            toast({
-              title: 'Rascunho salvo automaticamente',
-              description: 'Os administradores foram notificados para aprovar o artigo.',
-            });
+            toast.success('Rascunho salvo automaticamente. Os administradores foram notificados.');
           }
         } catch (finalSaveError) {
           console.error('[Final-save] Error:', finalSaveError);
@@ -528,11 +511,7 @@ export function useFullArticleGeneration() {
         step.status === 'loading' ? { ...step, status: 'error' } : step
       ));
 
-      toast({
-        title: 'Erro ao gerar artigo',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(`Erro ao gerar artigo: ${errorMessage}`);
 
       return null;
     } finally {
@@ -540,18 +519,14 @@ export function useFullArticleGeneration() {
         setIsGenerating(false);
       }
     }
-  }, [toast, updateStep, resetGeneration]);
+  }, [updateStep, resetGeneration]);
 
   // Ref to prevent double-clicks on mobile
   const isSavingRef = useRef(false);
 
   const saveArticle = useCallback(async (publishNow: boolean = false) => {
     if (!article) {
-      toast({
-        title: 'Nenhum artigo para salvar',
-        description: 'Gere um artigo primeiro.',
-        variant: 'destructive',
-      });
+      toast.error('Nenhum artigo para salvar. Gere um artigo primeiro.');
       return null;
     }
 
@@ -579,11 +554,7 @@ export function useFullArticleGeneration() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        toast({
-          title: 'Não autenticado',
-          description: 'Faça login para salvar artigos.',
-          variant: 'destructive',
-        });
+        toast.error('Não autenticado. Faça login para salvar artigos.');
         return null;
       }
 
@@ -699,12 +670,7 @@ export function useFullArticleGeneration() {
         setArticleSavedId(data.id);
       }
 
-      toast({
-        title: publishNow ? 'Artigo publicado!' : 'Rascunho salvo!',
-        description: publishNow
-          ? 'O artigo está disponível no site.'
-          : 'O artigo foi salvo como rascunho.',
-      });
+      toast.success(publishNow ? 'Artigo publicado! O artigo está disponível no site.' : 'Rascunho salvo!');
 
       return data;
 
@@ -735,11 +701,7 @@ export function useFullArticleGeneration() {
         statusText: error?.statusText,
       });
 
-      toast({
-        title: 'Erro ao salvar',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(`Erro ao salvar: ${errorMessage}`);
       return null;
     } finally {
       // Reset saving flag after a small delay to prevent rapid re-clicks
