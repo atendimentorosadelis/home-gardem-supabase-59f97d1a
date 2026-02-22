@@ -1,7 +1,8 @@
 import { Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSocialLinks, SocialPlatform } from '@/hooks/use-social-links';
 
-export type SocialPlatform = 'facebook' | 'instagram' | 'twitter' | 'youtube' | 'linkedin' | 'pinterest' | 'tiktok';
+export { type SocialPlatform } from '@/hooks/use-social-links';
 
 export const PinterestIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -15,15 +16,42 @@ export const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const platformIcons: Record<SocialPlatform, React.ComponentType<{ className?: string }>> = {
+  facebook: Facebook,
+  instagram: Instagram,
+  twitter: Twitter,
+  youtube: Youtube,
+  linkedin: Linkedin,
+  pinterest: PinterestIcon,
+  tiktok: TikTokIcon,
+};
+
 interface SocialLinksProps {
   className?: string;
   iconClassName?: string;
 }
 
-export function SocialLinks({ className, iconClassName }: SocialLinksProps) {
+export function SocialLinks({ className, iconClassName = "w-5 h-5" }: SocialLinksProps) {
+  const { activeLinks } = useSocialLinks();
+
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      {/* Social links will be populated from database */}
+      {activeLinks.map(({ platform, url, hasUrl }) => {
+        const Icon = platformIcons[platform];
+        if (!hasUrl) return null;
+        return (
+          <a
+            key={platform}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition-colors"
+            aria-label={platform}
+          >
+            <Icon className={iconClassName} />
+          </a>
+        );
+      })}
     </div>
   );
 }
