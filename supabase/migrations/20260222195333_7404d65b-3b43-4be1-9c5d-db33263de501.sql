@@ -1,0 +1,1 @@
+UPDATE content_articles SET status = 'published', published_at = now() WHERE status = 'draft' AND published_at IS NULL;
