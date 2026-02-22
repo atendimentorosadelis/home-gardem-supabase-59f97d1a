@@ -82,8 +82,8 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    if (!OPENAI_API_KEY) throw new Error('OPENAI_API_KEY não configurada');
 
     const randomIndex = Math.floor(Math.random() * OPENING_TEMPLATES.length);
     const mandatoryOpening = OPENING_TEMPLATES[randomIndex];
@@ -115,14 +115,14 @@ ESTILO: sensibilidade literária, metáforas, máximo 200 palavras, português b
 
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
-          const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Authorization': `Bearer ${OPENAI_API_KEY}`,
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              model: 'google/gemini-2.5-flash',
+              model: 'gpt-4o-mini',
               messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt + retryAddendum },
@@ -136,7 +136,7 @@ ESTILO: sensibilidade literária, metáforas, máximo 200 palavras, português b
             await delay(Math.pow(2, attempt) * 1000);
             continue;
           }
-          if (!response.ok) throw new Error(`AI Gateway error: ${response.status}`);
+          if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`);
 
           const data = await response.json();
           return data.choices?.[0]?.message?.content?.trim() || '';
