@@ -25,6 +25,7 @@ export default function Blog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Get initial values from URL
   const initialSearch = searchParams.get("q") || "";
   const initialCategory = searchParams.get("category") || "all";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
@@ -36,18 +37,21 @@ export default function Blog() {
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [sortBy, setSortBy] = useState<SortOption>(initialSort);
 
+  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-      setCurrentPage(1);
+      setCurrentPage(1); // Reset to first page on search
     }, 300);
     return () => clearTimeout(timer);
   }, [search]);
 
+  // Reset page when category or sort changes
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, sortBy]);
 
+  // Update URL params
   useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedSearch) params.set("q", debouncedSearch);
@@ -86,16 +90,21 @@ export default function Blog() {
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Stats for the hero
   const totalArticles = data?.totalPosts || 0;
 
   return (
     <Layout>
       {/* Hero Section */}
       <section className="relative min-h-[50vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden pt-16 md:pt-20">
+        {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5">
+          {/* Floating elements - hidden on mobile for performance */}
           <div className="hidden md:block absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
           <div className="hidden md:block absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-gradient-to-r from-primary/5 to-accent/5 rounded-full blur-3xl" />
+
+          {/* Decorative icons floating - hidden on mobile */}
           <div className="hidden md:block absolute top-32 left-[10%] animate-float opacity-20">
             <Leaf className="h-12 w-12 text-primary" />
           </div>
@@ -110,10 +119,12 @@ export default function Blog() {
           </div>
         </div>
 
+        {/* Grid pattern overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] md:bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
 
         <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-12">
           <div className="max-w-4xl mx-auto text-center space-y-4 md:space-y-8">
+            {/* Badge */}
             <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-primary/10 border border-primary/20 rounded-full animate-fade-in">
               <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
               <span className="text-xs md:text-sm font-medium text-primary">
@@ -121,16 +132,19 @@ export default function Blog() {
               </span>
             </div>
 
+            {/* Title with gradient */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tight animate-fade-in" style={{ animationDelay: '0.1s' }}>
               <span className="bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
                 {t("blog.title")}
               </span>
             </h1>
 
+            {/* Subtitle */}
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in px-2" style={{ animationDelay: '0.2s' }}>
               {t("blog.subtitle")}
             </p>
 
+            {/* Stats Row */}
             <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 pt-4 md:pt-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -163,6 +177,7 @@ export default function Blog() {
               </div>
             </div>
 
+            {/* Scroll indicator */}
             <button
               onClick={scrollToContent}
               className="inline-flex flex-col items-center gap-1.5 md:gap-2 pt-4 md:pt-8 animate-fade-in group"
@@ -182,6 +197,7 @@ export default function Blog() {
       {/* Content Section */}
       <section ref={contentRef} className="py-10 md:py-20 bg-gradient-to-b from-background to-secondary/20">
         <div className="container mx-auto px-4 md:px-6 lg:px-12">
+          {/* Filters */}
           <div className="mb-8 md:mb-12 animate-fade-in">
             <BlogFilters
               search={search}
@@ -196,7 +212,9 @@ export default function Blog() {
             />
           </div>
 
+          {/* Content */}
           {isLoading ? (
+            // Loading skeleton
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 9 }).map((_, i) => (
                 <div key={i} className="space-y-4 animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>
@@ -214,6 +232,7 @@ export default function Blog() {
               ))}
             </div>
           ) : isError ? (
+            // Error state
             <div className="text-center py-20 space-y-4">
               <div className="w-20 h-20 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
                 <FileSearch className="h-10 w-10 text-destructive" />
@@ -226,6 +245,7 @@ export default function Blog() {
               </p>
             </div>
           ) : data?.posts.length === 0 ? (
+            // Empty state
             <div className="text-center py-20 space-y-6">
               <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center">
                 <FileSearch className="h-12 w-12 text-muted-foreground/50" />
@@ -249,6 +269,7 @@ export default function Blog() {
             </div>
           ) : (
             <>
+              {/* Results count */}
               <div className="mb-8 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   {data?.totalPosts === 1
@@ -262,6 +283,7 @@ export default function Blog() {
                 )}
               </div>
 
+              {/* Posts Grid with staggered animation */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {data?.posts.map((post, index) => (
                   <div
@@ -274,6 +296,7 @@ export default function Blog() {
                 ))}
               </div>
 
+              {/* Pagination */}
               <BlogPagination
                 currentPage={data?.currentPage || 1}
                 totalPages={data?.totalPages || 1}
@@ -310,6 +333,7 @@ export default function Blog() {
         </div>
       </section>
 
+      {/* Custom animation styles */}
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
