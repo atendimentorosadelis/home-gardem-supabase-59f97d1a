@@ -237,7 +237,7 @@ const Article = () => {
     enabled: i18n.language !== 'pt-BR' && i18n.language !== 'pt',
   });
 
-  const rawContent = translatedContent || post?.content || '';
+  const rawContent = (isTranslated && translatedContent) ? translatedContent : (post?.content || '');
   const displayContent = useMemo(() => parseCurrencyInText(rawContent), [rawContent, i18n.language]);
 
   // Dynamic OG meta tags for social sharing
@@ -866,7 +866,7 @@ const Article = () => {
   return (
     <Layout>
       <article className="min-h-screen">
-        <ArticleHero image={post.image} title={post.title} />
+        <ArticleHero image={post.image} title={displayTitle} />
 
         <div className="container mx-auto px-4 mt-[30px] relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -881,7 +881,7 @@ const Article = () => {
                     <BreadcrumbLink asChild><Link to={`/${post.categorySlug}`} className="text-muted-foreground hover:text-primary transition-colors">{post.category}</Link></BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
-                  <BreadcrumbItem><BreadcrumbPage className="text-foreground line-clamp-1">{post.title}</BreadcrumbPage></BreadcrumbItem>
+                  <BreadcrumbItem><BreadcrumbPage className="text-foreground line-clamp-1">{displayTitle}</BreadcrumbPage></BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
             </AnimatedLine>
