@@ -41,7 +41,7 @@ export function usePublishedArticles() {
   return useQuery({
     queryKey: ['published-articles'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('content_articles')
         .select('*')
         .eq('status', 'published')
@@ -50,12 +50,30 @@ export function usePublishedArticles() {
         .order('published_at', { ascending: false })
         .limit(20);
 
-      if (error) {
-        console.error('Error fetching articles:', error);
-        return [];
-      }
+      if (error) { console.error('Error fetching published articles:', error); throw error; }
 
-      return (data || []).map(mapArticleToPost);
+      const { data: viewsData } = await supabase.from('article_views').select('article_id');
+      const viewsCount: Record<string, number> = {};
+      viewsData?.forEach(view => { viewsCount[view.article_id] = (viewsCount[view.article_id] || 0) + 1; });
+
+      const articlesWithImages = (data as DatabaseArticle[]).filter(
+        article => article.cover_image && article.cover_image.trim() !== '' && article.cover_image !== '/placeholder.svg'
+      );
+
+      return articlesWithImages.map(article => ({ ...mapArticleToPost(article), viewsCount: viewsCount[article.id] || 0 }));
     },
+  });
+}
+
+export function useArticleBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: ['article', slug],
+    queryFn: async () => {
+      if (!slug) return null;
+      const { data, error } = await supabase.from('content_articles').select('*').eq('slug', slug).eq('status', 'published').single();
+      if (error) { console.error('Error fetching article by slug:', error); return null; }
+      return data as DatabaseArticle;
+    },
+    enabled: !!slug,
   });
 }
