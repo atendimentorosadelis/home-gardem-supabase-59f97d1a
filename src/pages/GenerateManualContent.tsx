@@ -701,7 +701,7 @@ function GenerateManualContentPage() {
               </CardContent>
             </Card>
 
-            <ArticlePreviewFull article={article} articleSavedId={articleSavedId} />
+            <ArticlePreviewFull article={article} />
           </div>
         )}
       </div>

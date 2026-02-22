@@ -16,8 +16,10 @@ export function useEmotionalConclusion(articleId: string | undefined) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [conclusion, setConclusion] = useState<EmotionalConclusion | null>(null);
 
+  // Fetch existing conclusion
   const fetchConclusion = useCallback(async () => {
     if (!articleId) return null;
+
     setIsLoading(true);
     try {
       const { data, error } = await (supabase as any)
@@ -27,9 +29,10 @@ export function useEmotionalConclusion(articleId: string | undefined) {
         .maybeSingle();
 
       if (error) {
-        console.error('[useEmotionalConclusion] Fetch error:', error);
+        console.log('[useEmotionalConclusion] Fetch error:', error);
         return null;
       }
+
       setConclusion(data || null);
       return data || null;
     } catch (err) {
@@ -40,26 +43,35 @@ export function useEmotionalConclusion(articleId: string | undefined) {
     }
   }, [articleId]);
 
+  // Generate new conclusion via Edge Function
   const generateConclusion = useCallback(async (articleTitle?: string) => {
     if (!articleId) {
       toast.error('ID do artigo não encontrado');
       return null;
     }
+
     setIsGenerating(true);
     try {
+      // Get the theme - use provided title or fetch from article
       let theme = articleTitle;
+
       if (!theme) {
         const { data: articles } = await (supabase as any)
           .from('content_articles')
-          .select('title')
+          .select('title, main_subject')
           .eq('id', articleId)
           .maybeSingle();
-        theme = articles?.title;
+
+        theme = articles?.main_subject || articles?.title;
       }
+
       if (!theme) {
-        toast.error('Não foi possível determinar o tema');
+        toast.error('Não foi possível determinar o tema do artigo');
         return null;
       }
+
+      // Call the edge function
+      console.log('[useEmotionalConclusion] Calling edge function with theme:', theme);
 
       const { data, error } = await invokeEdgeFunction('generate-emotional-conclusion', {
         theme,
@@ -67,13 +79,40 @@ export function useEmotionalConclusion(articleId: string | undefined) {
       });
 
       if (error) throw error;
+
       if (!data?.emotional_text) {
-        toast.error(data?.error || 'Erro ao gerar conclusão');
+        const errorMessage = data?.error || 'Erro ao gerar conclusão';
+        toast.error(errorMessage);
         return null;
+      }
+
+      if (data.saved) {
+        console.log('[useEmotionalConclusion] Edge function saved conclusion directly');
+        toast.success('Conclusão emocional gerada e salva com sucesso!');
+        await fetchConclusion();
+        return data.emotional_text;
+      }
+
+      // Fallback: Try to save directly if edge function didn't save
+      console.log('[useEmotionalConclusion] Attempting fallback save');
+      const { error: saveError } = await (supabase as any)
+        .from('article_emotional_conclusions')
+        .upsert({
+          article_id: articleId,
+          conclusion_text: data.emotional_text,
+          generated_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'article_id' });
+
+      if (saveError) {
+        console.error('[useEmotionalConclusion] Fallback save error:', saveError);
+        toast.warning('Conclusão gerada, mas não foi possível salvar. Verifique as permissões.');
+        return data.emotional_text;
       }
 
       toast.success('Conclusão emocional gerada com sucesso!');
       await fetchConclusion();
+
       return data.emotional_text;
     } catch (err) {
       console.error('[useEmotionalConclusion] Generate error:', err);
@@ -84,29 +123,39 @@ export function useEmotionalConclusion(articleId: string | undefined) {
     }
   }, [articleId, fetchConclusion]);
 
+  // Update conclusion text
   const updateConclusion = useCallback(async (newText: string) => {
     if (!articleId) return false;
+
     try {
       const { error } = await (supabase as any)
         .from('article_emotional_conclusions')
-        .update({ conclusion_text: newText, updated_at: new Date().toISOString() })
+        .update({
+          conclusion_text: newText,
+          updated_at: new Date().toISOString(),
+        })
         .eq('article_id', articleId);
 
       if (error) {
+        console.error('[useEmotionalConclusion] Update error:', error);
         toast.error('Erro ao salvar conclusão');
         return false;
       }
+
       setConclusion(prev => prev ? { ...prev, conclusion_text: newText, updated_at: new Date().toISOString() } : null);
       toast.success('Conclusão atualizada com sucesso!');
       return true;
     } catch (err) {
+      console.error('[useEmotionalConclusion] Update error:', err);
       toast.error('Erro ao salvar conclusão');
       return false;
     }
   }, [articleId]);
 
+  // Delete conclusion
   const deleteConclusion = useCallback(async () => {
     if (!articleId) return false;
+
     try {
       const { error } = await (supabase as any)
         .from('article_emotional_conclusions')
@@ -114,16 +163,27 @@ export function useEmotionalConclusion(articleId: string | undefined) {
         .eq('article_id', articleId);
 
       if (error) {
+        console.error('[useEmotionalConclusion] Delete error:', error);
         toast.error('Erro ao excluir conclusão');
         return false;
       }
+
       setConclusion(null);
       toast.success('Conclusão excluída');
       return true;
     } catch (err) {
+      console.error('[useEmotionalConclusion] Error:', err);
       return false;
     }
   }, [articleId]);
 
-  return { conclusion, isLoading, isGenerating, fetchConclusion, generateConclusion, updateConclusion, deleteConclusion };
+  return {
+    conclusion,
+    isLoading,
+    isGenerating,
+    fetchConclusion,
+    generateConclusion,
+    updateConclusion,
+    deleteConclusion,
+  };
 }
