@@ -142,6 +142,7 @@ function GenerateManualContentPage() {
   const {
     isGenerating,
     article,
+    articleSavedId,
     steps,
     startTime,
     currentTopic,
@@ -695,7 +696,7 @@ function GenerateManualContentPage() {
               </CardContent>
             </Card>
 
-            <ArticlePreviewFull article={article} />
+            <ArticlePreviewFull article={article} articleSavedId={articleSavedId} />
           </div>
         )}
       </div>

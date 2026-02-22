@@ -1,13 +1,35 @@
+import { useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Clock, Tag, FileText, Image, Link2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Clock, Tag, FileText, Image, Link2, Heart, Sparkles, Loader2 } from 'lucide-react';
+import { useEmotionalConclusion } from '@/hooks/use-emotional-conclusion';
 import type { GeneratedArticle } from '@/hooks/use-full-article-generation';
 
 interface ArticlePreviewFullProps {
   article: GeneratedArticle;
+  articleSavedId?: string | null;
 }
 
-export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
+export function ArticlePreviewFull({ article, articleSavedId }: ArticlePreviewFullProps) {
+  const {
+    conclusion,
+    isLoading: isLoadingConclusion,
+    isGenerating: isGeneratingConclusion,
+    fetchConclusion,
+    generateConclusion,
+  } = useEmotionalConclusion(articleSavedId || undefined);
+
+  useEffect(() => {
+    if (articleSavedId) {
+      fetchConclusion();
+    }
+  }, [articleSavedId, fetchConclusion]);
+
+  const handleGenerateConclusion = async () => {
+    await generateConclusion(article.title);
+  };
+
   return (
     <div className="space-y-6">
       {/* Metadados do Artigo */}
@@ -16,7 +38,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
           <CardTitle className="text-lg font-bold">Metadados do Artigo</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
-          {/* Título e Slug */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">Título</span>
@@ -28,7 +49,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
             </div>
           </div>
 
-          {/* Categoria e Leitura */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">Categoria</span>
@@ -44,7 +64,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
             </div>
           </div>
 
-          {/* Resumo */}
           {article.excerpt && (
             <div className="space-y-1">
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">Resumo</span>
@@ -52,7 +71,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
             </div>
           )}
 
-          {/* Tags */}
           {article.tags.length > 0 && (
             <div className="space-y-2">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
@@ -66,7 +84,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
             </div>
           )}
 
-          {/* Keywords */}
           {article.keywords && (
             <div className="space-y-1">
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">Keywords (SEO)</span>
@@ -74,7 +91,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
             </div>
           )}
 
-          {/* Links Externos */}
           {article.externalLinks && article.externalLinks.length > 0 && (
             <div className="space-y-2">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
@@ -87,6 +103,46 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
                   </a>
                 ))}
               </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Conclusão Emocional */}
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="text-lg font-bold flex items-center gap-2">
+            <Heart className="h-5 w-5 text-pink-500" />
+            Conclusão Emocional
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">Texto poético gerado por IA para o card final do artigo</p>
+        </CardHeader>
+        <CardContent>
+          {isLoadingConclusion ? (
+            <div className="flex items-center justify-center py-6">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : conclusion ? (
+            <div className="bg-muted/50 rounded-xl p-4 border border-border/50">
+              <p className="text-sm text-foreground leading-relaxed italic">
+                "{conclusion.conclusion_text}"
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-6 gap-4">
+              <Heart className="h-8 w-8 text-muted-foreground/50" />
+              <p className="text-sm text-muted-foreground">Nenhuma conclusão emocional gerada ainda</p>
+              <Button
+                onClick={handleGenerateConclusion}
+                disabled={isGeneratingConclusion || !articleSavedId}
+                className="rounded-xl bg-pink-500 hover:bg-pink-600 text-white"
+              >
+                {isGeneratingConclusion ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>
+                ) : (
+                  <><Sparkles className="mr-2 h-4 w-4" />Gerar Conclusão Emocional</>
+                )}
+              </Button>
             </div>
           )}
         </CardContent>
@@ -118,7 +174,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Cover */}
             {article.coverImage && (
               <div className="space-y-2">
                 <span className="text-xs font-semibold text-primary uppercase tracking-wider">Imagem de Capa</span>
@@ -128,7 +183,6 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
               </div>
             )}
 
-            {/* Gallery grid */}
             {article.galleryImages.length > 0 && (
               <div className="space-y-2">
                 <span className="text-xs font-semibold text-primary uppercase tracking-wider">

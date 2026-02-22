@@ -709,7 +709,7 @@ export function useFullArticleGeneration() {
         isSavingRef.current = false;
       }, 1000);
     }
-  }, [article, articleSavedId, toast]);
+  }, [article, articleSavedId]);
 
   // Clear persisted state (call after publishing)
   const clearPersistedArticle = useCallback(() => {
@@ -719,6 +719,7 @@ export function useFullArticleGeneration() {
   return {
     isGenerating,
     article,
+    articleSavedId,
     steps,
     startTime,
     currentTopic,
