@@ -24,7 +24,7 @@ i18n
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
     },
-    lng: 'en',
+    lng: 'pt-BR',
     interpolation: { escapeValue: false },
   });
 
