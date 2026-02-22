@@ -318,13 +318,8 @@ const Article = () => {
 
   const encodedExcerpt = encodeURIComponent(post.excerpt ? post.excerpt.substring(0, 200) : '');
   const whatsappText = [
-    `🏡 *${post.title}*`,
+    post.excerpt ? post.excerpt.substring(0, 200) : '',
     '',
-    post.excerpt ? `${post.excerpt.substring(0, 200)}...` : '',
-    '',
-    `🖼️ ${post.image}`,
-    '',
-    `📖 Leia o artigo completo:`,
     currentUrl,
   ].filter(Boolean).join('\n');
 
