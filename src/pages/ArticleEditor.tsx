@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Instagram, Download } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Download, Share2 } from 'lucide-react';
 import { ImageQueueStatus } from '@/components/dashboard/ImageQueueStatus';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -341,108 +341,119 @@ const CopyForFacebookCard = ({
   );
 };
 
-// Instagram Story Image Generator Component
-const InstagramStoryCard = ({
-  title, excerpt
+// Social Media Compatible Images Component
+const SocialMediaImagesCard = ({
+  coverImage
 }: {
-  title: string; excerpt: string;
+  coverImage: string;
 }) => {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const socialFormats = [
+    {
+      label: 'Facebook / WhatsApp',
+      icon: 'fb',
+      width: 1200,
+      height: 630,
+      description: '1200×630 — Ideal para compartilhar no Facebook e WhatsApp',
+    },
+    {
+      label: 'Instagram (Feed / Reels)',
+      icon: 'ig',
+      width: 1080,
+      height: 1350,
+      description: '1080×1350 — Formato retrato para feed e Reels do Instagram',
+    },
+  ];
 
-  const handleGenerate = async () => {
-    if (!title) {
-      toast.error('O artigo precisa ter um título para gerar a imagem.');
-      return;
-    }
-    setIsGenerating(true);
-    try {
-      const { data, error } = await invokeEdgeFunction('generate-instagram-image', {
-        title,
-        excerpt,
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      if (data?.imageUrl) {
-        setGeneratedImage(data.imageUrl);
-        toast.success('Imagem para Instagram gerada com sucesso!');
-      }
-    } catch (err) {
-      console.error('Instagram image error:', err);
-      toast.error('Erro ao gerar imagem para Instagram.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  const getConvertedUrl = (w: number, h: number) =>
+    `https://wsrv.nl/?url=${encodeURIComponent(coverImage)}&w=${w}&h=${h}&fit=cover&output=jpg&q=90`;
 
-  const handleDownload = async () => {
-    if (!generatedImage) return;
+  const handleDownload = async (w: number, h: number, name: string) => {
     try {
-      const response = await fetch(generatedImage);
+      const url = getConvertedUrl(w, h);
+      const response = await fetch(url);
       const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
+      const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `instagram-story-${Date.now()}.png`;
+      a.href = blobUrl;
+      a.download = `${name}-${w}x${h}.jpg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast.success('Imagem baixada!');
+      URL.revokeObjectURL(blobUrl);
+      toast.success('Imagem JPG baixada!');
     } catch {
       toast.error('Erro ao baixar imagem.');
     }
   };
 
-  const handleCopyUrl = async () => {
-    if (!generatedImage) return;
-    await navigator.clipboard.writeText(generatedImage);
+  const handleCopyUrl = async (w: number, h: number) => {
+    const url = getConvertedUrl(w, h);
+    await navigator.clipboard.writeText(url);
     toast.success('URL da imagem copiada!');
   };
+
+  if (!coverImage) {
+    return (
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Share2 className="h-4 w-4 text-blue-500" />
+            Imagens para Redes Sociais
+          </CardTitle>
+          <CardDescription>Gere a imagem de capa primeiro para criar versões compatíveis</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-border/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Instagram className="h-4 w-4 text-pink-500" />
-          Imagem para Instagram
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Share2 className="h-4 w-4 text-blue-500" />
+          Imagens para Redes Sociais
         </CardTitle>
-        <CardDescription>Gere uma imagem retrato (Stories/Reels) para postar no Instagram</CardDescription>
+        <CardDescription>Versões JPG compatíveis com Facebook, WhatsApp e Instagram</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button
-          onClick={handleGenerate}
-          disabled={isGenerating || !title}
-          className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:from-purple-600 hover:via-pink-600 hover:to-orange-500 text-white"
-        >
-          {isGenerating ? (
-            <><Loader2 className="h-4 w-4 animate-spin mr-2" />Gerando imagem...</>
-          ) : (
-            <><Sparkles className="h-4 w-4 mr-2" />Gerar Imagem para Stories</>
-          )}
-        </Button>
-
-        {generatedImage && (
-          <div className="space-y-3">
-            <div className="relative rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+        {socialFormats.map((fmt) => (
+          <div key={fmt.label} className="space-y-2 p-3 rounded-lg border border-border/40 bg-muted/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">{fmt.label}</p>
+                <p className="text-xs text-muted-foreground">{fmt.description}</p>
+              </div>
+            </div>
+            <div className="relative rounded-md overflow-hidden border border-border/30 bg-muted/30">
               <img
-                src={generatedImage}
-                alt="Instagram Story"
-                className="w-full max-h-[500px] object-contain mx-auto"
+                src={getConvertedUrl(fmt.width, fmt.height)}
+                alt={fmt.label}
+                className="w-full object-contain"
+                style={{ maxHeight: fmt.height > fmt.width ? '300px' : '180px' }}
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1" onClick={handleDownload}>
-                <Download className="h-4 w-4 mr-1" />
-                Baixar
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={() => handleDownload(fmt.width, fmt.height, fmt.label.toLowerCase().replace(/[^a-z]/g, '-'))}
+              >
+                <Download className="h-3.5 w-3.5 mr-1" />
+                Baixar JPG
               </Button>
-              <Button variant="outline" size="sm" className="flex-1" onClick={handleCopyUrl}>
-                <Copy className="h-4 w-4 mr-1" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={() => handleCopyUrl(fmt.width, fmt.height)}
+              >
+                <Copy className="h-3.5 w-3.5 mr-1" />
                 Copiar URL
               </Button>
             </div>
           </div>
-        )}
+        ))}
       </CardContent>
     </Card>
   );
@@ -1298,10 +1309,9 @@ export default function ArticleEditor() {
               emotionalConclusion={emotionalConclusion?.conclusion_text || null}
             />
 
-            {/* Instagram Story Image */}
-            <InstagramStoryCard
-              title={title}
-              excerpt={excerpt}
+            {/* Social Media Compatible Images */}
+            <SocialMediaImagesCard
+              coverImage={coverImage}
             />
 
             {/* Affiliate Banner */}
