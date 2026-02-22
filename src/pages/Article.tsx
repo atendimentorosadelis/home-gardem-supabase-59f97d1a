@@ -240,6 +240,53 @@ const Article = () => {
   const rawContent = translatedContent || post?.content || '';
   const displayContent = useMemo(() => parseCurrencyInText(rawContent), [rawContent, i18n.language]);
 
+  // Dynamic OG meta tags for social sharing
+  useEffect(() => {
+    if (!post || !dbArticle) return;
+
+    const siteUrl = 'https://blank-canvas-maker-5273.lovable.app';
+    const articleUrl = `${siteUrl}/${dbArticle.category_slug}/${dbArticle.slug}`;
+    const articleImage = dbArticle.cover_image || `${siteUrl}/og-image.jpg`;
+    const articleDescription = dbArticle.excerpt || post.title;
+
+    const setMeta = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) || document.querySelector(`meta[name="${property}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        if (property.startsWith('og:') || property.startsWith('article:')) {
+          el.setAttribute('property', property);
+        } else {
+          el.setAttribute('name', property);
+        }
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    document.title = `${post.title} | Home Garden Manual`;
+    setMeta('description', articleDescription);
+    setMeta('og:title', post.title);
+    setMeta('og:description', articleDescription);
+    setMeta('og:image', articleImage);
+    setMeta('og:url', articleUrl);
+    setMeta('og:type', 'article');
+    setMeta('og:site_name', 'Home Garden Manual');
+    setMeta('article:published_time', dbArticle.published_at || '');
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', post.title);
+    setMeta('twitter:description', articleDescription);
+    setMeta('twitter:image', articleImage);
+
+    return () => {
+      document.title = 'Home Garden Manual - Decoration, Architecture, Design & Gardening';
+      setMeta('og:title', 'Home Garden Manual - Decoration, Architecture, Design & Gardening');
+      setMeta('og:description', 'Your complete guide to decoration, architecture, modern design, and gardening.');
+      setMeta('og:image', `${siteUrl}/og-image.jpg`);
+      setMeta('og:url', siteUrl);
+      setMeta('og:type', 'website');
+    };
+  }, [post, dbArticle]);
+
   // Register article view
   useEffect(() => {
     if (!post || !dbArticle) return;
@@ -269,11 +316,16 @@ const Article = () => {
   const encodedTitle = encodeURIComponent(post.title);
   const encodedImage = encodeURIComponent(post.image);
 
+  const encodedExcerpt = encodeURIComponent(post.excerpt ? post.excerpt.substring(0, 200) : '');
+  const whatsappText = post.excerpt
+    ? `✨ *${post.title}*\n\n${post.excerpt.substring(0, 200)}...\n\n📖 Leia o artigo completo:\n${currentUrl}`
+    : `✨ *${post.title}*\n\n📖 Leia o artigo completo:\n${currentUrl}`;
+
   const shareUrls = {
-    whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-    twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    pinterest: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}&media=${encodedImage}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(whatsappText)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}%20-%20${encodedExcerpt}&url=${encodedUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
+    pinterest: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}%20-%20${encodedExcerpt}&media=${encodedImage}`,
   };
 
   const copyToClipboard = async () => {
