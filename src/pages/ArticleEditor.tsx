@@ -343,9 +343,9 @@ const CopyForFacebookCard = ({
 
 // Instagram Story Image Generator Component
 const InstagramStoryCard = ({
-  title, excerpt, coverImage
+  title, excerpt
 }: {
-  title: string; excerpt: string; coverImage: string;
+  title: string; excerpt: string;
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -360,7 +360,6 @@ const InstagramStoryCard = ({
       const { data, error } = await invokeEdgeFunction('generate-instagram-image', {
         title,
         excerpt,
-        coverImageUrl: coverImage || null,
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -1303,7 +1302,6 @@ export default function ArticleEditor() {
             <InstagramStoryCard
               title={title}
               excerpt={excerpt}
-              coverImage={coverImage}
             />
 
             {/* Affiliate Banner */}

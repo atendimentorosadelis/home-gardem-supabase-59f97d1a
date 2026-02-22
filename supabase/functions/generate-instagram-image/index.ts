@@ -1,9 +1,29 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
+
+const subjectTranslations: Record<string, string> = {
+  'lareira': 'fireplace', 'jardim': 'garden', 'plantas': 'plants',
+  'suculentas': 'succulent plants', 'cactos': 'cactus plants',
+  'decoração': 'home decor', 'pergolado': 'pergola', 'varanda': 'balcony',
+  'piscina': 'swimming pool', 'churrasqueira': 'barbecue grill',
+  'cozinha': 'kitchen', 'sala de jantar': 'dining room',
+  'sala de estar': 'living room', 'sala': 'living room',
+  'quarto': 'bedroom', 'banheiro': 'bathroom', 'escritório': 'home office',
+  'área gourmet': 'gourmet area', 'área de serviço': 'laundry room',
+};
+
+function extractSubjectFromTitle(title: string): string {
+  const lowerTitle = title.toLowerCase();
+  for (const [pt, en] of Object.entries(subjectTranslations)) {
+    if (lowerTitle.includes(pt)) return en;
+  }
+  return 'home interior design element';
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,119 +31,106 @@ serve(async (req) => {
   }
 
   try {
-    const { title, excerpt, coverImageUrl } = await req.json();
-
-    if (!title) {
-      return new Response(
-        JSON.stringify({ error: 'Title is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const REPLICATE_API_KEY = Deno.env.get("REPLICATE_API_KEY");
+    if (!REPLICATE_API_KEY) {
+      throw new Error("REPLICATE_API_KEY is not configured");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
-    }
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || '';
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || '';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const prompt = `Create a professional Instagram Story image (9:16 portrait format) for a home & garden blog post.
+    const { title, excerpt, mainSubject, visualContext } = await req.json();
 
-The article is titled: "${title}"
-${excerpt ? `Summary: "${excerpt.substring(0, 150)}"` : ''}
+    if (!title) throw new Error("Title is required");
 
-Design requirements:
-- Portrait orientation (9:16 ratio), suitable for Instagram Stories and Reels
-- Clean, modern, editorial design with elegant typography
-- The title "${title}" should be prominently displayed as stylized text overlay
-- Use warm, inviting colors related to home, garden, and interior design
-- Include decorative botanical or architectural elements that complement the theme
-- Add a subtle "Home & Garden" branding at the bottom
-- Professional magazine-quality aesthetic
-- Make the text readable and visually striking
-- Do NOT include any phone UI elements, status bars, or device frames
+    const subject = mainSubject || extractSubjectFromTitle(title);
+    const setting = visualContext || 'beautiful home environment, professional photography, warm natural lighting';
+    const antiTextClause = "no text, no words, no letters, no typography, no watermarks, no logos";
 
-Ultra high resolution, photographic quality.`;
+    const prompt = `${subject}, stunning portrait photograph for Instagram Stories. Vertical 9:16 composition, ${setting}. Editorial home and garden magazine quality, vibrant colors, dreamy atmosphere, ultra high resolution, sharp focus. ${antiTextClause}.`;
 
-    const messages: any[] = [
-      {
-        role: 'user',
-        content: coverImageUrl 
-          ? [
-              { type: 'text', text: prompt + '\n\nUse this article cover image as visual reference and inspiration for the color palette and theme:' },
-              { type: 'image_url', image_url: { url: coverImageUrl } }
-            ]
-          : prompt
-      }
-    ];
+    console.log(`Generating Instagram Story image: ${prompt.substring(0, 100)}...`);
 
-    console.log('Generating Instagram Story image...');
-
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
+    const replicateResponse = await fetch("https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${REPLICATE_API_KEY}`,
+        "Content-Type": "application/json",
+        "Prefer": "wait",
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-image',
-        messages,
-        modalities: ['image', 'text'],
+        input: {
+          prompt,
+          aspect_ratio: "9:16",
+          output_format: "webp",
+          output_quality: 90,
+          num_outputs: 1,
+          go_fast: true,
+        },
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
-      throw new Error(`AI Gateway error: ${response.status}`);
+    if (!replicateResponse.ok) {
+      const errorText = await replicateResponse.text();
+      throw new Error(`Replicate API error: ${replicateResponse.status} - ${errorText}`);
     }
 
-    const data = await response.json();
-    const imageData = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const prediction = await replicateResponse.json();
+    let imageUrl: string | null = null;
 
-    if (!imageData) {
-      throw new Error('No image generated');
+    if (prediction.status === 'succeeded' && prediction.output) {
+      imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
+    } else if (prediction.status === 'processing' || prediction.status === 'starting') {
+      const pollUrl = prediction.urls?.get || `https://api.replicate.com/v1/predictions/${prediction.id}`;
+      for (let attempts = 0; attempts < 60; attempts++) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const pollResponse = await fetch(pollUrl, {
+          headers: { "Authorization": `Bearer ${REPLICATE_API_KEY}` },
+        });
+        const pollResult = await pollResponse.json();
+        if (pollResult.status === 'succeeded') {
+          imageUrl = Array.isArray(pollResult.output) ? pollResult.output[0] : pollResult.output;
+          break;
+        } else if (pollResult.status === 'failed' || pollResult.status === 'canceled') {
+          throw new Error(`Prediction failed: ${pollResult.error || 'Unknown error'}`);
+        }
+      }
     }
+
+    if (!imageUrl) throw new Error("No image was generated");
+
+    // Download image
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) throw new Error(`Failed to download image: ${imageResponse.status}`);
+    const imageBytes = new Uint8Array(await imageResponse.arrayBuffer());
 
     // Upload to Supabase Storage
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 8);
+    const fileName = `instagram/story-${timestamp}-${randomId}.webp`;
 
-    const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
-    const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-    
-    const fileName = `instagram/story-${Date.now()}.png`;
+    const { error: uploadError } = await supabase.storage
+      .from('article-images')
+      .upload(fileName, imageBytes, { contentType: 'image/webp', upsert: false });
 
-    const uploadResponse = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/article-images/${fileName}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          'Content-Type': 'image/png',
-          'x-upsert': 'true',
-        },
-        body: binaryData,
-      }
-    );
+    if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
-    if (!uploadResponse.ok) {
-      const uploadError = await uploadResponse.text();
-      console.error('Storage upload error:', uploadError);
-      throw new Error('Failed to upload image to storage');
-    }
+    const { data: { publicUrl } } = supabase.storage
+      .from('article-images')
+      .getPublicUrl(fileName);
 
-    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/article-images/${fileName}`;
-
-    console.log('Instagram Story image generated and uploaded:', publicUrl);
+    console.log('Instagram Story image generated:', publicUrl);
 
     return new Response(
-      JSON.stringify({ imageUrl: publicUrl }),
+      JSON.stringify({ success: true, imageUrl: publicUrl }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Instagram image generation error:', error);
+    console.error("Error generating Instagram image:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Image generation failed' }),
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
