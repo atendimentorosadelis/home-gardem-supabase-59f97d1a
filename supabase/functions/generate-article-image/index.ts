@@ -75,7 +75,7 @@ serve(async (req) => {
         input: {
           prompt,
           aspect_ratio: aspectRatio,
-          output_format: "webp",
+          output_format: "png",
           output_quality: 85,
           num_outputs: 1,
           go_fast: true,
@@ -121,11 +121,11 @@ serve(async (req) => {
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 8);
     const safeSlug = (slug || 'article').replace(/[^a-z0-9-]/gi, '-').toLowerCase();
-    const fileName = `${safeSlug}/${type}-${timestamp}-${randomId}.webp`;
+    const fileName = `${safeSlug}/${type}-${timestamp}-${randomId}.png`;
 
     const { error: uploadError } = await supabase.storage
       .from('article-images')
-      .upload(fileName, imageBytes, { contentType: 'image/webp', upsert: false });
+      .upload(fileName, imageBytes, { contentType: 'image/png', upsert: false });
 
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
@@ -159,13 +159,13 @@ serve(async (req) => {
         image_index: type === 'cover' ? 0 : imageIndex,
         public_url: publicUrl,
         file_size: imageBytes.length,
-        format: 'webp',
+        format: 'png',
         prompt,
       });
     }
 
     return new Response(
-      JSON.stringify({ success: true, imageUrl: publicUrl, prompt, type, fileSize: imageBytes.length, format: 'webp' }),
+      JSON.stringify({ success: true, imageUrl: publicUrl, prompt, type, fileSize: imageBytes.length, format: 'png' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
