@@ -15,7 +15,7 @@ export function Logo({ className = "" }: LogoProps) {
 
   useEffect(() => setMounted(true), []);
 
-  const logoSrc = mounted && theme === "light" ? logoLight : logoDark;
+  const logoSrc = mounted && theme === "dark" ? logoLight : logoDark;
   const isHomePage = location.pathname === "/";
 
   const handleClick = (e: React.MouseEvent) => {
