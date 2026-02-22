@@ -317,16 +317,21 @@ const Article = () => {
   const encodedImage = encodeURIComponent(post.image);
 
   const encodedExcerpt = encodeURIComponent(post.excerpt ? post.excerpt.substring(0, 200) : '');
+
+  // OG share URL for crawlers (WhatsApp, Facebook, Twitter)
+  const ogShareUrl = `https://xfhtixubllcdockbkbwm.supabase.co/functions/v1/og-share?slug=${encodeURIComponent(dbArticle?.slug || postId || '')}&category=${encodeURIComponent(dbArticle?.category_slug || categorySlug || '')}`;
+  const encodedOgUrl = encodeURIComponent(ogShareUrl);
+
   const whatsappText = [
     post.excerpt ? post.excerpt.substring(0, 200) : '',
     '',
-    currentUrl,
+    ogShareUrl,
   ].filter(Boolean).join('\n');
 
   const shareUrls = {
     whatsapp: `https://wa.me/?text=${encodeURIComponent(whatsappText)}`,
-    twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}%20-%20${encodedExcerpt}&url=${encodedUrl}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}%20-%20${encodedExcerpt}&url=${encodedOgUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedOgUrl}&quote=${encodedTitle}`,
     pinterest: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}%20-%20${encodedExcerpt}&media=${encodedImage}`,
   };
 
