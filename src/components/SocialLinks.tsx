@@ -17,9 +17,10 @@ export const TikTokIcon = ({ className }: { className?: string }) => (
 
 interface SocialLinksProps {
   className?: string;
+  iconClassName?: string;
 }
 
-export function SocialLinks({ className }: SocialLinksProps) {
+export function SocialLinks({ className, iconClassName }: SocialLinksProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       {/* Social links will be populated from database */}
