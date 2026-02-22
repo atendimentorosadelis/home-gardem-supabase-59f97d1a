@@ -118,7 +118,7 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
         </button>
       </div>
       <p className="text-xs text-muted-foreground">
-        {t('newsletter.privacyNote', 'Prometemos não enviar spam. Apenas dicas e novidades do mundo da jardinagem.')}
+        {t('newsletter.privacyNote')}
       </p>
     </form>
   );

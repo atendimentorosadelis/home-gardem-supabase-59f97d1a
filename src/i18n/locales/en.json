@@ -52,7 +52,7 @@
     "errorDesc": "An error occurred while loading articles. Please try again."
   },
   "footer": {
-    "description": "Your complete guide to transforming your home and garden into amazing spaces.",
+    "description": "Your complete guide to decoration, architecture, modern design, and gardening. Inspiration to transform every space in your home.",
     "newsletter": "Newsletter",
     "newsletterPlaceholder": "Your email",
     "subscribe": "Subscribe",
@@ -68,6 +68,18 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Use",
     "cookies": "Cookie Policy"
+  },
+  "newsletter": {
+    "privacyNote": "No spam, we promise. Only tips and inspiration on decoration, architecture, design, and gardening.",
+    "invalidEmail": "Invalid email",
+    "invalidEmailDesc": "Please enter a valid email address.",
+    "alreadySubscribed": "You're already subscribed!",
+    "alreadySubscribedDesc": "This email is already registered in our newsletter.",
+    "success": "🎉 Successfully subscribed!",
+    "successDesc": "You'll receive our latest tips on decoration, architecture, and design directly in your inbox.",
+    "thankYou": "Thank you! Keep an eye on your inbox 📬",
+    "error": "Subscription error",
+    "errorDesc": "An error occurred. Please try again later."
   },
   "common": {
     "readMore": "Read more",
