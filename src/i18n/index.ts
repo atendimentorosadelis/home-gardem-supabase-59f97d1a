@@ -20,11 +20,10 @@ i18n
     fallbackLng: 'en',
     supportedLngs: ['en', 'pt-BR', 'es'],
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
     },
-    lng: 'en',
     interpolation: { escapeValue: false },
   });
 
