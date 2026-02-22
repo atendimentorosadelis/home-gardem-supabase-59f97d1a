@@ -33,13 +33,13 @@ interface UseTranslatedContentResult {
 
 const CACHE_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 
-function getCacheKey(slug: string, lang: string): string {
-  return `translation_cache_${slug}_${lang}`;
+function getCacheKey(slug: string, lang: string, contentLength: number): string {
+  return `translation_cache_${slug}_${lang}_${contentLength}`;
 }
 
-function getFromCache(slug: string, lang: string): TranslationCache | null {
+function getFromCache(slug: string, lang: string, contentLength: number): TranslationCache | null {
   try {
-    const key = getCacheKey(slug, lang);
+    const key = getCacheKey(slug, lang, contentLength);
     const cached = localStorage.getItem(key);
     if (!cached) return null;
     const data: TranslationCache = JSON.parse(cached);
@@ -53,9 +53,9 @@ function getFromCache(slug: string, lang: string): TranslationCache | null {
   }
 }
 
-function saveToCache(slug: string, lang: string, title: string, excerpt: string, content: string): void {
+function saveToCache(slug: string, lang: string, contentLength: number, title: string, excerpt: string, content: string): void {
   try {
-    const key = getCacheKey(slug, lang);
+    const key = getCacheKey(slug, lang, contentLength);
     const now = Date.now();
     const cache: TranslationCache = { title, excerpt, content, language: lang, cachedAt: now, expiresAt: now + CACHE_DURATION_MS };
     localStorage.setItem(key, JSON.stringify(cache));
@@ -95,7 +95,7 @@ export function useTranslatedContent({ title, excerpt = '', content = '', slug, 
       return;
     }
 
-    const cached = getFromCache(slug, currentLang);
+    const cached = getFromCache(slug, currentLang, content.length);
     if (cached) {
       setTranslatedTitle(cached.title);
       setTranslatedExcerpt(cached.excerpt);
@@ -124,7 +124,7 @@ export function useTranslatedContent({ title, excerpt = '', content = '', slug, 
           setTranslatedExcerpt(data.excerpt || excerpt);
           setTranslatedContent(data.content || content);
           setIsTranslated(true);
-          saveToCache(slug, currentLang, data.title || title, data.excerpt || excerpt, data.content || content);
+          saveToCache(slug, currentLang, content.length, data.title || title, data.excerpt || excerpt, data.content || content);
         }
       } catch (err) {
         console.error('Translation error:', err);
