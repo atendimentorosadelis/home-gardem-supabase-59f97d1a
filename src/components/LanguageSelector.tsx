@@ -44,11 +44,16 @@ export function LanguageSelector({ mobile = false }: LanguageSelectorProps) {
                 <button
                   key={lang.code}
                   onClick={() => handleLanguageChange(lang.code)}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-muted transition-colors"
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-secondary transition-colors",
+                    lang.code === currentLanguage.code && "bg-secondary"
+                  )}
                 >
                   <span>{lang.flag}</span>
-                  <span>{lang.name}</span>
-                  {lang.code === i18n.language && <Check className="w-3 h-3 ml-auto text-primary" />}
+                  <span className="flex-1 text-left">{lang.name}</span>
+                  {lang.code === currentLanguage.code && (
+                    <Check className="w-4 h-4 text-primary" />
+                  )}
                 </button>
               ))}
             </div>
@@ -62,26 +67,35 @@ export function LanguageSelector({ mobile = false }: LanguageSelectorProps) {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-muted transition-all text-sm"
+        className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-full hover:bg-primary/90 transition-all hover:scale-105"
+        aria-label="Select language"
       >
-        <Globe className="w-4 h-4 text-muted-foreground" />
-        <span className="text-muted-foreground">{currentLanguage.flag}</span>
-        <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", isOpen && "rotate-180")} />
+        <Globe className="w-4 h-4" />
+        <span>{currentLanguage.code.split("-")[0].toUpperCase()}</span>
+        <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform", isOpen && "rotate-180")} />
       </button>
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-40 bg-popover border border-border rounded-lg shadow-lg z-50 overflow-hidden">
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 top-full mt-2 w-44 bg-popover border border-border rounded-lg shadow-lg z-50 overflow-hidden">
             {languages.map((lang) => (
               <button
                 key={lang.code}
                 onClick={() => handleLanguageChange(lang.code)}
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted transition-colors"
+                className={cn(
+                  "w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-secondary transition-colors",
+                  lang.code === currentLanguage.code && "bg-secondary"
+                )}
               >
-                <span>{lang.flag}</span>
-                <span>{lang.name}</span>
-                {lang.code === i18n.language && <Check className="w-3 h-3 ml-auto text-primary" />}
+                <span className="text-lg">{lang.flag}</span>
+                <span className="flex-1 text-left">{lang.name}</span>
+                {lang.code === currentLanguage.code && (
+                  <Check className="w-4 h-4 text-primary" />
+                )}
               </button>
             ))}
           </div>
