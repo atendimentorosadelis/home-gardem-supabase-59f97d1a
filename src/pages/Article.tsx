@@ -317,9 +317,16 @@ const Article = () => {
   const encodedImage = encodeURIComponent(post.image);
 
   const encodedExcerpt = encodeURIComponent(post.excerpt ? post.excerpt.substring(0, 200) : '');
-  const whatsappText = post.excerpt
-    ? `✨ *${post.title}*\n\n${post.excerpt.substring(0, 200)}...\n\n📖 Leia o artigo completo:\n${currentUrl}`
-    : `✨ *${post.title}*\n\n📖 Leia o artigo completo:\n${currentUrl}`;
+  const whatsappText = [
+    `🏡 *${post.title}*`,
+    '',
+    post.excerpt ? `${post.excerpt.substring(0, 200)}...` : '',
+    '',
+    `🖼️ ${post.image}`,
+    '',
+    `📖 Leia o artigo completo:`,
+    currentUrl,
+  ].filter(Boolean).join('\n');
 
   const shareUrls = {
     whatsapp: `https://wa.me/?text=${encodeURIComponent(whatsappText)}`,
