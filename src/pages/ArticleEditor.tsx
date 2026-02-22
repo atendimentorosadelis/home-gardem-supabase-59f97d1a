@@ -341,56 +341,129 @@ const CopyForFacebookCard = ({
   );
 };
 
-// Social Media Compatible Images Component
-const SocialMediaImagesCard = ({
-  coverImage
+// Social Media Ready Post Cards
+const SocialMediaPostCards = ({
+  title, excerpt, coverImage, category, slug, emotionalConclusion
 }: {
-  coverImage: string;
+  title: string; excerpt: string; coverImage: string;
+  category: string; slug: string; emotionalConclusion: string | null;
 }) => {
-  const socialFormats = [
-    {
-      label: 'Facebook / WhatsApp',
-      icon: 'fb',
-      width: 1200,
-      height: 630,
-      description: '1200×630 — Ideal para compartilhar no Facebook e WhatsApp',
-    },
-    {
-      label: 'Instagram (Feed / Reels)',
-      icon: 'ig',
-      width: 1080,
-      height: 1350,
-      description: '1080×1350 — Formato retrato para feed e Reels do Instagram',
-    },
-  ];
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [copyingImage, setCopyingImage] = useState<string | null>(null);
 
-  const getConvertedUrl = (w: number, h: number) =>
-    `https://wsrv.nl/?url=${encodeURIComponent(coverImage)}&w=${w}&h=${h}&fit=cover&output=jpg&q=90`;
+  const siteUrl = 'https://homegardenmanual.com';
+  const articleUrl = category && slug ? `${siteUrl}/${category}/${slug}` : '';
 
-  const handleDownload = async (w: number, h: number, name: string) => {
+  const copyText = async (text: string, field: string) => {
     try {
-      const url = getConvertedUrl(w, h);
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      toast.success('Copiado!');
+      setTimeout(() => setCopiedField(null), 2500);
+    } catch {
+      toast.error('Erro ao copiar');
+    }
+  };
+
+  const copyImageToClipboard = async (url: string, field: string) => {
+    setCopyingImage(field);
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      // Convert to PNG for clipboard compatibility
+      const img = document.createElement('img');
+      img.crossOrigin = 'anonymous';
+      const loaded = new Promise<void>((resolve) => { img.onload = () => resolve(); });
+      img.src = URL.createObjectURL(blob);
+      await loaded;
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(img.src);
+      const pngBlob = await new Promise<Blob>((resolve) =>
+        canvas.toBlob((b) => resolve(b!), 'image/png')
+      );
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': pngBlob })
+      ]);
+      setCopiedField(field);
+      toast.success('Imagem copiada para a memória!');
+      setTimeout(() => setCopiedField(null), 2500);
+    } catch {
+      toast.error('Não foi possível copiar a imagem. Tente baixar.');
+    } finally {
+      setCopyingImage(null);
+    }
+  };
+
+  const handleDownload = async (url: string, name: string) => {
+    try {
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = blobUrl;
-      a.download = `${name}-${w}x${h}.jpg`;
+      a.download = name;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
-      toast.success('Imagem JPG baixada!');
+      toast.success('Imagem baixada!');
     } catch {
       toast.error('Erro ao baixar imagem.');
     }
   };
 
-  const handleCopyUrl = async (w: number, h: number) => {
-    const url = getConvertedUrl(w, h);
-    await navigator.clipboard.writeText(url);
-    toast.success('URL da imagem copiada!');
-  };
+  const getJpgUrl = (w: number, h: number) =>
+    coverImage ? `https://wsrv.nl/?url=${encodeURIComponent(coverImage)}&w=${w}&h=${h}&fit=cover&output=jpg&q=90` : '';
+
+  const fbImageUrl = getJpgUrl(1200, 630);
+  const igImageUrl = getJpgUrl(1080, 1350);
+
+  const fbPostText = [
+    `🏡 ${title}`,
+    '',
+    excerpt ? `✨ ${excerpt}` : '',
+    '',
+    emotionalConclusion ? `💚 ${emotionalConclusion}` : '',
+    '',
+    articleUrl ? `📖 Leia mais: ${articleUrl}` : '',
+    '',
+    '#decoração #casa #jardim #design #homedecor #homegardenmanual',
+  ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n').trim();
+
+  const igPostText = [
+    `🌿 ${title}`,
+    '',
+    excerpt ? `✨ ${excerpt}` : '',
+    '',
+    emotionalConclusion ? `💚 ${emotionalConclusion}` : '',
+    '',
+    articleUrl ? `🔗 Link na bio: ${articleUrl}` : '',
+    '',
+    '#decoração #casa #jardim #design #plantasdeinterior #homedecor #arquitetura #homegardenmanual',
+  ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n').trim();
+
+  const CopyBtn = ({ field, onClick, label, icon }: { field: string; onClick: () => void; label: string; icon?: React.ReactNode }) => (
+    <Button
+      size="sm"
+      variant={copiedField === field ? "default" : "outline"}
+      className="gap-1.5 text-xs h-8"
+      onClick={onClick}
+      disabled={copyingImage === field}
+    >
+      {copyingImage === field ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : copiedField === field ? (
+        <Check className="h-3.5 w-3.5" />
+      ) : (
+        icon || <Copy className="h-3.5 w-3.5" />
+      )}
+      {copiedField === field ? 'Copiado!' : label}
+    </Button>
+  );
 
   if (!coverImage) {
     return (
@@ -398,64 +471,98 @@ const SocialMediaImagesCard = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Share2 className="h-4 w-4 text-blue-500" />
-            Imagens para Redes Sociais
+            Posts para Redes Sociais
           </CardTitle>
-          <CardDescription>Gere a imagem de capa primeiro para criar versões compatíveis</CardDescription>
+          <CardDescription>Gere a imagem de capa primeiro</CardDescription>
         </CardHeader>
       </Card>
     );
   }
 
   return (
-    <Card className="border-border/50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Share2 className="h-4 w-4 text-blue-500" />
-          Imagens para Redes Sociais
-        </CardTitle>
-        <CardDescription>Versões JPG compatíveis com Facebook, WhatsApp e Instagram</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {socialFormats.map((fmt) => (
-          <div key={fmt.label} className="space-y-2 p-3 rounded-lg border border-border/40 bg-muted/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">{fmt.label}</p>
-                <p className="text-xs text-muted-foreground">{fmt.description}</p>
-              </div>
-            </div>
-            <div className="relative rounded-md overflow-hidden border border-border/30 bg-muted/30">
-              <img
-                src={getConvertedUrl(fmt.width, fmt.height)}
-                alt={fmt.label}
-                className="w-full object-contain"
-                style={{ maxHeight: fmt.height > fmt.width ? '300px' : '180px' }}
-              />
+    <div className="space-y-4">
+      {/* Facebook / WhatsApp Post */}
+      <Card className="border-blue-500/30 bg-blue-500/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Facebook className="h-4 w-4 text-blue-600" />
+            Post Facebook / WhatsApp
+          </CardTitle>
+          <CardDescription>Pronto para copiar e postar</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {/* Preview text */}
+          <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
+            {fbPostText}
+          </div>
+          <CopyBtn field="fb-text" onClick={() => copyText(fbPostText, 'fb-text')} label="Copiar Texto" />
+
+          {/* Image with copy */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Imagem 1200×630 (JPG)</p>
+            <div className="relative rounded-lg overflow-hidden border border-border/30">
+              <img src={fbImageUrl} alt="Facebook" className="w-full object-contain" style={{ maxHeight: '180px' }} />
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={() => handleDownload(fmt.width, fmt.height, fmt.label.toLowerCase().replace(/[^a-z]/g, '-'))}
-              >
-                <Download className="h-3.5 w-3.5 mr-1" />
-                Baixar JPG
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={() => handleCopyUrl(fmt.width, fmt.height)}
-              >
-                <Copy className="h-3.5 w-3.5 mr-1" />
-                Copiar URL
+              <CopyBtn field="fb-img" onClick={() => copyImageToClipboard(fbImageUrl, 'fb-img')} label="Copiar Imagem" icon={<Copy className="h-3.5 w-3.5" />} />
+              <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" onClick={() => handleDownload(fbImageUrl, `facebook-${slug || 'post'}.jpg`)}>
+                <Download className="h-3.5 w-3.5" />
+                Baixar
               </Button>
             </div>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+
+          {/* URL */}
+          {articleUrl && (
+            <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+              <Input value={articleUrl} readOnly className="h-8 text-xs bg-muted/30" />
+              <CopyBtn field="fb-url" onClick={() => copyText(articleUrl, 'fb-url')} label="Copiar" />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Instagram Post */}
+      <Card className="border-pink-500/30 bg-gradient-to-br from-pink-500/5 to-purple-500/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <span className="text-lg">📸</span>
+            Post Instagram
+          </CardTitle>
+          <CardDescription>Formato retrato para feed e Reels</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {/* Preview text */}
+          <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
+            {igPostText}
+          </div>
+          <CopyBtn field="ig-text" onClick={() => copyText(igPostText, 'ig-text')} label="Copiar Legenda" />
+
+          {/* Image with copy */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Imagem 1080×1350 (JPG)</p>
+            <div className="relative rounded-lg overflow-hidden border border-border/30 flex justify-center bg-muted/20">
+              <img src={igImageUrl} alt="Instagram" className="object-contain" style={{ maxHeight: '280px' }} />
+            </div>
+            <div className="flex gap-2">
+              <CopyBtn field="ig-img" onClick={() => copyImageToClipboard(igImageUrl, 'ig-img')} label="Copiar Imagem" icon={<Copy className="h-3.5 w-3.5" />} />
+              <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" onClick={() => handleDownload(igImageUrl, `instagram-${slug || 'post'}.jpg`)}>
+                <Download className="h-3.5 w-3.5" />
+                Baixar
+              </Button>
+            </div>
+          </div>
+
+          {/* URL */}
+          {articleUrl && (
+            <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+              <Input value={articleUrl} readOnly className="h-8 text-xs bg-muted/30" />
+              <CopyBtn field="ig-url" onClick={() => copyText(articleUrl, 'ig-url')} label="Copiar" />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
@@ -1309,9 +1416,14 @@ export default function ArticleEditor() {
               emotionalConclusion={emotionalConclusion?.conclusion_text || null}
             />
 
-            {/* Social Media Compatible Images */}
-            <SocialMediaImagesCard
+            {/* Social Media Ready Posts */}
+            <SocialMediaPostCards
+              title={title}
+              excerpt={excerpt}
               coverImage={coverImage}
+              category={category}
+              slug={slug}
+              emotionalConclusion={emotionalConclusion?.conclusion_text || null}
             />
 
             {/* Affiliate Banner */}
