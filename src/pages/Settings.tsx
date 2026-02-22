@@ -108,7 +108,7 @@ function SettingsContent() {
 
   const [siteSettings, setSiteSettings] = useState<SiteSettings>({
     site_name: 'Home Garden Manual',
-    site_description: 'Descubra inspirações encantadoras de decoração, arquitetura moderna, design de interiores e jardinagem. O Home Garden Manual é o seu refúgio digital com dicas práticas, tutoriais detalhados e tendências para transformar cada canto da sua casa e jardim em um espaço acolhedor, sofisticado e cheio de personalidade.',
+    site_description: 'Discover enchanting home decoration inspiration, modern architecture ideas, interior design trends, and expert gardening tips. Home Garden Manual is your ultimate digital haven — featuring practical guides, step-by-step tutorials, and curated trends to transform every corner of your home and garden into a warm, sophisticated, and beautifully personalized living space.',
     contact_email: '',
     contact_phone: '',
     address: '',
