@@ -20,8 +20,8 @@ export interface SocialSettings {
 
 const defaultSocialSettings: SocialSettings = {
   facebook: '', instagram: '', twitter: '', youtube: '', linkedin: '', pinterest: '', tiktok: '',
-  facebook_enabled: false, instagram_enabled: false, twitter_enabled: false, youtube_enabled: false,
-  linkedin_enabled: false, pinterest_enabled: false, tiktok_enabled: false,
+  facebook_enabled: true, instagram_enabled: true, twitter_enabled: true, youtube_enabled: true,
+  linkedin_enabled: true, pinterest_enabled: true, tiktok_enabled: true,
 };
 
 export type SocialPlatform = 'facebook' | 'instagram' | 'twitter' | 'youtube' | 'linkedin' | 'pinterest' | 'tiktok';
