@@ -60,3 +60,31 @@ export function useNotifications() {
 
   return { notifications, unreadCount, isLoading, markAsRead: markAsReadMutation.mutate, markAllAsRead: markAllAsReadMutation.mutate, deleteNotification: deleteNotificationMutation.mutate, refetch };
 }
+
+export async function createNotificationForAdmins(
+  title: string,
+  message: string,
+  type: string = 'info',
+  link: string | null = null
+) {
+  try {
+    const { data: admins, error: adminsError } = await (supabase as any)
+      .from('admin_users')
+      .select('id');
+
+    if (adminsError || !admins) return;
+
+    const notifications = admins.map((admin: any) => ({
+      user_id: admin.id,
+      title,
+      message,
+      type,
+      link,
+      is_read: false,
+    }));
+
+    await (supabase as any).from('notifications').insert(notifications);
+  } catch (error) {
+    console.error('Error creating notifications:', error);
+  }
+}
