@@ -63,7 +63,7 @@ serve(async (req) => {
         input: {
           prompt,
           aspect_ratio: "9:16",
-          output_format: "png",
+          output_format: "webp",
           output_quality: 90,
           num_outputs: 1,
           go_fast: true,
@@ -108,11 +108,11 @@ serve(async (req) => {
     // Upload to Supabase Storage
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 8);
-    const fileName = `instagram/story-${timestamp}-${randomId}.png`;
+    const fileName = `instagram/story-${timestamp}-${randomId}.webp`;
 
     const { error: uploadError } = await supabase.storage
       .from('article-images')
-      .upload(fileName, imageBytes, { contentType: 'image/png', upsert: false });
+      .upload(fileName, imageBytes, { contentType: 'image/webp', upsert: false });
 
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
