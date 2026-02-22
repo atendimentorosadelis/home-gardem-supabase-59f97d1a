@@ -36,12 +36,17 @@ serve(async (req) => {
 
     const title = article?.title || 'Home & Garden Manual';
     const description = article?.excerpt || 'Dicas, tutoriais e guias completas para criar seu jardim perfeito.';
-    const image = article?.cover_image || fallbackImage;
+    
+    // Converter imagem para JPEG via wsrv.nl (proxy de imagem gratuito)
+    let ogImage = fallbackImage;
+    if (article?.cover_image) {
+      ogImage = `https://wsrv.nl/?url=${encodeURIComponent(article.cover_image)}&w=1200&h=630&fit=cover&output=jpg&q=85`;
+    }
+    
     const articleCategory = article?.category_slug || category || '';
     const articleSlug = article?.slug || slug;
     const articleUrl = `${siteUrl}/${articleCategory}/${articleSlug}`;
 
-    // Return HTML with OG tags that redirect to the actual article
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -53,33 +58,36 @@ serve(async (req) => {
   <meta property="og:type" content="article" />
   <meta property="og:title" content="${escapeHtml(title)}" />
   <meta property="og:description" content="${escapeHtml(description)}" />
-  <meta property="og:image" content="${escapeHtml(image)}" />
+  <meta property="og:image" content="${escapeAttr(ogImage)}" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:url" content="${escapeHtml(articleUrl)}" />
-  <meta property="og:site_name" content="Home & Garden Manual" />
+  <meta property="og:image:alt" content="${escapeHtml(title)}" />
+  <meta property="og:url" content="${escapeAttr(articleUrl)}" />
+  <meta property="og:site_name" content="Home &amp; Garden Manual" />
+  <meta property="og:locale" content="pt_BR" />
   
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeHtml(title)}" />
   <meta name="twitter:description" content="${escapeHtml(description)}" />
-  <meta name="twitter:image" content="${escapeHtml(image)}" />
+  <meta name="twitter:image" content="${escapeAttr(ogImage)}" />
   
   <!-- Redirect real users to the actual article -->
-  <meta http-equiv="refresh" content="0;url=${escapeHtml(articleUrl)}" />
-  <link rel="canonical" href="${escapeHtml(articleUrl)}" />
+  <meta http-equiv="refresh" content="0;url=${escapeAttr(articleUrl)}" />
+  <link rel="canonical" href="${escapeAttr(articleUrl)}" />
 </head>
 <body>
-  <p>Redirecionando para <a href="${escapeHtml(articleUrl)}">${escapeHtml(title)}</a>...</p>
+  <p>Redirecionando para <a href="${escapeAttr(articleUrl)}">${escapeHtml(title)}</a>...</p>
 </body>
 </html>`;
 
-    const headers = new Headers();
-    headers.set('Content-Type', 'text/html; charset=utf-8');
-    headers.set('Cache-Control', 'public, max-age=3600');
-    headers.set('Content-Security-Policy', "default-src 'none'");
-    
-    return new Response(html, { headers });
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
 
   } catch (error) {
     console.error('OG redirect error:', error);
@@ -87,6 +95,7 @@ serve(async (req) => {
   }
 });
 
+// Escape para conteúdo de texto HTML
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, '&amp;')
@@ -94,4 +103,12 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+// Escape para atributos de URL - só escapa " e < para não quebrar URLs com &
+function escapeAttr(str: string): string {
+  return str
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
