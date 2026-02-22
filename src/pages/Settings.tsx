@@ -108,7 +108,7 @@ function SettingsContent() {
 
   const [siteSettings, setSiteSettings] = useState<SiteSettings>({
     site_name: 'Home Garden Manual',
-    site_description: 'Seu guia completo para jardinagem e plantas',
+    site_description: 'Descubra inspirações encantadoras de decoração, arquitetura moderna, design de interiores e jardinagem. O Home Garden Manual é o seu refúgio digital com dicas práticas, tutoriais detalhados e tendências para transformar cada canto da sua casa e jardim em um espaço acolhedor, sofisticado e cheio de personalidade.',
     contact_email: '',
     contact_phone: '',
     address: '',
@@ -210,13 +210,32 @@ function SettingsContent() {
     loadOrCreateSeoSettings();
   }, []);
 
-  // Load other settings from localStorage
+  // Load site settings from DB then localStorage fallback
   useEffect(() => {
+    const loadSiteSettings = async () => {
+      try {
+        const { data } = await supabase.from('site_settings').select('value').eq('key', 'site_info').maybeSingle();
+        if (data?.value && typeof data.value === 'object' && !Array.isArray(data.value)) {
+          const value = data.value as Record<string, unknown>;
+          setSiteSettings(prev => ({
+            ...prev,
+            site_name: (value.site_name as string) || prev.site_name,
+            site_description: (value.site_description as string) || prev.site_description,
+            contact_email: (value.contact_email as string) || prev.contact_email,
+            contact_phone: (value.contact_phone as string) || prev.contact_phone,
+            address: (value.address as string) || prev.address,
+          }));
+        } else {
+          const savedSite = localStorage.getItem('admin_site_settings');
+          if (savedSite) setSiteSettings(JSON.parse(savedSite));
+        }
+      } catch (e) { console.error('Error loading site settings:', e); }
+    };
+    loadSiteSettings();
+
     const savedGeneral = localStorage.getItem('admin_general_settings');
-    const savedSite = localStorage.getItem('admin_site_settings');
     const savedNotifications = localStorage.getItem('admin_notification_settings');
     if (savedGeneral) setGeneralSettings(JSON.parse(savedGeneral));
-    if (savedSite) setSiteSettings(JSON.parse(savedSite));
     if (savedNotifications) setNotificationSettings(JSON.parse(savedNotifications));
   }, []);
 
@@ -324,6 +343,14 @@ function SettingsContent() {
   const handleSaveSite = async () => {
     setSaving(true);
     try {
+      const { data: existing } = await supabase.from('site_settings').select('id').eq('key', 'site_info').maybeSingle();
+      if (existing) {
+        const { error } = await supabase.from('site_settings').update({ value: siteSettings as any, updated_at: new Date().toISOString() }).eq('key', 'site_info');
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('site_settings').insert({ key: 'site_info', value: siteSettings as any });
+        if (error) throw error;
+      }
       localStorage.setItem('admin_site_settings', JSON.stringify(siteSettings));
       toast.success('Configurações do site salvas com sucesso!');
     } catch (error) { console.error('Error saving site settings:', error); toast.error('Erro ao salvar configurações'); }
