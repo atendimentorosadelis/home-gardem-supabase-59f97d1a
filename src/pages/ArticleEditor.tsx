@@ -174,8 +174,7 @@ export default function ArticleEditor() {
         title, slug, excerpt, body, category: selectedCategory?.name || null, category_slug: category || null,
         tags, keywords, cover_image: coverImage || null, gallery_images: cleanGallery.length > 0 ? cleanGallery : [],
         read_time: readTime, status, published_at: status === 'published' ? (article?.published_at || new Date().toISOString()) : null,
-        affiliate_banner_enabled: affiliateBannerEnabled, affiliate_banner_image: affiliateBannerImage || null,
-        affiliate_banner_image_mobile: affiliateBannerImageMobile || null, affiliate_banner_url: affiliateBannerUrl || null,
+        affiliate_banner_enabled: affiliateBannerEnabled,
       };
       const { error } = await (supabase as any).from('content_articles').update(updates).eq('id', id);
       if (error) throw error;
@@ -184,6 +183,8 @@ export default function ArticleEditor() {
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
       queryClient.invalidateQueries({ queryKey: ['article-edit', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['published-articles'] });
+      queryClient.invalidateQueries({ queryKey: ['blog-articles'] });
       toast.success('Artigo salvo com sucesso!');
     },
     onError: (error) => { console.error('Save error:', error); toast.error('Erro ao salvar artigo'); },

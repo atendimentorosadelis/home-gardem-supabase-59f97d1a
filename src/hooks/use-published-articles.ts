@@ -46,7 +46,6 @@ export function usePublishedArticles() {
         .select('*')
         .eq('status', 'published')
         .not('published_at', 'is', null)
-        .not('cover_image', 'is', null)
         .order('published_at', { ascending: false })
         .limit(20);
 
@@ -56,11 +55,7 @@ export function usePublishedArticles() {
       const viewsCount: Record<string, number> = {};
       viewsData?.forEach(view => { viewsCount[view.article_id] = (viewsCount[view.article_id] || 0) + 1; });
 
-      const articlesWithImages = (data as DatabaseArticle[]).filter(
-        article => article.cover_image && article.cover_image.trim() !== '' && article.cover_image !== '/placeholder.svg'
-      );
-
-      return articlesWithImages.map(article => ({ ...mapArticleToPost(article), viewsCount: viewsCount[article.id] || 0 }));
+      return (data as DatabaseArticle[]).map(article => ({ ...mapArticleToPost(article), viewsCount: viewsCount[article.id] || 0 }));
     },
   });
 }

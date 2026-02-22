@@ -52,7 +52,7 @@ export function useBlogArticles(options: UseBlogArticlesOptions = {}) {
   return useQuery({
     queryKey: ["blog-articles", search, category, page, perPage, sortBy],
     queryFn: async () => {
-      const { data: dbArticles, error } = await (supabase as any).from("content_articles").select("*").eq("status", "published").not("published_at", "is", null).not("cover_image", "is", null).order("published_at", { ascending: false });
+      const { data: dbArticles, error } = await (supabase as any).from("content_articles").select("*").eq("status", "published").not("published_at", "is", null).order("published_at", { ascending: false });
       if (error) throw error;
 
       const { data: viewsData } = await (supabase as any).from("article_views").select("article_id");

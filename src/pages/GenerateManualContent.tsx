@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Loader2,
   RefreshCw,
@@ -319,12 +320,16 @@ function GenerateManualContentPage() {
       setArticleSaved(true);
     }
   };
+  const queryClient = useQueryClient();
 
   const handlePublish = async () => {
     const saved = await saveArticle(true);
     if (saved && currentTopic) {
       await updateHistoryArticleId(currentTopic, saved.id);
     }
+    queryClient.invalidateQueries({ queryKey: ['published-articles'] });
+    queryClient.invalidateQueries({ queryKey: ['blog-articles'] });
+    queryClient.invalidateQueries({ queryKey: ['blog-categories'] });
     resetToSelectionScreen();
   };
 
