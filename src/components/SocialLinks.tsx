@@ -38,18 +38,17 @@ export function SocialLinks({ className, iconClassName = "w-5 h-5" }: SocialLink
     <div className={cn("flex items-center gap-3", className)}>
       {activeLinks.map(({ platform, url, hasUrl }) => {
         const Icon = platformIcons[platform];
-        if (!hasUrl) return null;
+        const Wrapper = hasUrl ? 'a' : 'span';
+        const linkProps = hasUrl ? { href: url, target: "_blank", rel: "noopener noreferrer" } : {};
         return (
-          <a
+          <Wrapper
             key={platform}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            {...linkProps}
+            className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
             aria-label={platform}
           >
             <Icon className={iconClassName} />
-          </a>
+          </Wrapper>
         );
       })}
     </div>
