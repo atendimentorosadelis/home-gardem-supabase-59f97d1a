@@ -443,6 +443,9 @@ export type Database = {
       content_articles: {
         Row: {
           affiliate_banner_enabled: boolean | null
+          affiliate_banner_image: string | null
+          affiliate_banner_image_mobile: string | null
+          affiliate_banner_url: string | null
           affiliate_clicks_count: number | null
           author_id: string | null
           body: string | null
@@ -452,9 +455,11 @@ export type Database = {
           created_at: string
           excerpt: string | null
           gallery_images: Json | null
+          gallery_prompts: string[] | null
           id: string
           keywords: string | null
           likes_count: number | null
+          main_subject: string | null
           published_at: string | null
           read_time: string | null
           slug: string | null
@@ -462,9 +467,13 @@ export type Database = {
           tags: string[] | null
           title: string
           updated_at: string
+          visual_context: string | null
         }
         Insert: {
           affiliate_banner_enabled?: boolean | null
+          affiliate_banner_image?: string | null
+          affiliate_banner_image_mobile?: string | null
+          affiliate_banner_url?: string | null
           affiliate_clicks_count?: number | null
           author_id?: string | null
           body?: string | null
@@ -474,9 +483,11 @@ export type Database = {
           created_at?: string
           excerpt?: string | null
           gallery_images?: Json | null
+          gallery_prompts?: string[] | null
           id?: string
           keywords?: string | null
           likes_count?: number | null
+          main_subject?: string | null
           published_at?: string | null
           read_time?: string | null
           slug?: string | null
@@ -484,9 +495,13 @@ export type Database = {
           tags?: string[] | null
           title: string
           updated_at?: string
+          visual_context?: string | null
         }
         Update: {
           affiliate_banner_enabled?: boolean | null
+          affiliate_banner_image?: string | null
+          affiliate_banner_image_mobile?: string | null
+          affiliate_banner_url?: string | null
           affiliate_clicks_count?: number | null
           author_id?: string | null
           body?: string | null
@@ -496,9 +511,11 @@ export type Database = {
           created_at?: string
           excerpt?: string | null
           gallery_images?: Json | null
+          gallery_prompts?: string[] | null
           id?: string
           keywords?: string | null
           likes_count?: number | null
+          main_subject?: string | null
           published_at?: string | null
           read_time?: string | null
           slug?: string | null
@@ -506,6 +523,7 @@ export type Database = {
           tags?: string[] | null
           title?: string
           updated_at?: string
+          visual_context?: string | null
         }
         Relationships: []
       }

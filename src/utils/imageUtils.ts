@@ -86,3 +86,28 @@ export async function resizeImage(
     img.src = URL.createObjectURL(file);
   });
 }
+
+export async function convertToWebP(
+  file: File,
+  quality: number = 0.85
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { reject(new Error('Failed to get canvas context')); return; }
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(
+        (blob) => { blob ? resolve(blob) : reject(new Error('Failed to create blob')); },
+        'image/webp',
+        quality
+      );
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => { reject(new Error('Failed to load image')); URL.revokeObjectURL(img.src); };
+    img.src = URL.createObjectURL(file);
+  });
+}
