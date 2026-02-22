@@ -46,16 +46,34 @@ export function usePublishedArticles() {
         .select('*')
         .eq('status', 'published')
         .not('published_at', 'is', null)
+        .not('cover_image', 'is', null)
         .order('published_at', { ascending: false })
         .limit(20);
 
-      if (error) { console.error('Error fetching published articles:', error); throw error; }
+      if (error) {
+        console.error('Error fetching published articles:', error);
+        throw error;
+      }
 
-      const { data: viewsData } = await supabase.from('article_views').select('article_id');
+      // Fetch views count for all articles
+      const { data: viewsData } = await supabase
+        .from('article_views')
+        .select('article_id');
+
       const viewsCount: Record<string, number> = {};
-      viewsData?.forEach(view => { viewsCount[view.article_id] = (viewsCount[view.article_id] || 0) + 1; });
+      viewsData?.forEach(view => {
+        viewsCount[view.article_id] = (viewsCount[view.article_id] || 0) + 1;
+      });
 
-      return (data as DatabaseArticle[]).map(article => ({ ...mapArticleToPost(article), viewsCount: viewsCount[article.id] || 0 }));
+      // Filter out articles without valid cover images
+      const articlesWithImages = (data as DatabaseArticle[]).filter(
+        article => article.cover_image && article.cover_image.trim() !== '' && article.cover_image !== '/placeholder.svg'
+      );
+
+      return articlesWithImages.map(article => ({
+        ...mapArticleToPost(article),
+        viewsCount: viewsCount[article.id] || 0,
+      }));
     },
   });
 }
@@ -65,8 +83,19 @@ export function useArticleBySlug(slug: string | undefined) {
     queryKey: ['article', slug],
     queryFn: async () => {
       if (!slug) return null;
-      const { data, error } = await supabase.from('content_articles').select('*').eq('slug', slug).eq('status', 'published').single();
-      if (error) { console.error('Error fetching article by slug:', error); return null; }
+
+      const { data, error } = await supabase
+        .from('content_articles')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .single();
+
+      if (error) {
+        console.error('Error fetching article by slug:', error);
+        return null;
+      }
+
       return data as DatabaseArticle;
     },
     enabled: !!slug,
