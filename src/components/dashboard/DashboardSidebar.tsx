@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LayoutDashboard, FileText, LogOut, FolderOpen, Users, Settings, ImageIcon, Images, Mail, MessageSquare, Palette, ExternalLink, Bot, X, Shield, Youtube } from 'lucide-react';
+import logoDark from '@/assets/logo-home-garden.png';
+import logoLight from '@/assets/logo-home-garden-light.png';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/contexts/AuthContext';
@@ -77,7 +79,7 @@ export function DashboardSidebar() {
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-col items-center gap-1 flex-1">
             <Link to="/" target="_blank" className="transition-transform hover:scale-105" title="Abrir site">
-              <span className={cn("font-bold", collapsed ? "text-sm" : "text-lg", isDark ? "text-white" : "text-[#1B4332]")}>🌿 HG</span>
+              <img src={isDark ? logoLight : logoDark} alt="Home Garden" className={cn(collapsed ? "h-8" : "h-12", "w-auto")} />
             </Link>
             {!collapsed && <span className={cn("uppercase tracking-wider", isMobile ? "text-[9px]" : "text-[10px]", isDark ? "text-white/70" : "text-[#1B4332]/70")}>Área Admin</span>}
           </div>
