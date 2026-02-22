@@ -31,7 +31,7 @@ import { createNotificationForAdmins } from '@/hooks/use-notifications';
 import { useSendNewsletter } from '@/hooks/use-send-newsletter';
 import {
   MoreHorizontal, Search, Loader2, Eye, Pencil, Trash2, Globe, FileText,
-  ExternalLink, ChevronLeft, ChevronRight, ImageIcon, Settings2, MessageSquarePlus, Heart, ArrowUpDown
+  ExternalLink, ChevronLeft, ChevronRight, ImageIcon, Settings2, MessageSquarePlus, Heart, ArrowUpDown, DatabaseIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
@@ -64,9 +64,29 @@ function ArticlesManagerContent() {
   const [generatingConclusionForId, setGeneratingConclusionForId] = useState<string | null>(null);
   const [selectedArticles, setSelectedArticles] = useState<Set<string>>(new Set());
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [isMigrating, setIsMigrating] = useState(false);
   const { requireApproval, setRequireApproval } = useImageApproval();
   const { sendNewsletterIfEnabled } = useSendNewsletter();
   const queryClient = useQueryClient();
+
+  const handleMigrateArticles = async () => {
+    setIsMigrating(true);
+    try {
+      const { data: result, error } = await invokeEdgeFunction('migrate-articles', {}, true);
+      if (error) throw error;
+      if (result?.success) {
+        toast.success(`Migração concluída! ${result.migrated} artigos migrados, ${result.skipped} ignorados.${result.conclusionsMigrated ? ` ${result.conclusionsMigrated} conclusões.` : ''}${result.videosMigrated ? ` ${result.videosMigrated} vídeos.` : ''}`);
+        queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
+      } else {
+        toast.error(`Erro: ${result?.error || 'Desconhecido'}`);
+      }
+    } catch (err) {
+      toast.error('Erro ao executar migração');
+      console.error(err);
+    } finally {
+      setIsMigrating(false);
+    }
+  };
 
   const { data: articlesData, isLoading } = useQuery({
     queryKey: ['admin-articles', currentPage, itemsPerPage, searchQuery, statusFilter],
@@ -329,6 +349,22 @@ function ArticlesManagerContent() {
                 </div>
               </div>
               <Switch id="approval-toggle" checked={requireApproval} onCheckedChange={setRequireApproval} />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Migration Button */}
+        <Card className="border-border/50">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm">Migrar Artigos do Supabase Antigo</p>
+                <p className="text-xs text-muted-foreground">Importa artigos, conclusões emocionais e vídeos. Duplicados são ignorados automaticamente.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={handleMigrateArticles} disabled={isMigrating}>
+                {isMigrating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <DatabaseIcon className="h-4 w-4 mr-2" />}
+                {isMigrating ? 'Migrando...' : 'Migrar Artigos'}
+              </Button>
             </div>
           </CardContent>
         </Card>

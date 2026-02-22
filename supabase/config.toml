@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.og-share]
 verify_jwt = false
+
+[functions.migrate-articles]
+verify_jwt = false
