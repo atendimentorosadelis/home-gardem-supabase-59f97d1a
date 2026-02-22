@@ -578,7 +578,26 @@ function SettingsContent() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2"><Label htmlFor="site_name">Nome do Site</Label><Input id="site_name" value={siteSettings.site_name} onChange={(e) => setSiteSettings({ ...siteSettings, site_name: e.target.value })} placeholder="Nome do site" /></div>
                   <div className="space-y-2"><Label htmlFor="contact_email">Email de Contato</Label><Input id="contact_email" type="email" value={siteSettings.contact_email} onChange={(e) => setSiteSettings({ ...siteSettings, contact_email: e.target.value })} placeholder="contato@exemplo.com" /></div>
-                  <div className="space-y-2"><Label htmlFor="contact_phone">Telefone</Label><Input id="contact_phone" value={siteSettings.contact_phone} onChange={(e) => setSiteSettings({ ...siteSettings, contact_phone: e.target.value })} placeholder="(11) 99999-9999" /></div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact_phone">Telefone</Label>
+                    <Input
+                      id="contact_phone"
+                      type="tel"
+                      value={siteSettings.contact_phone}
+                      onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length > 11) value = value.slice(0, 11);
+                        if (value.length > 0) {
+                          value = '(' + value;
+                          if (value.length > 3) value = value.slice(0, 3) + ') ' + value.slice(3);
+                          if (value.length > 10) value = value.slice(0, 10) + '-' + value.slice(10);
+                        }
+                        setSiteSettings({ ...siteSettings, contact_phone: value });
+                      }}
+                      placeholder="(31) 97329-0745"
+                      maxLength={15}
+                    />
+                  </div>
                   <div className="space-y-2"><Label htmlFor="address">Endereço</Label><Input id="address" value={siteSettings.address} onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })} placeholder="Endereço completo" /></div>
                 </div>
                 <div className="space-y-2"><Label htmlFor="site_description">Descrição do Site</Label><Textarea id="site_description" value={siteSettings.site_description} onChange={(e) => setSiteSettings({ ...siteSettings, site_description: e.target.value })} placeholder="Descrição do site para SEO" rows={3} /></div>
