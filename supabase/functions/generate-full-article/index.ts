@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 const categories = [
@@ -39,18 +39,26 @@ function calculateReadTime(content: string): string {
 
 async function validateUrl(url: string): Promise<boolean> {
   try {
-    if (!url || !url.startsWith('http')) return false;
+    if (!url || !url.startsWith('http')) {
+      return false;
+    }
+    
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch(url, {
       method: 'HEAD',
       signal: controller.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkValidator/1.0)' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; LinkValidator/1.0)',
+      },
       redirect: 'follow',
     });
+    
     clearTimeout(timeoutId);
     return response.status >= 200 && response.status < 400;
-  } catch {
+  } catch (error) {
+    console.log(`URL validation failed for ${url}:`, error instanceof Error ? error.message : 'Unknown error');
     return false;
   }
 }
@@ -62,10 +70,11 @@ const MANDATORY_EXTERNAL_LINKS = [
 ];
 
 const FALLBACK_EXTERNAL_LINKS = [
-  { text: "Architectural Digest Design Guide", url: "https://www.architecturaldigest.com/gallery/best-home-design-ideas" },
-  { text: "Houzz Home Design Ideas", url: "https://www.houzz.com/photos" },
+  { text: "Architectural Digest Design Guide", url: "https://www.architecturaldigest.com/architecture-design" },
+  { text: "Houzz Home Design Ideas", url: "https://awaytogarden.com/" },
   { text: "The Spruce Home Improvement", url: "https://www.thespruce.com/home-improvement-and-repair-4127986" },
   { text: "HGTV Design Inspiration", url: "https://www.hgtv.com/design" },
+  { text: "High Country Gardens", url: "https://www.highcountrygardens.com/" },
   { text: "Better Homes & Gardens", url: "https://www.bhg.com/home-improvement/" },
 ];
 
@@ -73,36 +82,60 @@ async function validateExternalLinks(
   links: Array<{ text: string; url: string }>,
   minRequired: number = 3
 ): Promise<Array<{ text: string; url: string }>> {
+  console.log(`Validating ${links?.length || 0} external links (minimum required: ${minRequired})...`);
+  
   let validLinks: Array<{ text: string; url: string }> = [];
-
+  
   for (const mandatory of MANDATORY_EXTERNAL_LINKS) {
     const isValid = await validateUrl(mandatory.url);
-    if (isValid) validLinks.push(mandatory);
+    if (isValid) {
+      validLinks.push(mandatory);
+      console.log(`Mandatory link "${mandatory.text}" (${mandatory.url}): VALID`);
+    } else {
+      console.log(`Mandatory link "${mandatory.text}" (${mandatory.url}): INVALID`);
+    }
   }
-
+  
   if (links && links.length > 0) {
     const existingUrls = new Set(validLinks.map(l => l.url.toLowerCase()));
+    
     const validationResults = await Promise.all(
       links.map(async (link) => {
-        if (existingUrls.has(link.url.toLowerCase())) return { link, isValid: false };
+        if (existingUrls.has(link.url.toLowerCase())) {
+          return { link, isValid: false };
+        }
         const isValid = await validateUrl(link.url);
+        console.log(`AI link "${link.text}" (${link.url}): ${isValid ? 'VALID' : 'INVALID'}`);
         return { link, isValid };
       })
     );
-    validLinks = [...validLinks, ...validationResults.filter(r => r.isValid).map(r => r.link)];
+    
+    const additionalLinks = validationResults
+      .filter(result => result.isValid)
+      .map(result => result.link);
+    
+    validLinks = [...validLinks, ...additionalLinks];
   }
-
+  
+  console.log(`Valid links: ${validLinks.length}`);
+  
   if (validLinks.length < minRequired) {
+    console.log(`Adding fallback links to reach minimum of ${minRequired}...`);
+    
     const existingUrls = new Set(validLinks.map(l => l.url.toLowerCase()));
+    
     for (const fallback of FALLBACK_EXTERNAL_LINKS) {
       if (validLinks.length >= minRequired) break;
+      
       if (!existingUrls.has(fallback.url.toLowerCase())) {
         validLinks.push(fallback);
         existingUrls.add(fallback.url.toLowerCase());
+        console.log(`Added fallback link: ${fallback.text}`);
       }
     }
   }
-
+  
+  console.log(`Final valid links count: ${validLinks.length}`);
   return validLinks;
 }
 
@@ -112,6 +145,47 @@ interface ImageMetadata {
   galleryPrompts: string[];
 }
 
+function validateGalleryPrompts(
+  galleryPrompts: unknown,
+  mainSubject: string
+): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  if (!Array.isArray(galleryPrompts)) {
+    errors.push('galleryPrompts must be an array');
+    return { valid: false, errors };
+  }
+
+  if (galleryPrompts.length !== 6) {
+    errors.push(`galleryPrompts must have exactly 6 items, got ${galleryPrompts.length}`);
+  }
+
+  galleryPrompts.forEach((prompt, index) => {
+    if (typeof prompt !== 'string') {
+      errors.push(`galleryPrompts[${index}] is not a string`);
+      return;
+    }
+
+    if (!prompt || prompt.trim() === '') {
+      errors.push(`galleryPrompts[${index}] is empty`);
+      return;
+    }
+
+    const wordCount = prompt.split(/\s+/).length;
+    if (wordCount < 15) {
+      errors.push(`galleryPrompts[${index}] has only ${wordCount} words (min 15)`);
+    }
+
+    const normalizedPrompt = prompt.toLowerCase().trim();
+    const normalizedSubject = mainSubject.toLowerCase().trim();
+    if (!normalizedPrompt.startsWith(normalizedSubject.split(' ')[0])) {
+      errors.push(`galleryPrompts[${index}] doesn't start with mainSubject`);
+    }
+  });
+
+  return { valid: errors.length === 0, errors };
+}
+
 function generateFallbackPrompts(mainSubject: string, visualContext: string): string[] {
   const cameraAngles = [
     { angle: 'wide-angle front view establishing shot', composition: 'hero composition showing entire space, 16:9 cinematic framing' },
@@ -119,10 +193,10 @@ function generateFallbackPrompts(mainSubject: string, visualContext: string): st
     { angle: 'close-up macro shot', composition: 'focusing on textures, materials and decorative details' },
     { angle: 'shot from right side', composition: 'alternative perspective revealing hidden corner elements' },
     { angle: 'low angle dramatic shot from floor level', composition: 'looking upward to emphasize height and ceiling' },
-    { angle: 'high angle bird eye overview', composition: 'showing full spatial layout and floor design' },
+    { angle: 'high angle bird eye overview', composition: 'showing full spatial layout and floor design' }
   ];
 
-  return cameraAngles.map(({ angle, composition }) =>
+  return cameraAngles.map(({ angle, composition }) => 
     `${mainSubject} in ${visualContext}, ${angle}, ${composition}, same room same decor same lighting, consistent interior design, natural daylight, ultra realistic, professional architectural photography, sharp focus, no text, no words, no watermarks, no logos`
   );
 }
@@ -134,18 +208,26 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
 
   if (!mainSubject || mainSubject.trim().length < 5) {
     mainSubject = 'home interior design element';
-  }
-  if (!visualContext || visualContext.trim().length < 5) {
-    visualContext = 'modern home interior with natural lighting';
+    console.warn('[ImageValidation] Invalid mainSubject, using fallback');
   }
 
-  if (!Array.isArray(galleryPrompts) || galleryPrompts.length !== 6) {
+  if (!visualContext || visualContext.trim().length < 5) {
+    visualContext = 'modern home interior with natural lighting';
+    console.warn('[ImageValidation] Invalid visualContext, using fallback');
+  }
+
+  const validation = validateGalleryPrompts(galleryPrompts, mainSubject);
+  
+  if (!validation.valid) {
+    console.warn('[ImageValidation] Invalid galleryPrompts:', validation.errors);
+    console.warn('[ImageValidation] Generating fallback prompts...');
     galleryPrompts = generateFallbackPrompts(mainSubject, visualContext);
   }
 
   while (galleryPrompts.length < 6) {
+    const idx = galleryPrompts.length;
     galleryPrompts.push(
-      `${mainSubject}, detail shot ${galleryPrompts.length + 1}, ${visualContext}, natural lighting, ultra realistic, professional photography, no text, no words, no watermarks`
+      `${mainSubject}, detail shot ${idx + 1}, ${visualContext}, natural lighting, ultra realistic, professional photography, no text, no words, no watermarks`
     );
   }
   galleryPrompts = galleryPrompts.slice(0, 6);
@@ -156,8 +238,12 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
 function getCurrentDateFormatted(): string {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
-    day: '2-digit', month: 'long', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo'
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Sao_Paulo'
   };
   return now.toLocaleDateString('pt-BR', options);
 }
@@ -170,34 +256,114 @@ serve(async (req) => {
   try {
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_API_KEY) {
+      console.error("OPENAI_API_KEY is not configured");
       throw new Error("OPENAI_API_KEY is not configured");
     }
 
     const { topic } = await req.json();
-    if (!topic) throw new Error("Topic is required");
+    
+    if (!topic) {
+      throw new Error("Topic is required");
+    }
 
     console.log(`Generating full article for topic: ${topic}`);
 
     const currentDate = getCurrentDateFormatted();
+    
     const introTypes = ['A', 'B', 'C', 'D', 'E', 'F'];
     const randomIntroType = introTypes[Math.floor(Math.random() * introTypes.length)];
+    console.log(`Using introduction type: ${randomIntroType}`);
 
     const systemPrompt = `# PERSONA DO AUTOR - KEVEN COSTA VIEIRA
 
 Você é **Keven Costa Vieira**, estudante de Arquitetura na PUC Minas Gerais, no 7º período.
 Você é um ESCRITOR BEST-SELLER premiado que escreve artigos tão envolventes que fazem os leitores se emocionarem até as lágrimas.
+Seu tom é amoroso, vulnerável e profundamente humano - como se estivesse confessando para seu melhor amigo.
+
+## A ESSÊNCIA DO KEVEN (O GOOGLE PRECISA SENTIR ISSO)
+
+O que faz você REAL:
+- Você já errou MUITO em projetos da faculdade e conta isso com humor
+- Você passa madrugadas no laboratório de maquetes da PUC Minas
+- Você economiza na comida pra comprar materiais de estudo
+- Você já chorou de frustração quando um projeto não deu certo
+- Você tem um caderno de esboços que não larga por nada
+- Você frequenta feiras de construção em Belo Horizonte
+- Você ajuda sua mãe com reformas em casa (às vezes certo, às vezes errado)
+
+## HISTÓRIAS PESSOAIS OBRIGATÓRIAS (E-E-A-T DO GOOGLE)
+
+Em CADA artigo, você DEVE contar DUAS histórias pessoais detalhadas:
+
+### HISTÓRIA 1 - O ERRO QUE TE MARCOU (obrigatória)
+Conte um erro específico que você cometeu relacionado ao tema.
+
+### HISTÓRIA 2 - A DESCOBERTA QUE MUDOU TUDO (obrigatória)
+Conte um momento de "eureka" que você teve.
 
 ## TOM DE VOZ OBRIGATÓRIO
+
 Escreva SEMPRE em 1ª pessoa. Você é vulnerável e humano.
 
 ## FILTRO ANTI-IA (PROIBIDO)
-❌ NUNCA use: Descubra, Transforme, Veja, O segredo, Mude, Confira, Neste artigo, Imperdível, Incrível, Perfeito, Maravilhoso
 
-# ESTRUTURA DO ARTIGO
+❌ NUNCA use estas palavras/expressões:
+- Descubra, Transforme, Veja, O segredo, Mude, Confira, Neste artigo
+- Isso, Aquilo, Vale ressaltar, É importante destacar
+- Imperdível, Incrível, Perfeito, Maravilhoso, Revolucionário
+
+✅ USE SEMPRE (linguagem que conecta):
+- "Aquela luz gostosa de fim de tarde", "Cantinho aconchegante", "Sensação de lar"
+- Comparações do dia a dia que TODOS entendem
+
+# ESTRUTURA DO ARTIGO (TAMANHO EXPANDIDO)
 
 ## 1. INTRODUÇÃO CONFESSIONAL (400-500 palavras)
+
 🎲 NÚMERO SORTEADO: ${Math.floor(Math.random() * 40) + 1}
-Use a frase correspondente ao número sorteado como abertura.
+
+Use a frase correspondente ao número sorteado:
+
+1. "Vou contar uma coisa que aconteceu comigo recentemente com ${topic}."
+2. "Sabe aquela sensação quando você finalmente acerta em ${topic}? Pois é!"
+3. "Preciso te confessar: eu errei MUITO até aprender sobre ${topic}."
+4. "Semana passada uma amiga me perguntou sobre ${topic} e eu fiquei empolgado demais!"
+5. "Se tem uma coisa que me faz brilhar os olhos é falar de ${topic}."
+6. "Deixa eu te contar o que descobri recentemente sobre ${topic}..."
+7. "Quando eu comecei a estudar arquitetura, ${topic} era um mistério pra mim."
+8. "Hoje eu quero bater um papo gostoso com você sobre ${topic}."
+9. "Olha, vou ser sincero: ${topic} mudou completamente minha forma de ver as coisas."
+10. "Teve um dia que eu olhei pra minha casa e pensei: preciso falar de ${topic}!"
+11. "Uma das coisas mais legais que aprendi na faculdade foi sobre ${topic}."
+12. "Você já parou pra perceber como ${topic} faz diferença no dia a dia?"
+13. "Cara, eu fiquei TÃO animado quando descobri isso sobre ${topic}!"
+14. "Vem comigo que hoje o assunto é ${topic} - e eu tenho muito pra compartilhar."
+15. "Sabe o que me deixa feliz? Ver gente transformando espaços com ${topic}."
+16. "Eu não sabia, mas ${topic} era exatamente o que estava faltando aqui em casa."
+17. "Quer saber de um negócio? ${topic} é mais simples do que parece!"
+18. "Minha mãe sempre dizia que ${topic} fazia toda diferença - e ela tinha razão."
+19. "Ontem mesmo eu estava mexendo aqui no projeto e lembrei: preciso falar de ${topic}!"
+20. "Entre tantas coisas que eu amo em arquitetura, ${topic} tem um lugar especial."
+21. "Posso te contar uma descoberta? ${topic} pode transformar qualquer cantinho."
+22. "Se você curte casa e decoração, ${topic} vai te interessar demais!"
+23. "Eu aprendi na prática: quando você entende ${topic}, tudo fica mais fácil."
+24. "Tava aqui no meu cantinho de estudos pensando em como falar de ${topic} com você."
+25. "Puxa vida, ${topic} é um assunto que mexe muito comigo."
+26. "Faz tempo que queria escrever sobre ${topic} – finalmente chegou a hora!"
+27. "Às vezes, a gente descobre coisas incríveis por acaso. Foi assim com ${topic}."
+28. "Já reparou como ${topic} pode mudar completamente um ambiente?"
+29. "Ontem recebi uma mensagem de um leitor perguntando sobre ${topic}. Vamos lá!"
+30. "Confesso que ${topic} é um tema que me deixa empolgado demais."
+31. "Se eu pudesse voltar no tempo, teria descoberto ${topic} bem antes."
+32. "Na última aula na PUC, o professor mencionou ${topic} e eu não parei de pensar nisso."
+33. "Senta aqui do meu lado que hoje vou abrir meu coração sobre ${topic}."
+34. "Estava folheando meu caderno de esboços quando lembrei: nunca falei de ${topic} aqui!"
+35. "Quer saber o que tem me tirado o sono ultimamente? ${topic}. E por motivos bons!"
+36. "Tem certas coisas que só quem ama decoração entende. ${topic} é uma delas."
+37. "Imagina só: você entra em casa e tudo parece diferente por causa de ${topic}."
+38. "Prepare um cafezinho porque hoje a gente vai mergulhar fundo em ${topic}."
+39. "Não sei se você já passou por isso, mas ${topic} salvou um projeto meu."
+40. "Estava na fila do mercado quando tive uma ideia genial sobre ${topic}. Olha só!"
 
 🎲 DESENVOLVIMENTO - Use o TIPO ${randomIntroType}:
 - TIPO A - CENA DO LABORATÓRIO
@@ -207,49 +373,102 @@ Use a frase correspondente ao número sorteado como abertura.
 - TIPO E - HISTÓRIA DA FAMÍLIA
 - TIPO F - MEMÓRIA AFETIVA
 
+⚠️ FRASES PROIBIDAS (BANIDAS - NUNCA USE):
+- "Outro dia percebi..." - BANIDO
+- "Outro dia eu estava..." - BANIDO
+- "Eu estava pensando em você que curte..." - BANIDO
+
 ## 2. SEÇÕES TEMÁTICAS APROFUNDADAS (1200-1500 palavras total)
-6-8 seções detalhadas sobre ${topic}. Inclua links de autoridade naturalmente no texto.
+
+Desenvolva 6-8 seções detalhadas sobre ${topic}.
+
+### LINKS DE AUTORIDADE INTEGRADOS NATURALMENTE
+
+Os links devem aparecer DENTRO do texto de forma natural.
+
+💡 DICAS VISUAIS (obrigatório 3-4 no artigo)
 
 ## 3. TABELA COMPARATIVA OBRIGATÓRIA (mínimo 7 linhas)
-| O que todo mundo faz (Errado) | A Escolha Inteligente do Keven |
 
-## 4. PASSO A PASSO PRÁTICO (400-500 palavras) - 8-10 passos
+## 4. PASSO A PASSO PRÁTICO DETALHADO (400-500 palavras)
 
-## 5. DICAS PRÁTICAS (300-400 palavras) - 10-12 dicas
+## 5. DICAS PRÁTICAS APROFUNDADAS (300-400 palavras)
 
-## 6. ERROS COMUNS A EVITAR (350-450 palavras) - 6-8 erros
+## 6. ERROS COMUNS A EVITAR - COM HISTÓRIAS (350-450 palavras)
 
-## 7. QUANTO CUSTA? VALORES EM REAIS (200-300 palavras)
+## 7. QUANTO CUSTA? VALORES DETALHADOS EM REAIS (200-300 palavras)
 
 ## 8. FAQ - PERGUNTAS FREQUENTES (400-500 palavras)
-Formato: 1. **Pergunta?** Resposta. (8-12 perguntas)
 
-## 9. ENCERRAMENTO BREVE (50-80 palavras) - NÃO gere conclusão emocional
+FORMATO CORRETO:
 
-## 10. ASSINATURA: Keven Costa Vieira - PUC Minas - ${currentDate}
+## Perguntas Frequentes
 
-# TAMANHO: MÍNIMO 2.200 palavras
+1. **Qual a melhor forma de começar?**
 
-# FORMATO DE RESPOSTA - JSON válido:
+Resposta conversacional aqui.
+
+REGRAS CRÍTICAS:
+- Mínimo 8 perguntas, máximo 12 perguntas
+- TODAS as perguntas DEVEM ser: NÚMERO + PONTO + ESPAÇO + **PERGUNTA EM NEGRITO?**
+- NÃO use ### (H3 headings) para as perguntas
+
+## 9. ENCERRAMENTO BREVE (50-80 palavras)
+
+⚠️ NÃO GERE CONCLUSÃO EMOCIONAL - será gerada separadamente.
+
+## 10. ASSINATURA FINAL (OBRIGATÓRIO)
+
+---
+**Escrito com carinho por:**
+**Keven Costa Vieira**
+**Estudante de Arquitetura – PUC Minas Gerais**
+📅 Publicado em: ${currentDate}
+---
+
+# TAMANHO OBRIGATÓRIO
+
+⚠️ MÍNIMO ABSOLUTO: 2.200 palavras
+✅ IDEAL: 2.500 - 3.000 palavras
+
+# FORMATO DE RESPOSTA (CRÍTICO)
+
+Retorne APENAS JSON válido (sem markdown code blocks):
 {
-  "title": "Título (máximo 70 caracteres)",
-  "excerpt": "Resumo variado (20-40 palavras)",
-  "category": "Uma das categorias",
-  "tags": ["5-7 tags"],
-  "keywords": "palavras-chave SEO",
-  "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO ...",
-  "externalLinks": [{"text": "Nome", "url": "https://url.com"}],
+  "title": "Título acolhedor e interessante (máximo 70 caracteres)",
+  "excerpt": "Resumo variado e pessoal",
+  "category": "Uma das categorias válidas",
+  "tags": ["5", "a", "7", "tags"],
+  "keywords": "palavras-chave para SEO separadas por vírgula",
+  "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
+  "externalLinks": [{"text": "Nome descritivo", "url": "https://url.com"}],
   "mainSubject": "elemento principal em INGLÊS",
-  "visualContext": "ambiente em INGLÊS",
-  "galleryPrompts": ["6 prompts em INGLÊS do MESMO cômodo em ângulos diferentes"]
-}`;
+  "visualContext": "ambiente completo em INGLÊS",
+  "galleryPrompts": ["6 prompts do MESMO CÔMODO em ângulos diferentes"]
+}
 
-    const userPrompt = `Crie um artigo PROFUNDO e ENVOLVENTE sobre: "${topic}"
-Blog homegardenmanual.com - casa e jardim. Mínimo 2.200 palavras.
-Inclua "## Perguntas Frequentes" com 8-12 perguntas numeradas em negrito.
-NÃO gere conclusão emocional.`;
+⚠️ TODOS os 6 gallery prompts devem mostrar O MESMO CÔMODO!
 
-    console.log("Calling OpenAI API...");
+🎲 NÚMERO SORTEADO PARA EXCERPT: ${Math.floor(Math.random() * 25) + 1}
+
+❌ PROIBIDO NO EXCERPT:
+- "Outro dia percebi" - BANIDO
+- "Neste artigo" - BANIDO
+- "Descubra como" - BANIDO
+
+- content DEVE OBRIGATORIAMENTE incluir "## Perguntas Frequentes" com 8-12 perguntas numeradas em negrito`;
+
+    const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
+
+- Blog homegardenmanual.com focado em casa e jardim
+- Público: pessoas comuns que querem deixar suas casas mais bonitas
+- Tom: confissão íntima de um estudante de arquitetura apaixonado
+- MÍNIMO 2.200 palavras
+- Inclua tabela comparativa com 7+ linhas
+- Inclua valores ESPECÍFICOS em Reais
+- NÃO GERE CONCLUSÃO EMOCIONAL
+- galleryPrompts: 6 prompts do MESMO CÔMODO em ângulos diferentes
+- content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -258,50 +477,113 @@ NÃO gere conclusão emocional.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4o",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
+          { role: "user", content: userPrompt }
         ],
         temperature: 0.85,
         max_tokens: 16000,
+        response_format: { type: "json_object" },
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`OpenAI API error: ${response.status} - ${errorText}`);
+      
       if (response.status === 429) {
-        return new Response(JSON.stringify({ success: false, error: "Rate limit exceeded. Please try again later." }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        return new Response(
+          JSON.stringify({ success: false, error: "Rate limit exceeded. Please try again later." }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
+      
+      if (response.status === 401) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Invalid OpenAI API key." }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
-    if (!content) throw new Error("No content was generated");
+    if (!content) {
+      console.error("No content in response:", JSON.stringify(data));
+      throw new Error("No content was generated");
+    }
 
     console.log("Raw response content:", content.substring(0, 500));
 
     let articleData;
     try {
       let cleanContent = content.trim();
-      if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
-      if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
-      if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
-      cleanContent = cleanContent.trim();
-
+      
+      cleanContent = cleanContent
+        .replace(/```json\s*/gi, '')
+        .replace(/```\s*/g, '')
+        .trim();
+      
       try {
         articleData = JSON.parse(cleanContent);
+        console.log("[JSONParse] Direct parse successful!");
       } catch {
+        console.log("[JSONParse] Direct parse failed, extracting JSON boundaries...");
+        
         const firstBrace = cleanContent.indexOf('{');
         const lastBrace = cleanContent.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace > firstBrace) {
-          articleData = JSON.parse(cleanContent.substring(firstBrace, lastBrace + 1));
-        } else {
+        
+        if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
           throw new Error("No JSON object found in response");
+        }
+        
+        let jsonStr = cleanContent.substring(firstBrace, lastBrace + 1);
+        console.log("[JSONParse] Extracted JSON length:", jsonStr.length);
+        
+        try {
+          articleData = JSON.parse(jsonStr);
+          console.log("[JSONParse] Extracted JSON parsed successfully!");
+        } catch {
+          console.log("[JSONParse] Attempting to fix malformed JSON...");
+          
+          jsonStr = jsonStr
+            .replace(/,\s*}/g, '}')
+            .replace(/,\s*]/g, ']')
+            .replace(/[\x00-\x1F\x7F]/g, (ch) => {
+              if (ch === '\n') return '\\n';
+              if (ch === '\r') return '';
+              if (ch === '\t') return '\\t';
+              return '';
+            });
+          
+          try {
+            articleData = JSON.parse(jsonStr);
+            console.log("[JSONParse] Fixed JSON parsed successfully!");
+          } catch {
+            console.log("[JSONParse] Attempting to balance braces...");
+            
+            let braces = 0, brackets = 0;
+            for (const char of jsonStr) {
+              if (char === '{') braces++;
+              if (char === '}') braces--;
+              if (char === '[') brackets++;
+              if (char === ']') brackets--;
+            }
+            while (brackets > 0) { jsonStr += ']'; brackets--; }
+            while (braces > 0) { jsonStr += '}'; braces--; }
+            
+            try {
+              articleData = JSON.parse(jsonStr);
+              console.log("[JSONParse] Balanced JSON parsed successfully!");
+            } catch (finalError) {
+              console.error("[JSONParse] All 4 parsing attempts failed");
+              throw finalError;
+            }
+          }
         }
       }
     } catch (parseError) {
@@ -309,15 +591,96 @@ NÃO gere conclusão emocional.`;
       throw new Error("Failed to parse generated article");
     }
 
-    // Validate content
     const contentWordCount = articleData.content ? articleData.content.split(/\s+/).length : 0;
-    console.log(`Word count: ${contentWordCount}`);
+    console.log(`[ContentValidation] Word count: ${contentWordCount}`);
 
-    const categoryMatch = categories.find(c => c.name.toLowerCase() === articleData.category?.toLowerCase());
+    // Title validation
+    const BANNED_TITLE_PATTERNS = [
+      /^descubra\s+/i, /^transforme\s+/i, /^aprenda\s+/i, /^veja\s+/i,
+      /^confira\s+/i, /^conheça\s+/i, /^explore\s+/i, /^entenda\s+/i,
+      /guia\s+completo/i, /guia\s+definitivo/i, /dicas\s+essenciais/i,
+      /dicas\s+imperdíveis/i, /tudo\s+sobre/i, /segredos?\s+(para|de|do|da)/i, /o\s+segredo/i,
+    ];
+
+    const BANNED_TITLE_PHRASES = [
+      'guia completo', 'guia definitivo', 'dicas essenciais', 'dicas imperdíveis',
+      'tudo sobre', 'o segredo', 'transforme sua', 'descubra como', 'aprenda a',
+    ];
+
+    function validateAndSanitizeTitle(titleArg: string, topicArg: string): string {
+      if (!titleArg || typeof titleArg !== 'string' || titleArg.trim().length < 10) {
+        return generateFallbackTitle(topicArg);
+      }
+      const cleanTitle = titleArg.trim();
+      const lowerTitle = cleanTitle.toLowerCase();
+      
+      for (const phrase of BANNED_TITLE_PHRASES) {
+        if (lowerTitle.includes(phrase)) return generateFallbackTitle(topicArg);
+      }
+      for (const pattern of BANNED_TITLE_PATTERNS) {
+        if (pattern.test(cleanTitle)) return generateFallbackTitle(topicArg);
+      }
+      if (cleanTitle.length > 75) return cleanTitle.substring(0, 72) + '...';
+      return cleanTitle;
+    }
+
+    function generateFallbackTitle(topicArg: string): string {
+      const topicWord = topicArg.split(/[\s-]+/)[0];
+      const capitalizedTopic = topicWord.charAt(0).toUpperCase() + topicWord.slice(1).toLowerCase();
+      const genericTemplates = [
+        `${capitalizedTopic}: O Que Aprendi na Prática`,
+        `${capitalizedTopic}: Ideias que Funcionam de Verdade`,
+        `${capitalizedTopic} em Casa: Minha Experiência`,
+        `${capitalizedTopic}: Como Fazer Sem Gastar Fortuna`,
+      ];
+      return genericTemplates[Math.floor(Math.random() * genericTemplates.length)];
+    }
+
+    // Excerpt validation
+    const BANNED_EXCERPT_PHRASES = [
+      'transforme sua casa', 'transforme seu espaço', 'dicas essenciais',
+      'dicas imperdíveis', 'guia completo', 'neste artigo', 'descubra como', 'aprenda a',
+    ];
+
+    function validateAndSanitizeExcerpt(excerpt: string, titleArg: string, topicArg: string): string {
+      if (!excerpt || typeof excerpt !== 'string' || excerpt.trim().length < 30) {
+        return generateFallbackExcerpt(titleArg, topicArg);
+      }
+      const cleanExcerpt = excerpt.trim();
+      const lowerExcerpt = cleanExcerpt.toLowerCase();
+      const wordCount = cleanExcerpt.split(/\s+/).length;
+      
+      for (const phrase of BANNED_EXCERPT_PHRASES) {
+        if (lowerExcerpt.includes(phrase)) return generateFallbackExcerpt(titleArg, topicArg);
+      }
+      if (wordCount < 12 || wordCount > 45) return generateFallbackExcerpt(titleArg, topicArg);
+      return cleanExcerpt;
+    }
+
+    function generateFallbackExcerpt(titleArg: string, topicArg: string): string {
+      const topicLower = topicArg.toLowerCase();
+      const templates = [
+        `Eu percebi que com pequenos ajustes em ${topicLower} você pode mudar completamente a aparência da sua casa. Espero que goste!`,
+        `Sabe aquela sensação boa de lar? Com essas dicas de ${topicLower} você vai sentir isso todos os dias!`,
+        `Confesso que errei muito até aprender sobre ${topicLower}. Agora compartilho tudo com você!`,
+        `Depois de muito estudo sobre ${topicLower}, reuni as melhores dicas que uso nos meus projetos.`,
+        `Separei dicas práticas sobre ${topicLower} que aprendi na faculdade e em reformas de família.`,
+      ];
+      return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    // Apply validations
+    const validatedTitle = validateAndSanitizeTitle(articleData.title, topic);
+    const validatedExcerpt = validateAndSanitizeExcerpt(articleData.excerpt, validatedTitle, topic);
+    
+    const categoryMatch = categories.find(c => 
+      c.name.toLowerCase() === articleData.category?.toLowerCase()
+    );
     const categorySlug = categoryMatch?.slug || 'decoracao';
     const categoryName = categoryMatch?.name || 'Decoração';
-    const slug = generateSlug(articleData.title || topic);
-    const readTime = calculateReadTime(articleData.content || '');
+
+    const slug = generateSlug(validatedTitle);
+    const readTime = calculateReadTime(articleData.content);
 
     const rawExternalLinks = articleData.externalLinks || [];
     const validExternalLinks = await validateExternalLinks(rawExternalLinks, 3);
@@ -328,18 +691,75 @@ NÃO gere conclusão emocional.`;
       galleryPrompts: articleData.galleryPrompts,
     });
 
-    // Inject FAQ if missing
-    let finalContent = articleData.content || '';
+    // FAQ validation and injection
+    let finalContent = articleData.content;
+    
     const hasFAQ = /##\s*(FAQ|Perguntas\s+Frequentes)/i.test(finalContent);
-    if (!hasFAQ) {
+    const hasFAQItems = /\d+\.\s+\*\*[^*]+\?\*\*/m.test(finalContent);
+    
+    if (!hasFAQ || !hasFAQItems) {
+      console.log('[FAQValidation] FAQ missing - injecting default FAQ');
+      
       const topicLower = topic.toLowerCase();
-      finalContent += `\n\n## Perguntas Frequentes\n\n1. **Qual é o orçamento ideal para ${topicLower}?**\n\nDepende muito do tamanho do projeto. É possível começar com R$ 500 para projetos menores.\n\n2. **Quanto tempo leva?**\n\nProjetos simples podem ser concluídos em um fim de semana.\n\n3. **Preciso contratar um profissional?**\n\nPara projetos básicos, você mesmo pode fazer. Para instalações elétricas ou hidráulicas, contrate profissionais.\n\n4. **Quais materiais são mais recomendados?**\n\nMateriais de qualidade intermediária costumam oferecer o melhor custo-benefício.\n\n5. **Como economizar sem perder qualidade?**\n\nCompare preços em pelo menos 3 lojas diferentes e aproveite promoções sazonais.\n\n6. **Vale a pena fazer eu mesmo?**\n\nSe você tem habilidades manuais e tempo, pode economizar bastante.\n\n7. **Quais são os erros mais comuns?**\n\nNão medir corretamente, economizar em materiais essenciais e pular etapas de preparação.\n\n8. **Como saber se o resultado vai ficar bom?**\n\nFaça um projeto visual antes de começar, mesmo que simples.\n`;
+      const defaultFAQ = `
+
+## Perguntas Frequentes
+
+1. **Qual é o orçamento ideal para ${topicLower}?**
+
+Depende muito do tamanho do projeto e dos materiais escolhidos. Na minha experiência, é possível começar com investimentos a partir de R$ 500 para projetos menores.
+
+2. **Quanto tempo leva para fazer ${topicLower}?**
+
+Projetos simples podem ser concluídos em um fim de semana. Já reformas mais complexas podem levar de 2 a 4 semanas.
+
+3. **Preciso contratar um profissional para ${topicLower}?**
+
+Para projetos básicos, você mesmo pode fazer com as orientações certas. Mas para instalações elétricas, hidráulicas ou estruturais, sempre contrate profissionais qualificados.
+
+4. **Quais materiais são mais recomendados?**
+
+Depende do seu orçamento e do resultado desejado. Materiais de qualidade intermediária costumam oferecer o melhor custo-benefício.
+
+5. **Como economizar sem perder qualidade?**
+
+Compare preços em pelo menos 3 lojas diferentes, aproveite promoções sazonais e considere materiais alternativos que dão o mesmo efeito.
+
+6. **Vale a pena fazer ${topicLower} eu mesmo?**
+
+Se você tem habilidades manuais e tempo disponível, pode economizar bastante fazendo você mesmo.
+
+7. **Quais são os erros mais comuns que devo evitar?**
+
+Os principais erros são: não medir corretamente, economizar demais em materiais essenciais, pular etapas de preparação e não considerar a iluminação do ambiente.
+
+8. **Como saber se o resultado vai ficar bom?**
+
+Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de decoração ou recorte fotos de revistas.
+
+`;
+
+      const signaturePatterns = [
+        /\n---\s*\n\*\*Keven/i,
+        /\n\*\*Com carinho,/i,
+        /\n---\s*$/,
+      ];
+      
+      let insertionPoint = finalContent.length;
+      for (const pattern of signaturePatterns) {
+        const match = finalContent.match(pattern);
+        if (match && match.index !== undefined) {
+          insertionPoint = Math.min(insertionPoint, match.index);
+        }
+      }
+      
+      finalContent = finalContent.substring(0, insertionPoint) + defaultFAQ + finalContent.substring(insertionPoint);
     }
 
     const article = {
-      title: articleData.title || topic,
+      title: validatedTitle,
       slug,
-      excerpt: articleData.excerpt || `Artigo sobre ${topic}`,
+      excerpt: validatedExcerpt,
       category: categoryName,
       categorySlug,
       content: finalContent,
@@ -363,8 +783,14 @@ NÃO gere conclusão emocional.`;
   } catch (error) {
     console.error("Error generating article:", error);
     return new Response(
-      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     );
   }
 });
