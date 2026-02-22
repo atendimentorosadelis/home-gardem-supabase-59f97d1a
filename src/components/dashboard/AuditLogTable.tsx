@@ -1,13 +1,16 @@
-// Stub - AuditLogTable component
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function AuditLogTable() {
+interface AuditLogTableProps {
+  limit?: number;
+  showFilters?: boolean;
+  isSuperAdmin?: boolean;
+  actionTypes?: string[];
+}
+
+export function AuditLogTable({ limit, showFilters, isSuperAdmin, actionTypes }: AuditLogTableProps) {
   return (
-    <Card className="border-border/50">
-      <CardHeader><CardTitle className="text-base">Log de Auditoria</CardTitle></CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">Nenhum registro de auditoria encontrado.</p>
-      </CardContent>
-    </Card>
+    <div>
+      <p className="text-sm text-muted-foreground">Nenhum registro de auditoria encontrado.</p>
+    </div>
   );
 }
