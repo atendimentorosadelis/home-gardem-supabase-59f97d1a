@@ -84,6 +84,14 @@ export function useBlogArticles(options: UseBlogArticlesOptions = {}) {
   });
 }
 
+// Default categories to show when database has no published articles
+const defaultCategories = [
+  { name: "Arquitetura", slug: "arquitetura" },
+  { name: "Decoração", slug: "decoracao" },
+  { name: "Design Interno", slug: "design-interno" },
+  { name: "Jardim", slug: "jardim" },
+];
+
 export function useCategories() {
   return useQuery({
     queryKey: ["blog-categories"],
@@ -92,7 +100,10 @@ export function useCategories() {
       const dbCategories = (dbArticles || []).map((a: any) => ({ name: a.category || "Decoração", slug: a.category_slug || "decoracao" }));
       const uniqueCategories = dbCategories.filter((cat: any, index: number, self: any[]) => index === self.findIndex(c => c.slug === cat.slug));
       const sorted = uniqueCategories.sort((a: any, b: any) => a.slug.localeCompare(b.slug));
-      return [{ name: "Todos", slug: "all" }, ...sorted];
+      
+      // Use default categories as fallback if no categories found in database
+      const categories = sorted.length > 0 ? sorted : defaultCategories;
+      return [{ name: "Todos", slug: "all" }, ...categories];
     },
   });
 }
