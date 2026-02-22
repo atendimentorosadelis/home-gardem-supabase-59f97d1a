@@ -31,10 +31,19 @@ serve(async (req) => {
     }
 
     // Connect to OLD Supabase
-    const oldUrl = Deno.env.get('OLD_SUPABASE_URL');
-    const oldKey = Deno.env.get('OLD_SUPABASE_ANON_KEY');
+    const oldUrl = Deno.env.get('OLD_SUPABASE_URL')?.trim();
+    const oldKey = Deno.env.get('OLD_SUPABASE_ANON_KEY')?.trim();
+    
+    console.log('OLD_SUPABASE_URL starts with https:', oldUrl?.startsWith('https://'));
+    console.log('OLD_SUPABASE_URL length:', oldUrl?.length);
+    console.log('OLD_SUPABASE_ANON_KEY present:', !!oldKey);
+    
     if (!oldUrl || !oldKey) {
-      throw new Error('OLD_SUPABASE_URL or OLD_SUPABASE_ANON_KEY not configured');
+      throw new Error(`Secrets not configured. URL present: ${!!oldUrl}, Key present: ${!!oldKey}`);
+    }
+    
+    if (!oldUrl.startsWith('http://') && !oldUrl.startsWith('https://')) {
+      throw new Error(`OLD_SUPABASE_URL must start with https:// - got: "${oldUrl.substring(0, 20)}..."`);
     }
 
     const oldSupabase = createClient(oldUrl, oldKey);
