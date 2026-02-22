@@ -1,11 +1,19 @@
 export interface Post {
   id: string;
+  uuid?: string;
   title: string;
   excerpt?: string;
+  image?: string;
   image_url?: string;
   category?: string;
+  categorySlug?: string;
   slug?: string;
+  date?: string;
+  readTime?: string;
   created_at?: string;
+  content?: string;
+  tags?: string[];
+  likesCount?: number;
 }
 
 interface PostCardProps {
@@ -13,10 +21,11 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const image = post.image || post.image_url;
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
-      {post.image_url && (
-        <img src={post.image_url} alt={post.title} className="w-full h-48 object-cover" />
+      {image && (
+        <img src={image} alt={post.title} className="w-full h-48 object-cover" />
       )}
       <div className="p-4 space-y-2">
         {post.category && (
