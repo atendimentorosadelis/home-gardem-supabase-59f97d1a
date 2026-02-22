@@ -480,9 +480,13 @@ export type Database = {
       email_templates: {
         Row: {
           body: string
+          category: string | null
           created_at: string
+          description: string | null
+          html_template: string | null
           id: string
           is_active: boolean | null
+          is_default: boolean | null
           name: string
           subject: string
           template_type: string | null
@@ -490,9 +494,13 @@ export type Database = {
         }
         Insert: {
           body: string
+          category?: string | null
           created_at?: string
+          description?: string | null
+          html_template?: string | null
           id?: string
           is_active?: boolean | null
+          is_default?: boolean | null
           name: string
           subject: string
           template_type?: string | null
@@ -500,9 +508,13 @@ export type Database = {
         }
         Update: {
           body?: string
+          category?: string | null
           created_at?: string
+          description?: string | null
+          html_template?: string | null
           id?: string
           is_active?: boolean | null
+          is_default?: boolean | null
           name?: string
           subject?: string
           template_type?: string | null
