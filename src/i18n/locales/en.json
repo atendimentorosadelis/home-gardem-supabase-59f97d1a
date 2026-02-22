@@ -1,0 +1,35 @@
+{
+  "cookies": {
+    "title": "Cookie Consent",
+    "message": "We use cookies to improve your experience. Read our",
+    "policyLink": "Cookie Policy",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "admin": {
+    "accessDenied": "Access Denied",
+    "noPermission": "You don't have permission to access this area.",
+    "backToSite": "Back to Site",
+    "logout": "Logout",
+    "checkingPermissions": "Checking permissions..."
+  },
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "gardenTips": "Garden Tips",
+    "indoorPlants": "Indoor Plants",
+    "manuals": "Manuals",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Your Garden Journey Starts Here",
+    "subtitle": "Expert tips, tutorials, and guides for creating your perfect garden"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "cookies": "Cookie Policy"
+  }
+}

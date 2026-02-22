@@ -1,8 +1,20 @@
+import { Layout } from "@/components/layout/Layout";
+import { Hero } from "@/components/home/Hero";
+import { Stats } from "@/components/home/Stats";
+import { PostsGrid } from "@/components/home/PostsGrid";
+import { usePublishedArticles } from "@/hooks/use-published-articles";
+import type { Post } from "@/components/home/PostCard";
+
 const Index = () => {
+  const { data: publishedArticles = [] } = usePublishedArticles();
+  const posts: Post[] = publishedArticles.slice(0, 6);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <h1 className="text-4xl font-bold text-foreground">Home Garden Manual</h1>
-    </div>
+    <Layout fullWidth>
+      <Hero />
+      <Stats />
+      <PostsGrid posts={posts} useTranslatedTitles />
+    </Layout>
   );
 };
 
