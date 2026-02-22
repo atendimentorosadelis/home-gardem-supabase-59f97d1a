@@ -605,6 +605,60 @@ function SettingsContent() {
               </CardContent>
             </Card>
 
+            {/* OG Settings */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Image className="h-5 w-5" />Open Graph (Compartilhamento)</CardTitle>
+                <CardDescription>Configure como seu site aparece quando compartilhado nas redes sociais</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="site_og_title">Título OG</Label>
+                    <Input id="site_og_title" value={seoSettings.og_title} onChange={(e) => setSeoSettings({ ...seoSettings, og_title: e.target.value })} placeholder="Título para compartilhamento" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="site_og_type">Tipo</Label>
+                    <Select value={seoSettings.og_type} onValueChange={(value) => setSeoSettings({ ...seoSettings, og_type: value })}>
+                      <SelectTrigger id="site_og_type"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="website">Website</SelectItem>
+                        <SelectItem value="article">Artigo</SelectItem>
+                        <SelectItem value="blog">Blog</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="site_og_description">Descrição OG</Label>
+                  <Textarea id="site_og_description" value={seoSettings.og_description} onChange={(e) => setSeoSettings({ ...seoSettings, og_description: e.target.value })} placeholder="Descrição para compartilhamento" rows={2} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Imagem OG (1200x630 recomendado)</Label>
+                  <div className="flex items-start gap-4">
+                    {seoSettings.og_image ? (
+                      <div className="relative">
+                        <img src={seoSettings.og_image} alt="OG Image" className="w-48 h-24 object-cover rounded-lg border" />
+                        <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setSeoSettings({ ...seoSettings, og_image: '', twitter_image: '' })}><X className="h-3 w-3" /></Button>
+                      </div>
+                    ) : (
+                      <div className="w-48 h-24 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer hover:border-primary transition-colors" onClick={() => ogImageInputRef.current?.click()}>
+                        <div className="text-center"><Image className="h-6 w-6 mx-auto text-muted-foreground" /><span className="text-xs text-muted-foreground">Clique para enviar</span></div>
+                      </div>
+                    )}
+                    <input ref={ogImageInputRef} type="file" accept="image/*" className="hidden" onChange={handleOgImageUpload} />
+                    <div className="flex-1">
+                      <Input value={seoSettings.og_image} onChange={(e) => setSeoSettings({ ...seoSettings, og_image: e.target.value, twitter_image: e.target.value })} placeholder="URL da imagem ou faça upload" />
+                      <p className="text-xs text-muted-foreground mt-1">Recomendado: 1200x630 pixels, formato PNG ou JPG</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <Button onClick={handleSaveSeo} disabled={saving}>{saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}Salvar OG</Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Social Media */}
             <Card className="mt-6">
               <CardHeader><CardTitle>Redes Sociais</CardTitle><CardDescription>Configure os links das suas redes sociais (exibidos no rodapé do site)</CardDescription></CardHeader>
