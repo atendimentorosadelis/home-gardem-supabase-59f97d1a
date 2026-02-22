@@ -31,21 +31,34 @@ serve(async (req) => {
     }
 
     // Connect to OLD Supabase
-    const oldUrl = Deno.env.get('OLD_SUPABASE_URL')?.trim();
-    const oldKey = Deno.env.get('OLD_SUPABASE_ANON_KEY')?.trim();
+    const rawUrl = Deno.env.get('OLD_SUPABASE_URL');
+    const rawKey = Deno.env.get('OLD_SUPABASE_ANON_KEY');
     
-    console.log('OLD_SUPABASE_URL starts with https:', oldUrl?.startsWith('https://'));
-    console.log('OLD_SUPABASE_URL length:', oldUrl?.length);
-    console.log('OLD_SUPABASE_ANON_KEY present:', !!oldKey);
+    console.log('=== DEBUG SECRETS ===');
+    console.log('rawUrl type:', typeof rawUrl);
+    console.log('rawUrl is null:', rawUrl === null);
+    console.log('rawUrl is undefined:', rawUrl === undefined);
+    console.log('rawUrl length:', rawUrl?.length);
+    console.log('rawUrl first 30 chars:', JSON.stringify(rawUrl?.substring(0, 30)));
+    console.log('rawUrl last 10 chars:', JSON.stringify(rawUrl?.substring((rawUrl?.length || 0) - 10)));
+    console.log('rawKey present:', !!rawKey);
+    console.log('rawKey length:', rawKey?.length);
+    
+    const oldUrl = rawUrl?.trim();
+    const oldKey = rawKey?.trim();
+    
+    console.log('trimmed oldUrl length:', oldUrl?.length);
+    console.log('trimmed oldUrl first 30 chars:', JSON.stringify(oldUrl?.substring(0, 30)));
     
     if (!oldUrl || !oldKey) {
       throw new Error(`Secrets not configured. URL present: ${!!oldUrl}, Key present: ${!!oldKey}`);
     }
     
     if (!oldUrl.startsWith('http://') && !oldUrl.startsWith('https://')) {
-      throw new Error(`OLD_SUPABASE_URL must start with https:// - got: "${oldUrl.substring(0, 20)}..."`);
+      throw new Error(`OLD_SUPABASE_URL must start with https:// - got first 30: "${oldUrl.substring(0, 30)}"`);
     }
 
+    console.log('About to create oldSupabase client with URL:', oldUrl);
     const oldSupabase = createClient(oldUrl, oldKey);
 
     // Fetch all articles from old DB
