@@ -74,12 +74,12 @@ serve(async (req) => {
 </body>
 </html>`;
 
-    return new Response(html, {
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
+    const headers = new Headers();
+    headers.set('Content-Type', 'text/html; charset=utf-8');
+    headers.set('Cache-Control', 'public, max-age=3600');
+    headers.set('Content-Security-Policy', "default-src 'none'");
+    
+    return new Response(html, { headers });
 
   } catch (error) {
     console.error('OG redirect error:', error);
