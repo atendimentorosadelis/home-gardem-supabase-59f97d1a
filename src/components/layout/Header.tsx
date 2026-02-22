@@ -19,8 +19,7 @@ export function Header() {
     { name: t("nav.contact"), path: "/contact" },
   ];
 
-  const isArticlePage = /^\/[a-z-]+\/[a-z0-9-]+$/.test(location.pathname) &&
-    !location.pathname.startsWith('/admin');
+  const isArticlePage = /^\/[a-z-]+\/[a-z0-9-]+$/.test(location.pathname) && !location.pathname.startsWith('/admin');
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
@@ -41,66 +40,59 @@ export function Header() {
         <div className="flex items-center justify-between h-24">
           <Logo />
 
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={(e) => handleNavClick(e, item.path)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
-                  isActive(item.path)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center">
+            <div className="flex items-center bg-secondary/50 rounded-full px-2 py-2 gap-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={(e) => handleNavClick(e, item.path)}
+                  className={cn(
+                    "px-5 py-2 text-sm font-medium transition-all rounded-full",
+                    isActive(item.path) ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-3">
-              <LanguageSelector />
-              <ThemeToggle />
-            </div>
-
-            <button
-              className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
+            <LanguageSelector />
           </div>
-        </div>
-      </div>
 
-      {isMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border/50">
-          <div className="container mx-auto px-6 py-4 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMenuOpen(false)}
-                className={cn(
-                  "block px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                  isActive(item.path)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-            <div className="flex items-center justify-between pt-4 border-t border-border/50">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-foreground" aria-label="Toggle menu">
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {isMenuOpen && (
+          <nav className="md:hidden py-6 border-t border-border">
+            <div className="flex flex-col space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={(e) => { handleNavClick(e, item.path); setIsMenuOpen(false); }}
+                  className={cn(
+                    "px-4 py-3 text-base font-medium transition-colors rounded-lg",
+                    isActive(item.path) ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <div className="flex items-center justify-between px-4 py-3">
+                <span className="text-sm text-muted-foreground">{t("common.theme")}</span>
+                <ThemeToggle />
+              </div>
               <LanguageSelector mobile />
-              <ThemeToggle />
             </div>
-          </div>
-        </div>
-      )}
+          </nav>
+        )}
+      </div>
     </header>
   );
 }

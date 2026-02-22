@@ -2,12 +2,16 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
+import logoLight from "@/assets/logo-home-garden-light.png";
+import logoDark from "@/assets/logo-home-garden.png";
 import { SocialLinks } from "@/components/SocialLinks";
+import { useSocialLinks } from "@/hooks/use-social-links";
 import { NewsletterForm } from "@/components/newsletter/NewsletterForm";
 
 export function Footer() {
   const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
+  const { hasActiveLinks } = useSocialLinks();
 
   const footerLinks = [
     { name: t("nav.home"), path: "/" },
@@ -22,50 +26,66 @@ export function Footer() {
     { name: t("footer.cookiePolicy"), path: "/cookie-policy" },
   ];
 
+  const logoSrc = resolvedTheme === 'dark' ? logoDark : logoLight;
+  const showLogo = resolvedTheme !== undefined;
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-2 space-y-6">
             <Link to="/" className="inline-block">
-              <span className="text-2xl font-bold text-primary">HomeGarden</span>
+              <img src={logoSrc} alt="HomeGarden" className={`h-20 w-auto transition-opacity duration-300 ${showLogo ? 'opacity-100' : 'opacity-0'}`} />
             </Link>
-            <p className="text-muted-foreground max-w-md">
-              {t("footer.description")}
-            </p>
-            <SocialLinks />
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">{t("footer.navigation")}</h3>
-            <ul className="space-y-2">
-              {footerLinks.map((link) => (
-                <li key={link.path}>
-                  <Link to={link.path} className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">{t("footer.newsletter")}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-md">{t("footer.description")}</p>
             <NewsletterForm />
+            {hasActiveLinks && (
+              <div className="space-y-3 mt-6">
+                <p className="text-sm font-semibold text-foreground">{t("footer.followUs")}</p>
+                <SocialLinks className="w-5 h-5" />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">{t("footer.links")}</h4>
+            <nav className="flex flex-col space-y-3">
+              {footerLinks.map((link) => (
+                <Link key={link.path} to={link.path} className="text-sm text-muted-foreground hover:text-primary transition-colors">{link.name}</Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">{t("footer.legal")}</h4>
+            <nav className="flex flex-col space-y-3">
+              {legalLinks.map((link) => (
+                <Link key={link.path} to={link.path} className="text-sm text-muted-foreground hover:text-primary transition-colors">{link.name}</Link>
+              ))}
+            </nav>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} HomeGarden. {t("footer.allRightsReserved")}
-          </p>
-          <div className="flex gap-4">
-            {legalLinks.map((link) => (
-              <Link key={link.path} to={link.path} className="text-xs text-muted-foreground hover:text-primary transition-colors">
-                {link.name}
-              </Link>
-            ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 pt-8 border-t border-border">
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">{t("contact.label")}</h4>
+            <div className="flex flex-col space-y-2 text-sm text-muted-foreground">
+              <a href="tel:+5531973290745" className="inline-flex items-center gap-2 hover:text-primary transition-colors"><Phone className="w-4 h-4 text-primary" />(31) 97329-0745</a>
+              <a href="https://wa.me/5531973290745" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-primary transition-colors"><MessageCircle className="w-4 h-4 text-primary" />(31) 97329-0745</a>
+              <a href="mailto:criandoconteudomkt@gmail.com" className="inline-flex items-center gap-2 hover:text-primary transition-colors"><Mail className="w-4 h-4 text-primary" />criandoconteudomkt@gmail.com</a>
+            </div>
           </div>
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">{t("footer.findUs")}</h4>
+            <div className="inline-flex items-start gap-2 text-sm text-muted-foreground leading-relaxed">
+              <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+              <span>Rua Antonio Teixeira Dias S/N, Bairro Teixeira Dias - Belo Horizonte, MG - CEP: 30642270</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-16 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground text-center">© {new Date().getFullYear()} HomeGarden. {t("footer.copyright")}</p>
         </div>
       </div>
     </footer>
