@@ -31,5 +31,17 @@
     "privacy": "Política de Privacidad",
     "terms": "Términos de Uso",
     "cookies": "Política de Cookies"
+  },
+  "newsletter": {
+    "privacyNote": "Prometemos no enviar spam. Solo consejos e inspiración sobre decoración, arquitectura, diseño y jardín.",
+    "invalidEmail": "Email inválido",
+    "invalidEmailDesc": "Por favor, introduce un email válido.",
+    "alreadySubscribed": "¡Ya estás suscrito!",
+    "alreadySubscribedDesc": "Este email ya está registrado en nuestro boletín.",
+    "success": "🎉 ¡Suscripción realizada!",
+    "successDesc": "Recibirás nuestras novedades y consejos sobre decoración, arquitectura y diseño.",
+    "thankYou": "¡Gracias! Revisa tu bandeja de entrada 📬",
+    "error": "Error al suscribir",
+    "errorDesc": "Ocurrió un error. Inténtelo más tarde."
   }
 }

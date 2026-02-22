@@ -52,7 +52,7 @@
     "errorDesc": "Ocorreu um erro ao carregar os artigos. Por favor, tente novamente."
   },
   "footer": {
-    "description": "Seu guia completo para transformar sua casa e jardim em espaços incríveis.",
+    "description": "Seu guia completo sobre decoração, arquitetura, design moderno e jardinagem. Inspiração para transformar cada espaço da sua casa.",
     "newsletter": "Newsletter",
     "newsletterPlaceholder": "Seu email",
     "subscribe": "Inscrever",
@@ -68,6 +68,18 @@
     "privacy": "Política de Privacidade",
     "terms": "Termos de Uso",
     "cookies": "Política de Cookies"
+  },
+  "newsletter": {
+    "privacyNote": "Prometemos não enviar spam. Apenas dicas e novidades sobre decoração, arquitetura, design e jardim.",
+    "invalidEmail": "E-mail inválido",
+    "invalidEmailDesc": "Por favor, insira um e-mail válido.",
+    "alreadySubscribed": "Você já está inscrito!",
+    "alreadySubscribedDesc": "Este e-mail já está cadastrado em nossa newsletter.",
+    "success": "🎉 Inscrição realizada!",
+    "successDesc": "Você receberá nossas novidades e dicas exclusivas sobre decoração, arquitetura e design no seu e-mail.",
+    "thankYou": "Obrigado! Fique de olho na sua caixa de entrada 📬",
+    "error": "Erro ao inscrever",
+    "errorDesc": "Ocorreu um erro. Tente novamente mais tarde."
   },
   "common": {
     "readMore": "Ler mais",
