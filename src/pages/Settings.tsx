@@ -224,7 +224,7 @@ function SettingsContent() {
   useEffect(() => {
     const loadSocialSettings = async () => {
       try {
-        const { data, error } = await supabase.from('site_settings').select('value').eq('key', 'social_links').single();
+        const { data, error } = await supabase.from('site_settings').select('value').eq('key', 'social_links').maybeSingle();
         if (error && error.code !== 'PGRST116') console.error('Error loading social settings:', error);
         if (data?.value && typeof data.value === 'object' && !Array.isArray(data.value)) {
           const value = data.value as Record<string, unknown>;
@@ -250,7 +250,7 @@ function SettingsContent() {
   useEffect(() => {
     const loadAutoReplySettings = async () => {
       try {
-        const { data, error } = await supabase.from('site_settings').select('value').eq('key', 'auto_reply_config').single();
+        const { data, error } = await supabase.from('site_settings').select('value').eq('key', 'auto_reply_config').maybeSingle();
         if (error && error.code !== 'PGRST116') console.error('Error loading auto-reply settings:', error);
         if (data?.value && typeof data.value === 'object' && !Array.isArray(data.value)) {
           const value = data.value as { enabled?: boolean; prompt?: string };
@@ -281,8 +281,15 @@ function SettingsContent() {
   const handleSaveAutoReply = async () => {
     setSavingAutoReply(true);
     try {
-      const { error } = await supabase.from('site_settings').update({ value: { enabled: autoReplySettings.enabled, prompt: autoReplySettings.prompt }, updated_at: new Date().toISOString() }).eq('key', 'auto_reply_config');
-      if (error) throw error;
+      const payload = { enabled: autoReplySettings.enabled, prompt: autoReplySettings.prompt };
+      const { data: existing } = await supabase.from('site_settings').select('id').eq('key', 'auto_reply_config').maybeSingle();
+      if (existing) {
+        const { error } = await supabase.from('site_settings').update({ value: payload as any, updated_at: new Date().toISOString() }).eq('key', 'auto_reply_config');
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('site_settings').insert({ key: 'auto_reply_config', value: payload as any });
+        if (error) throw error;
+      }
       toast.success('Configurações de resposta automática salvas com sucesso!');
     } catch (error) { console.error('Error saving auto-reply settings:', error); toast.error('Erro ao salvar configurações'); }
     finally { setSavingAutoReply(false); }
@@ -371,9 +378,9 @@ function SettingsContent() {
       const fileExt = file.name.split('.').pop();
       const fileName = `favicon-${Date.now()}.${fileExt}`;
       const filePath = `seo/${fileName}`;
-      const { error: uploadError } = await supabase.storage.from('article-images').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('site-assets').upload(filePath, file);
       if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('article-images').getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage.from('site-assets').getPublicUrl(filePath);
       setSeoSettings({ ...seoSettings, favicon_url: publicUrl });
       toast.success('Favicon enviado com sucesso!');
     } catch (error) { console.error('Error uploading favicon:', error); toast.error('Erro ao enviar favicon'); }
@@ -390,9 +397,9 @@ function SettingsContent() {
       const fileExt = file.name.split('.').pop();
       const fileName = `og-image-${Date.now()}.${fileExt}`;
       const filePath = `seo/${fileName}`;
-      const { error: uploadError } = await supabase.storage.from('article-images').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('site-assets').upload(filePath, file);
       if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('article-images').getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage.from('site-assets').getPublicUrl(filePath);
       setSeoSettings({ ...seoSettings, og_image: publicUrl, twitter_image: publicUrl });
       toast.success('Imagem OG enviada com sucesso!');
     } catch (error) { console.error('Error uploading OG image:', error); toast.error('Erro ao enviar imagem'); }
@@ -625,7 +632,7 @@ function SettingsContent() {
                     onClick={async () => {
                       setSavingSocial(true);
                       try {
-                        const { data: existing } = await supabase.from('site_settings').select('key').eq('key', 'social_links').single();
+                        const { data: existing } = await supabase.from('site_settings').select('key').eq('key', 'social_links').maybeSingle();
                         let error;
                         if (existing) {
                           const result = await supabase.from('site_settings').update({ value: JSON.parse(JSON.stringify(socialSettings)), updated_at: new Date().toISOString() }).eq('key', 'social_links');
