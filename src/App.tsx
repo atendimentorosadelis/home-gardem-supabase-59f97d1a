@@ -14,6 +14,7 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { PageViewTracker } from "@/components/PageViewTracker";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import GardenTips from "./pages/GardenTips";
@@ -66,6 +67,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
+            <PageViewTracker />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/blog" element={<Blog />} />
