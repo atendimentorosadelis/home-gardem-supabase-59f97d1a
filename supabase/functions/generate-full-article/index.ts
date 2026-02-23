@@ -437,7 +437,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 {
   "title": "Título acolhedor e interessante (máximo 70 caracteres)",
   "excerpt": "Resumo variado e pessoal",
-  "category": "Uma das categorias válidas",
+  "category": "DEVE ser EXATAMENTE uma destas: Decoração, Design Interno, Jardim, Arquitetura, Plantas de Interior, DIY e Projetos, Sustentabilidade, Móveis e Organização, Tendências, Iluminação, Datas Comemorativas",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
@@ -673,9 +673,49 @@ Retorne APENAS JSON válido (sem markdown code blocks):
     const validatedTitle = validateAndSanitizeTitle(articleData.title, topic);
     const validatedExcerpt = validateAndSanitizeExcerpt(articleData.excerpt, validatedTitle, topic);
     
-    const categoryMatch = categories.find(c => 
+    // Smart category matching: exact match first, then partial, then topic-based inference
+    let categoryMatch = categories.find(c => 
       c.name.toLowerCase() === articleData.category?.toLowerCase()
     );
+    
+    if (!categoryMatch && articleData.category) {
+      // Try partial match
+      const aiCat = articleData.category.toLowerCase();
+      categoryMatch = categories.find(c => 
+        aiCat.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(aiCat)
+      );
+    }
+    
+    if (!categoryMatch) {
+      // Infer from topic
+      const topicLower = topic.toLowerCase();
+      if (/jardim|flores|plant|horta|suculenta|cacto|paisagismo|hidroponia|ervas/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'jardim');
+      } else if (/plantas?\s*(de\s*)?interior|indoor/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'plantas-interior');
+      } else if (/arquitetura|colonial|industrial|moderno|neo|europeu|nord/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'arquitetura');
+      } else if (/design\s*interno|sala|quarto|banheiro|cozinha|escritorio|varanda|lareira|gourmet/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'design-interno');
+      } else if (/iluminação|luminária|luz|led/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'iluminacao');
+      } else if (/sustentáv|ecológic|recicl/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'sustentabilidade');
+      } else if (/diy|faça\s*você|projeto/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'diy-projetos');
+      } else if (/móve|organiz|estante|armário/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'moveis-organizacao');
+      } else if (/tendência|trend/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'tendencias');
+      } else if (/halloween|natal|páscoa|comemorativ/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'datas-comemorativas');
+      }
+      
+      if (categoryMatch) {
+        console.log(`[Category] Inferred from topic "${topic}": ${categoryMatch.name}`);
+      }
+    }
+    
     const categorySlug = categoryMatch?.slug || 'decoracao';
     const categoryName = categoryMatch?.name || 'Decoração';
 
