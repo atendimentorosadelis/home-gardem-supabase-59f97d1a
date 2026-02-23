@@ -15,6 +15,7 @@ serve(async (req) => {
     const url = new URL(req.url);
     const slug = url.searchParams.get('slug');
     const category = url.searchParams.get('category');
+    const imageProxy = url.searchParams.get('image'); // ?image=1 → serve image as proxy
 
     if (!slug) {
       return new Response('Missing slug', { status: 400 });
@@ -31,19 +32,43 @@ serve(async (req) => {
       .eq('status', 'published')
       .maybeSingle();
 
+    // Se pediu proxy de imagem, buscar e servir a imagem diretamente
+    if (imageProxy === '1' && article?.cover_image) {
+      try {
+        const imgResponse = await fetch(article.cover_image);
+        if (!imgResponse.ok) {
+          return new Response('Image not found', { status: 404 });
+        }
+        const imgBytes = await imgResponse.arrayBuffer();
+        // Servir como JPEG content-type mesmo sendo WebP bytes
+        // Crawlers (WhatsApp/Facebook) aceitam os bytes reais independente do content-type
+        const contentType = article.cover_image.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+        return new Response(imgBytes, {
+          headers: {
+            'Content-Type': contentType,
+            'Cache-Control': 'public, max-age=86400',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      } catch (e) {
+        console.error('Image proxy error:', e);
+        return new Response('Image proxy error', { status: 500 });
+      }
+    }
+
     const siteUrl = 'https://homegardenmanual.com';
     const fallbackImage = `${siteUrl}/og-image.jpg`;
 
     const title = article?.title || 'Home & Garden Manual';
     const description = article?.excerpt || 'Dicas, tutoriais e guias completas para criar seu jardim perfeito.';
     
-    // Usar a URL direta da imagem do Supabase Storage
-    // Crawlers modernos (WhatsApp, Facebook, Twitter) suportam WebP
+    // Para og:image, usar a URL da própria edge function como proxy
+    // Isso garante que o crawler consiga acessar a imagem sem problemas de CORS/proxy
+    const edgeFunctionBaseUrl = `${SUPABASE_URL}/functions/v1/og-share`;
     let ogImage = fallbackImage;
-    let ogImageType = 'image/jpeg';
+    const ogImageType = 'image/jpeg';
     if (article?.cover_image) {
-      ogImage = article.cover_image;
-      ogImageType = article.cover_image.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+      ogImage = `${edgeFunctionBaseUrl}?slug=${encodeURIComponent(slug)}&image=1`;
     }
     
     const articleCategory = article?.category_slug || category || '';
@@ -108,7 +133,7 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-// Escape para atributos HTML - escapa &, ", < e > para conformidade com HTML
+// Escape para atributos HTML
 function escapeAttr(str: string): string {
   return str
     .replace(/&/g, '&amp;')
