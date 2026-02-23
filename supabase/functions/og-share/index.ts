@@ -105,9 +105,10 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-// Escape para atributos de URL - só escapa " e < para não quebrar URLs com &
+// Escape para atributos HTML - escapa &, ", < e > para conformidade com HTML
 function escapeAttr(str: string): string {
   return str
+    .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
