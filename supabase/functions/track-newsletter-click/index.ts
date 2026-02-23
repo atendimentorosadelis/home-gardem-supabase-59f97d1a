@@ -31,7 +31,7 @@ serve(async (req) => {
     console.error("[track-click] Error:", e);
   }
 
-  const redirectUrl = new URL(req.url).searchParams.get("url") || "https://blank-canvas-maker-5273.lovable.app";
+  const redirectUrl = new URL(req.url).searchParams.get("url") || "https://homegardenmanual.com";
   
   return new Response(null, {
     status: 302,
