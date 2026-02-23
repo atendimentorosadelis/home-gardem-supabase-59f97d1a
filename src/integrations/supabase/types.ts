@@ -693,6 +693,59 @@ export type Database = {
           },
         ]
       }
+      newsletter_send_history: {
+        Row: {
+          article_id: string | null
+          article_slug: string | null
+          article_title: string
+          clicked_count: number
+          error_message: string | null
+          failed_sends: number
+          id: string
+          opened_count: number
+          sent_at: string
+          status: string
+          successful_sends: number
+          total_recipients: number
+        }
+        Insert: {
+          article_id?: string | null
+          article_slug?: string | null
+          article_title?: string
+          clicked_count?: number
+          error_message?: string | null
+          failed_sends?: number
+          id?: string
+          opened_count?: number
+          sent_at?: string
+          status?: string
+          successful_sends?: number
+          total_recipients?: number
+        }
+        Update: {
+          article_id?: string | null
+          article_slug?: string | null
+          article_title?: string
+          clicked_count?: number
+          error_message?: string | null
+          failed_sends?: number
+          id?: string
+          opened_count?: number
+          sent_at?: string
+          status?: string
+          successful_sends?: number
+          total_recipients?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_send_history_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "content_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           email: string

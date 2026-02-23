@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.restore-images]
 verify_jwt = false
+
+[functions.send-newsletter]
+verify_jwt = false
