@@ -38,8 +38,8 @@ function mapArticleToPost(article: DatabaseArticle): PostWithDate {
     uuid: article.id,
     title: article.title,
     excerpt: article.excerpt || "",
-    category: article.category || "Decoração",
-    categorySlug: article.category_slug || "decoracao",
+    category: article.category || "Jardim",
+    categorySlug: article.category_slug || "jardim",
     image: article.cover_image || "/placeholder.svg",
     date: formatDate(article.published_at),
     readTime: article.read_time || "5 min",
@@ -172,8 +172,8 @@ export function useCategories() {
         .not("published_at", "is", null);
 
       const dbCategories = (dbArticles || []).map((a) => ({
-        name: a.category || "Decoração",
-        slug: a.category_slug || "decoracao",
+        name: a.category || "Jardim",
+        slug: a.category_slug || "jardim",
       }));
 
       const uniqueCategories = dbCategories.filter(

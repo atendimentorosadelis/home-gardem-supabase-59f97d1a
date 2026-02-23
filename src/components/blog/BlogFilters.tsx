@@ -35,17 +35,38 @@ interface BlogFiltersProps {
 // Category icons mapping
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   'all': LayoutGrid,
-  'decoracao': Palette,
-  'design-interno': Home,
+  // Design Interno
+  'sala': Armchair,
+  'sala-de-jantar': UtensilsCrossed,
+  'lareira': Home,
+  'area-gourmet': ChefHat,
+  'quarto': Bed,
+  'banheiro': Bath,
+  'escritorio': Laptop,
+  'cozinha': UtensilsCrossed,
+  'varanda': Sun,
+  'area-de-servico': Wrench,
+  'piscina': Waves,
+  // Jardim
   'jardim': Leaf,
-  'arquitetura': Building2,
-  'plantas-de-interior': Trees,
-  'diy-e-projetos': Hammer,
-  'sustentabilidade': Recycle,
-  'moveis-e-organizacao': Sofa,
-  'tendencias': TrendingUp,
-  'iluminacao': Lightbulb,
-  'datas-comemorativas': CalendarHeart,
+  'decoracao-jardim': Palette,
+  'cuidados-plantacao': Sprout,
+  'jardim-vertical': Fence,
+  'suculentas-cactos': Sprout,
+  'horta-de-ervas': Leaf,
+  'flores-ornamentais': Flower2,
+  'paisagismo': Mountain,
+  'hidroponia': Waves,
+  'jardim-sustentavel': Recycle,
+  'decoracao-halloween': Ghost,
+  // Arquitetura
+  'colonial': Castle,
+  'industrial': Factory,
+  'moderno': Sparkles,
+  'neolitico': Landmark,
+  'europeu': Building2,
+  'nordico': HomeIcon,
+  'neo-classico': Landmark,
 };
 
 // All sub-niches/themes as a flat list
@@ -148,9 +169,11 @@ export function BlogFilters({
   // Get translated category name
   const getCategoryName = (slug: string): string => {
     if (slug === "all") return t("blog.allCategories");
+    const cat = categories.find(c => c.slug === slug);
+    if (cat) return cat.name;
     const key = `categories.${slug}`;
     const translated = t(key);
-    return translated !== key ? translated : t('categories.default');
+    return translated !== key ? translated : slug;
   };
 
   // Get icon for category
