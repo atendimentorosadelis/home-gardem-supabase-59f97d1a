@@ -86,10 +86,13 @@ serve(async (req) => {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f0;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
-        <!-- Header com Logo -->
+        <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#2d5016,#4a7c28);padding:30px;text-align:center;">
-          <img src="${logoUrl}" alt="HomeGarden" width="180" style="display:block;margin:0 auto 10px;" />
-          <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">Seu guia completo de jardinagem 🌿</p>
+          <table cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>
+            <td><img src="${logoUrl}" alt="HomeGarden" width="44" height="44" style="display:block;border-radius:8px;" /></td>
+            <td style="padding-left:12px;"><span style="color:#ffffff;font-size:22px;font-weight:bold;font-family:Georgia,serif;">HomeGarden</span></td>
+          </tr></table>
+          <p style="color:rgba(255,255,255,0.8);margin:12px 0 0;font-size:14px;">Seu guia completo de jardinagem 🌿</p>
         </td></tr>
         ${coverImage ? `<tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ''}
         <!-- Conteúdo -->
@@ -98,7 +101,7 @@ serve(async (req) => {
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
           ${articleExcerpt ? `<p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ''}
-          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">Ler artigo completo →</a>
+          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Ler mais →</a>
         </td></tr>
         <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
