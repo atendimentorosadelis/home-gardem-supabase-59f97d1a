@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Post } from "@/components/home/PostCard";
 import { formatDate, getCurrentLocale } from "@/utils/formatDate";
+import { PARENT_CATEGORY_SLUGS } from "@/data/blog-categories";
 
 export type SortOption = "recent" | "popular" | "az" | "za";
 
@@ -105,14 +106,19 @@ export function useBlogArticles(options: UseBlogArticlesOptions = {}) {
         viewsCount: viewsCount[article.id] || 0,
       }));
 
-      // Apply category filter
+      // Apply category filter (support parent categories)
+      const parentSlugs = PARENT_CATEGORY_SLUGS[category];
       const filteredByCategory =
         category === "all"
           ? allPosts
-          : allPosts.filter(
-              (post) =>
-                post.categorySlug?.toLowerCase() === category.toLowerCase()
-            );
+          : parentSlugs
+            ? allPosts.filter((post) =>
+                parentSlugs.includes(post.categorySlug?.toLowerCase() || "")
+              )
+            : allPosts.filter(
+                (post) =>
+                  post.categorySlug?.toLowerCase() === category.toLowerCase()
+              );
 
       // Apply search filter
       const normalizeText = (text: string) =>
