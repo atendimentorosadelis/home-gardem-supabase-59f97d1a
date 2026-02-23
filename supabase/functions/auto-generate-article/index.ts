@@ -91,12 +91,24 @@ serve(async (req) => {
     }
 
     // 4. Pick a random topic
-    const topics: string[] = Array.isArray(config.topics) ? config.topics : [];
-    if (topics.length === 0) {
-      throw new Error('Nenhum tema configurado no piloto automático');
+    const allTopicIds = Object.keys(TOPIC_PROMPTS);
+    let randomTopicId: string;
+    let randomTopic: string;
+
+    if (config.random_all_topics) {
+      // Random from ALL available topics
+      randomTopicId = allTopicIds[Math.floor(Math.random() * allTopicIds.length)];
+      randomTopic = TOPIC_PROMPTS[randomTopicId];
+      console.log(`[AutoGenerate] Random ALL mode - picked from ${allTopicIds.length} topics`);
+    } else {
+      // Random from selected topics only
+      const topics: string[] = Array.isArray(config.topics) ? config.topics : [];
+      if (topics.length === 0) {
+        throw new Error('Nenhum tema configurado no piloto automático');
+      }
+      randomTopicId = topics[Math.floor(Math.random() * topics.length)];
+      randomTopic = TOPIC_PROMPTS[randomTopicId] || randomTopicId;
     }
-    const randomTopicId = topics[Math.floor(Math.random() * topics.length)];
-    const randomTopic = TOPIC_PROMPTS[randomTopicId] || randomTopicId;
 
     // 5. Create a log entry
     const { data: logEntry } = await supabase

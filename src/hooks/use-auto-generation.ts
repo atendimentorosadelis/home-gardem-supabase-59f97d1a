@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
-export interface AutoGenerationConfig { id: string; enabled: boolean; topics: string[]; publish_immediately: boolean; daily_limit: number; updated_at: string; updated_by: string | null; }
+export interface AutoGenerationConfig { id: string; enabled: boolean; topics: string[]; publish_immediately: boolean; daily_limit: number; random_all_topics: boolean; updated_at: string; updated_by: string | null; }
 export interface AutoGenerationSchedule { id: string; day_of_week: number; time_slot: string; is_active: boolean; created_at: string; }
 export interface AutoGenerationLog { id: string; article_id: string | null; topic_used: string; status: 'pending' | 'running' | 'success' | 'error' | 'skipped'; error_message: string | null; executed_at: string; duration_ms: number | null; }
 
