@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, Loader2, CheckCircle, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
@@ -40,8 +41,8 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
         .from('newsletter_subscribers')
         .insert({
           email: validation.data.toLowerCase(),
-          source,
-        });
+          language: i18n.language || 'pt-BR',
+        } as any);
 
       if (error) {
         // Handle duplicate email

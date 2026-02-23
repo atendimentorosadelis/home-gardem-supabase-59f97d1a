@@ -6,6 +6,48 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const translations: Record<string, {
+  greeting: string;
+  defaultName: string;
+  tagline: string;
+  readMore: string;
+  footer: string;
+  unsubscribe: string;
+  subject: (title: string) => string;
+}> = {
+  "pt-BR": {
+    greeting: "Olá",
+    defaultName: "Amante da jardinagem",
+    tagline: "Seu guia de casa, jardim, decoração e arquitetura",
+    readMore: "Ler mais →",
+    footer: "Seu guia de casa, jardim, decoração e arquitetura",
+    unsubscribe: "Cancelar inscrição",
+    subject: (title) => `🌿 ${title}`,
+  },
+  en: {
+    greeting: "Hello",
+    defaultName: "Garden lover",
+    tagline: "Your guide to home, garden, decor and architecture",
+    readMore: "Read more →",
+    footer: "Your guide to home, garden, decor and architecture",
+    unsubscribe: "Unsubscribe",
+    subject: (title) => `🌿 ${title}`,
+  },
+  es: {
+    greeting: "Hola",
+    defaultName: "Amante de la jardinería",
+    tagline: "Tu guía de hogar, jardín, decoración y arquitectura",
+    readMore: "Leer más →",
+    footer: "Tu guía de hogar, jardín, decoración y arquitectura",
+    unsubscribe: "Cancelar suscripción",
+    subject: (title) => `🌿 ${title}`,
+  },
+};
+
+function getTranslation(lang: string) {
+  return translations[lang] || translations["pt-BR"];
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -30,10 +72,10 @@ serve(async (req) => {
 
     console.log(`[send-newsletter] Sending newsletter for article: ${articleTitle}`);
 
-    // Get active subscribers
+    // Get active subscribers with language
     const { data: subscribers, error: subError } = await supabase
       .from("newsletter_subscribers")
-      .select("id, email, name")
+      .select("id, email, name, language")
       .eq("is_active", true);
 
     if (subError) throw subError;
@@ -67,16 +109,17 @@ serve(async (req) => {
 
     const siteUrl = "https://blank-canvas-maker-5273.lovable.app";
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
-    const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
 
     let sent = 0;
     let failed = 0;
 
-    // Send emails in batches
     for (const subscriber of subscribers) {
       try {
+        const lang = subscriber.language || "pt-BR";
+        const t = getTranslation(lang);
+        const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
         const unsubscribeUrl = `${siteUrl}/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
-        const subscriberName = subscriber.name || 'Amante da jardinagem';
+        const subscriberName = subscriber.name || t.defaultName;
 
         const htmlContent = `
 <!DOCTYPE html>
@@ -89,24 +132,24 @@ serve(async (req) => {
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#2d5016,#4a7c28);padding:30px;text-align:center;">
           <img src="${logoUrl}" alt="HomeGarden" width="160" style="display:block;margin:0 auto 12px;" />
-          <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">Seu guia de casa, jardim, decoração e arquitetura</p>
+          <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">${t.tagline}</p>
         </td></tr>
         ${coverImage ? `<tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ''}
-        <!-- Conteúdo -->
+        <!-- Content -->
         <tr><td style="padding:40px 30px;">
-          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${subscriberName}! 🌱</p>
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">${t.greeting}, ${subscriberName}! 🌱</p>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
           ${articleExcerpt ? `<p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ''}
-          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Ler mais →</a>
+          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">${t.readMore}</a>
         </td></tr>
         <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
           <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">
-            © ${new Date().getFullYear()} HomeGarden — Seu guia de casa, jardim, decoração e arquitetura
+            © ${new Date().getFullYear()} HomeGarden — ${t.footer}
           </p>
           <p style="margin:8px 0 0;">
-            <a href="${unsubscribeUrl}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">Cancelar inscrição</a>
+            <a href="${unsubscribeUrl}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">${t.unsubscribe}</a>
           </p>
         </td></tr>
       </table>
@@ -124,7 +167,7 @@ serve(async (req) => {
           body: JSON.stringify({
             from: "HomeGarden <newsletter@homegardenmanual.com>",
             to: [subscriber.email],
-            subject: `🌿 ${articleTitle}`,
+            subject: t.subject(articleTitle),
             html: htmlContent,
           }),
         });
