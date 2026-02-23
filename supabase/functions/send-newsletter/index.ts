@@ -66,6 +66,7 @@ serve(async (req) => {
     }
 
     const siteUrl = "https://blank-canvas-maker-5273.lovable.app";
+    const logoUrl = `${siteUrl}/logo-email.png`;
     const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
 
     let sent = 0;
@@ -75,31 +76,42 @@ serve(async (req) => {
     for (const subscriber of subscribers) {
       try {
         const unsubscribeUrl = `${siteUrl}/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+        const subscriberName = subscriber.name || 'Amante da jardinagem';
 
         const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background-color:#f4f4f4;font-family:Arial,sans-serif;">
-  <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;margin-top:20px;margin-bottom:20px;">
-    <div style="background:#2d5a27;padding:30px;text-align:center;">
-      <h1 style="color:#ffffff;margin:0;font-size:24px;">🌿 HomeGarden</h1>
-      <p style="color:#c8e6c9;margin:8px 0 0;font-size:14px;">Novidades fresquinhas do jardim!</p>
-    </div>
-    ${coverImage ? `<div style="width:100%;"><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></div>` : ''}
-    <div style="padding:30px;">
-      ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5a27;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
-      <h2 style="color:#1a1a1a;font-size:22px;line-height:1.3;margin:0 0 16px;">${articleTitle}</h2>
-      ${articleExcerpt ? `<p style="color:#666;font-size:15px;line-height:1.6;margin:0 0 24px;">${articleExcerpt}</p>` : ''}
-      <a href="${articleUrl}" style="display:inline-block;background:#2d5a27;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">Ler artigo completo →</a>
-    </div>
-    <div style="padding:20px 30px;background:#f9f9f9;text-align:center;border-top:1px solid #eee;">
-      <p style="color:#999;font-size:12px;margin:0;">
-        Você recebeu este e-mail porque está inscrito na newsletter do HomeGarden.<br/>
-        <a href="${unsubscribeUrl}" style="color:#999;text-decoration:underline;">Cancelar inscrição</a>
-      </p>
-    </div>
-  </div>
+<body style="margin:0;padding:0;background-color:#f0f4f0;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f0;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+        <!-- Header com Logo -->
+        <tr><td style="background:linear-gradient(135deg,#2d5016,#4a7c28);padding:30px;text-align:center;">
+          <img src="${logoUrl}" alt="HomeGarden" width="180" style="display:block;margin:0 auto 10px;" />
+          <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">Seu guia completo de jardinagem 🌿</p>
+        </td></tr>
+        ${coverImage ? `<tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ''}
+        <!-- Conteúdo -->
+        <tr><td style="padding:40px 30px;">
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${subscriberName}! 🌱</p>
+          ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
+          <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
+          ${articleExcerpt ? `<p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ''}
+          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">Ler artigo completo →</a>
+        </td></tr>
+        <!-- Footer -->
+        <tr><td style="background:#2d5016;padding:25px;text-align:center;">
+          <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">
+            © ${new Date().getFullYear()} HomeGarden — Seu guia completo de jardinagem
+          </p>
+          <p style="margin:8px 0 0;">
+            <a href="${unsubscribeUrl}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">Cancelar inscrição</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>`;
 
