@@ -293,7 +293,7 @@ const Article = () => {
     const registerView = async () => {
       try {
         const sessionHash = btoa(navigator.userAgent + new Date().toDateString());
-        await supabase.from('article_views').insert({ article_id: dbArticle.id, ip_hash: sessionHash });
+        await supabase.from('article_views').insert({ article_id: dbArticle.id, viewer_ip: sessionHash });
       } catch { /* ignore */ }
     };
     registerView();
