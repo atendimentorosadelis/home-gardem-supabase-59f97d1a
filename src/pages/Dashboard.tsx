@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { FileText, Eye, TrendingUp, Calendar, Loader2, Search, Wand2, Youtube, Video, VideoOff, CheckCircle2 } from 'lucide-react';
+import { FileText, Eye, Loader2, Search, Wand2, Youtube, Globe, Users } from 'lucide-react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { useDashboardStats, useRecentArticles, useRecentActivity, useViewsChart, calculateChange } from '@/hooks/use-dashboard-stats';
 import { useSEOStats } from '@/hooks/use-seo-stats';
+import { usePageViewsStats, useTopPages } from '@/hooks/use-page-views-stats';
 import { useVideoStats } from '@/hooks/use-video-stats';
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -19,7 +20,7 @@ import { KeywordCloud } from '@/components/dashboard/KeywordCloud';
 import { SEOArticleTable } from '@/components/dashboard/SEOArticleTable';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+
 
 type PeriodOption = '7' | '14' | '30' | '90' | 'this-month' | 'last-month';
 
@@ -48,6 +49,8 @@ export default function Dashboard() {
   const { data: viewsData, isLoading: chartLoading } = useViewsChart(dateRange.startDate, dateRange.endDate);
   const { data: seoStats, isLoading: seoLoading, refetch: refetchSEO } = useSEOStats();
   const { data: videoStats, isLoading: videoStatsLoading } = useVideoStats();
+  const { data: pageViewsStats } = usePageViewsStats();
+  const { data: topPages } = useTopPages(10);
 
   const handleExpandExcerpts = async () => {
     setIsExpandingExcerpts(true);
@@ -64,9 +67,9 @@ export default function Dashboard() {
 
   const statsCards = [
     { title: 'Artigos Publicados', value: stats?.totalArticles ?? 0, icon: FileText, change: calculateChange(stats?.totalArticles ?? 0, stats?.articlesLastMonth ?? 0) },
-    { title: 'Visualizações', value: stats?.totalViews ?? 0, icon: Eye, change: calculateChange(stats?.viewsThisMonth ?? 0, stats?.viewsLastMonth ?? 0) },
-    { title: 'Engajamento', value: `${stats?.engagement ?? 0}`, icon: TrendingUp, change: 'views/artigo' },
-    { title: 'Este Mês', value: stats?.articlesThisMonth ?? 0, icon: Calendar, change: 'artigos publicados' },
+    { title: 'Views Artigos', value: stats?.totalViews ?? 0, icon: Eye, change: calculateChange(stats?.viewsThisMonth ?? 0, stats?.viewsLastMonth ?? 0) },
+    { title: 'Page Views (Total)', value: pageViewsStats?.totalPageViews ?? 0, icon: Globe, change: `${pageViewsStats?.pageViewsToday ?? 0} hoje` },
+    { title: 'Visitantes Únicos', value: pageViewsStats?.uniqueVisitors ?? 0, icon: Users, change: calculateChange(pageViewsStats?.pageViewsThisMonth ?? 0, pageViewsStats?.pageViewsLastMonth ?? 0) },
   ];
 
   const formatDateStr = (dateString: string | null) => {
@@ -194,7 +197,28 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        <TopArticlesRanking />
+        <div className="grid gap-3 md:grid-cols-2">
+          <TopArticlesRanking />
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Globe className="h-5 w-5 text-primary" />Páginas Mais Visitadas</CardTitle>
+              <CardDescription>Ranking por page views</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {topPages && topPages.length > 0 ? (
+                <div className="space-y-3">
+                  {topPages.map((page, index) => (
+                    <div key={page.path} className="flex items-center gap-3">
+                      <span className="text-lg font-bold text-muted-foreground w-6">{index + 1}</span>
+                      <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{page.path}</p></div>
+                      <Badge variant="secondary">{page.views} views</Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : <p className="text-center text-muted-foreground py-8">Nenhuma visualização registrada</p>}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   );

@@ -809,6 +809,36 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          id: string
+          page_path: string
+          page_title: string | null
+          referrer: string | null
+          user_agent: string | null
+          viewed_at: string
+          viewer_hash: string | null
+        }
+        Insert: {
+          id?: string
+          page_path: string
+          page_title?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+          viewer_hash?: string | null
+        }
+        Update: {
+          id?: string
+          page_path?: string
+          page_title?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+          viewer_hash?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
