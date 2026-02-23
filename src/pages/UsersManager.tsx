@@ -108,6 +108,7 @@ function UsersManagerContent() {
 
   // Add admin modal state
   const [addAdminModalOpen, setAddAdminModalOpen] = useState(false);
+  const [addAdminSearch, setAddAdminSearch] = useState('');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [newAdminName, setNewAdminName] = useState('');
   const [newAdminPassword, setNewAdminPassword] = useState('');
@@ -185,6 +186,17 @@ function UsersManagerContent() {
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
 
     return matchesSearch && matchesRole;
+  });
+
+  // Non-admin users for the Add Admin modal
+  const nonAdminUsers = users.filter(user => {
+    if (user.role === 'admin') return false;
+    if (!addAdminSearch) return true;
+    const search = addAdminSearch.toLowerCase();
+    return (
+      (user.email?.toLowerCase().includes(search) || false) ||
+      (user.username?.toLowerCase().includes(search) || false)
+    );
   });
 
   // Check if current user can edit the target user's name
@@ -1066,79 +1078,149 @@ function UsersManagerContent() {
 
       {/* Add Admin Modal */}
       <Dialog open={addAdminModalOpen} onOpenChange={setAddAdminModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Adicionar Administrador</DialogTitle>
             <DialogDescription>
-              Insira os dados do novo administrador. Se definir uma senha, o usuário terá acesso imediato.
+              Promova um usuário existente ou crie um novo administrador.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="newAdminName">Nome</Label>
-              <Input
-                id="newAdminName"
-                value={newAdminName}
-                onChange={(e) => setNewAdminName(e.target.value)}
-                placeholder="Nome do administrador"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="newAdminEmail">Email *</Label>
-              <Input
-                id="newAdminEmail"
-                type="email"
-                value={newAdminEmail}
-                onChange={(e) => setNewAdminEmail(e.target.value)}
-                placeholder="email@exemplo.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="newAdminPassword">Senha (opcional)</Label>
-              <p className="text-xs text-muted-foreground">
-                Se informada, o usuário pode fazer login imediatamente sem confirmar email.
-              </p>
+          <Tabs defaultValue="existing" className="w-full">
+            <TabsList className="w-full">
+              <TabsTrigger value="existing" className="flex-1 gap-2">
+                <Users className="h-4 w-4" />
+                Usuários Cadastrados
+              </TabsTrigger>
+              <TabsTrigger value="new" className="flex-1 gap-2">
+                <UserPlus className="h-4 w-4" />
+                Criar Novo
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="existing" className="space-y-3 mt-3">
+              {/* Search existing users */}
               <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  id="newAdminPassword"
-                  type={showNewAdminPassword ? 'text' : 'password'}
-                  value={newAdminPassword}
-                  onChange={(e) => setNewAdminPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  className="pr-10"
+                  placeholder="Buscar usuário por nome ou email..."
+                  value={addAdminSearch}
+                  onChange={(e) => setAddAdminSearch(e.target.value)}
+                  className="pl-10"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowNewAdminPassword(!showNewAdminPassword)}
-                >
-                  {showNewAdminPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
               </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setAddAdminModalOpen(false);
-              setNewAdminEmail('');
-              setNewAdminName('');
-              setNewAdminPassword('');
-              setShowNewAdminPassword(false);
-            }}>
-              Cancelar
-            </Button>
-            <Button onClick={handleAddAdmin} disabled={addingAdmin || !newAdminEmail.trim()}>
-              {addingAdmin && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              <UserPlus className="h-4 w-4 mr-2" />
-              {newAdminPassword ? 'Criar Admin' : 'Enviar Convite'}
-            </Button>
-          </DialogFooter>
+
+              {/* List of non-admin users */}
+              <div className="max-h-[300px] overflow-y-auto space-y-2 border rounded-lg p-2">
+                {nonAdminUsers.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    {addAdminSearch ? 'Nenhum usuário encontrado' : 'Todos os usuários já são administradores'}
+                  </p>
+                ) : (
+                  nonAdminUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <Avatar className="h-8 w-8 shrink-0">
+                          <AvatarImage src={user.avatar_url || undefined} />
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                            {getInitials(user)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {user.username || 'Sem nome'}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {user.email || '-'}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setRoleAction({ user, action: 'promote' });
+                          setRoleDialogOpen(true);
+                          setAddAdminModalOpen(false);
+                        }}
+                      >
+                        <ShieldCheck className="h-4 w-4 mr-1" />
+                        Promover
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="new" className="space-y-4 mt-3">
+              <div className="space-y-2">
+                <Label htmlFor="newAdminName">Nome</Label>
+                <Input
+                  id="newAdminName"
+                  value={newAdminName}
+                  onChange={(e) => setNewAdminName(e.target.value)}
+                  placeholder="Nome do administrador"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newAdminEmail">Email *</Label>
+                <Input
+                  id="newAdminEmail"
+                  type="email"
+                  value={newAdminEmail}
+                  onChange={(e) => setNewAdminEmail(e.target.value)}
+                  placeholder="email@exemplo.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newAdminPassword">Senha (opcional)</Label>
+                <p className="text-xs text-muted-foreground">
+                  Se informada, o usuário pode fazer login imediatamente sem confirmar email.
+                </p>
+                <div className="relative">
+                  <Input
+                    id="newAdminPassword"
+                    type={showNewAdminPassword ? 'text' : 'password'}
+                    value={newAdminPassword}
+                    onChange={(e) => setNewAdminPassword(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setShowNewAdminPassword(!showNewAdminPassword)}
+                  >
+                    {showNewAdminPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => {
+                  setAddAdminModalOpen(false);
+                  setNewAdminEmail('');
+                  setNewAdminName('');
+                  setNewAdminPassword('');
+                  setShowNewAdminPassword(false);
+                }}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleAddAdmin} disabled={addingAdmin || !newAdminEmail.trim()}>
+                  {addingAdmin && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  {newAdminPassword ? 'Criar Admin' : 'Enviar Convite'}
+                </Button>
+              </DialogFooter>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
