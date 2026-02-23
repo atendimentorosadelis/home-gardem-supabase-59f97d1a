@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.notify-article-ready]
 verify_jwt = false
+
+[functions.generate-title-suggestions]
+verify_jwt = false
