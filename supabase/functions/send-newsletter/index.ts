@@ -109,6 +109,9 @@ serve(async (req) => {
 
     const siteUrl = "https://blank-canvas-maker-5273.lovable.app";
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
+    const trackOpenUrl = `${supabaseUrl}/functions/v1/track-newsletter-open`;
+    const trackClickUrl = `${supabaseUrl}/functions/v1/track-newsletter-click`;
+    const historyId = historyRecord?.id || "";
 
     let sent = 0;
     let failed = 0;
@@ -118,7 +121,9 @@ serve(async (req) => {
         const lang = subscriber.language || "pt-BR";
         const t = getTranslation(lang);
         const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
+        const trackedArticleUrl = historyId ? `${trackClickUrl}?id=${historyId}&url=${encodeURIComponent(articleUrl)}` : articleUrl;
         const unsubscribeUrl = `${siteUrl}/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+        const openPixelUrl = historyId ? `${trackOpenUrl}?id=${historyId}` : "";
         const subscriberName = subscriber.name || t.defaultName;
 
         const htmlContent = `
@@ -141,7 +146,7 @@ serve(async (req) => {
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
           ${articleExcerpt ? `<p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ''}
-          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">${t.readMore}</a>
+          <a href="${trackedArticleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">${t.readMore}</a>
         </td></tr>
         <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
@@ -155,6 +160,7 @@ serve(async (req) => {
       </table>
     </td></tr>
   </table>
+  ${openPixelUrl ? `<img src="${openPixelUrl}" width="1" height="1" alt="" style="display:none;" />` : ''}
 </body>
 </html>`;
 

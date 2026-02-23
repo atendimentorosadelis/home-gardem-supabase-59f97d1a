@@ -47,3 +47,9 @@ verify_jwt = false
 
 [functions.send-newsletter]
 verify_jwt = false
+
+[functions.track-newsletter-open]
+verify_jwt = false
+
+[functions.track-newsletter-click]
+verify_jwt = false
