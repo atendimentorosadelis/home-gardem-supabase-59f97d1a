@@ -4,4 +4,4 @@ Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /settings/
 
-Sitemap: https://xfhtixubllcdockbkbwm.supabase.co/functions/v1/generate-sitemap
+Sitemap: https://homegardenmanual.com/sitemap.xml
