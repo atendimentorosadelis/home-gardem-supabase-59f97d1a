@@ -613,6 +613,36 @@ export type Database = {
           },
         ]
       }
+      image_backup_logs: {
+        Row: {
+          backed_up: number
+          created_at: string
+          duration_ms: number | null
+          failed: number
+          id: string
+          status: string
+          total_images: number
+        }
+        Insert: {
+          backed_up?: number
+          created_at?: string
+          duration_ms?: number | null
+          failed?: number
+          id?: string
+          status?: string
+          total_images?: number
+        }
+        Update: {
+          backed_up?: number
+          created_at?: string
+          duration_ms?: number | null
+          failed?: number
+          id?: string
+          status?: string
+          total_images?: number
+        }
+        Relationships: []
+      }
       image_generation_queue: {
         Row: {
           article_id: string
