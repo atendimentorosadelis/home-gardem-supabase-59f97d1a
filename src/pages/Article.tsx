@@ -723,7 +723,7 @@ const Article = () => {
         return;
       }
 
-      const isNumberedBoldFaq = /^\d+\.\s+\*\*.*\?\*\*$/.test(trimmedLine);
+      const isNumberedBoldFaq = inFaqSection && /^\d+\.\s+\*\*.*\?\*\*$/.test(trimmedLine);
       const isSimpleFaq = inFaqSection && trimmedLine.endsWith('?') && !trimmedLine.startsWith('-') && !trimmedLine.startsWith('#') && trimmedLine.length > 10 && trimmedLine.length < 200;
       const isFaqQuestion = isNumberedBoldFaq || isSimpleFaq;
 
