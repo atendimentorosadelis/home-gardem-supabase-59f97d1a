@@ -292,7 +292,61 @@ serve(async (req) => {
       console.error('[AutoGenerate] Emotional conclusion error (non-fatal):', concErr);
     }
 
-    // 11. Update log as success
+    // 11. Send newsletter if auto-send is enabled and article is published
+    if (config.publish_immediately) {
+      try {
+        const { data: autoSendSetting } = await supabase
+          .from('site_settings')
+          .select('value')
+          .eq('key', 'newsletter_auto_send')
+          .single();
+
+        const autoSendEnabled = autoSendSetting?.value && typeof autoSendSetting.value === 'object'
+          ? (autoSendSetting.value as any).enabled === true
+          : false;
+
+        if (autoSendEnabled) {
+          // Get the latest article data (with cover_image)
+          const { data: finalArticle } = await supabase
+            .from('content_articles')
+            .select('id, title, slug, excerpt, category, cover_image')
+            .eq('id', articleId)
+            .single();
+
+          if (finalArticle) {
+            const newsletterUrl = `${SUPABASE_URL}/functions/v1/send-newsletter`;
+            const nlResponse = await fetch(newsletterUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              },
+              body: JSON.stringify({
+                articleId: finalArticle.id,
+                articleTitle: finalArticle.title,
+                articleSlug: finalArticle.slug,
+                articleExcerpt: finalArticle.excerpt,
+                articleCategory: finalArticle.category,
+                coverImage: finalArticle.cover_image,
+              }),
+            });
+
+            if (nlResponse.ok) {
+              const nlData = await nlResponse.json();
+              console.log(`[AutoGenerate] Newsletter sent: ${nlData.sent} sent, ${nlData.failed} failed`);
+            } else {
+              console.error('[AutoGenerate] Newsletter send failed:', await nlResponse.text());
+            }
+          }
+        } else {
+          console.log('[AutoGenerate] Newsletter auto-send is disabled, skipping');
+        }
+      } catch (nlErr) {
+        console.error('[AutoGenerate] Newsletter error (non-fatal):', nlErr);
+      }
+    }
+
+    // 12. Update log as success
     const durationMs = Date.now() - startTime;
     if (logId) {
       await supabase
