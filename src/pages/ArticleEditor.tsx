@@ -24,6 +24,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAffiliateClickStats } from '@/hooks/use-affiliate-clicks';
 import { useEmotionalConclusion } from '@/hooks/use-emotional-conclusion';
 import { resizeImage, getImageDimensions } from '@/utils/imageUtils';
+import { useSendNewsletter } from '@/hooks/use-send-newsletter';
 
 const BANNER_DIMENSIONS = {
   desktop: { width: 1300, height: 250 },
@@ -570,6 +571,7 @@ export default function ArticleEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { sendNewsletterIfEnabled } = useSendNewsletter();
 
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
@@ -686,6 +688,18 @@ export default function ArticleEditor() {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Send newsletter if article is being published for the first time
+      if (status === 'published' && article?.status !== 'published') {
+        await sendNewsletterIfEnabled({
+          id: id!,
+          title,
+          slug,
+          excerpt,
+          category: selectedCategory?.name || null,
+          cover_image: coverImage || null,
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });

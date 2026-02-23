@@ -59,6 +59,7 @@ import { useGenerationHistory } from '@/hooks/use-generation-history';
 import { useConfetti } from '@/hooks/use-confetti';
 import { useImageApproval } from '@/contexts/ImageApprovalContext';
 import { useUnsavedChangesWarning } from '@/hooks/use-unsaved-changes-warning';
+import { useSendNewsletter } from '@/hooks/use-send-newsletter';
 import { useNavigationBlock } from '@/contexts/NavigationBlockContext';
 import { useCommemorativeDates } from '@/hooks/use-commemorative-dates';
 import { CommemorativeDateSettingsDialog } from '@/components/dashboard/CommemorativeDateSettingsDialog';
@@ -139,6 +140,7 @@ function GenerateManualContentPage() {
 
   const { requireApproval } = useImageApproval();
   const { activeDates, hasActiveDate } = useCommemorativeDates();
+  const { sendNewsletterIfEnabled } = useSendNewsletter();
 
   const {
     isGenerating,
@@ -326,6 +328,17 @@ function GenerateManualContentPage() {
     const saved = await saveArticle(true);
     if (saved && currentTopic) {
       await updateHistoryArticleId(currentTopic, saved.id);
+    }
+    // Send newsletter if enabled
+    if (saved && saved.slug) {
+      await sendNewsletterIfEnabled({
+        id: saved.id,
+        title: saved.title,
+        slug: saved.slug,
+        excerpt: saved.excerpt,
+        category: saved.category,
+        cover_image: saved.cover_image,
+      });
     }
     queryClient.invalidateQueries({ queryKey: ['published-articles'] });
     queryClient.invalidateQueries({ queryKey: ['blog-articles'] });
