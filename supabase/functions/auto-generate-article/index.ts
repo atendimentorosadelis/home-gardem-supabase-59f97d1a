@@ -6,6 +6,39 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// Map topic IDs to descriptive prompts for article generation
+const TOPIC_PROMPTS: Record<string, string> = {
+  'sala': 'Dicas de design interno para sala de estar',
+  'sala-jantar': 'Dicas de design interno para sala de jantar',
+  'lareira': 'Dicas de design interno para lareira',
+  'area-gourmet': 'Dicas de design interno para área gourmet',
+  'quarto': 'Dicas de design interno para quarto',
+  'banheiro': 'Dicas de design interno para banheiro',
+  'escritorio': 'Dicas de design interno para escritório',
+  'cozinha': 'Dicas de design interno para cozinha',
+  'varanda': 'Dicas de design interno para varanda',
+  'area-servico': 'Dicas de design interno para área de serviço',
+  'piscina': 'Dicas de design interno para área de piscina',
+  'jardim': 'Jardim: dicas e inspirações para jardim',
+  'decoracao': 'Jardim: dicas de decoração para jardim',
+  'cuidados': 'Jardim: cuidados com a plantação',
+  'jardim-vertical': 'Jardim: jardim vertical',
+  'jardim-suculentas': 'Jardim: suculentas e cactos',
+  'jardim-ervas': 'Jardim: horta de ervas',
+  'jardim-flores': 'Jardim: flores ornamentais',
+  'jardim-paisagismo': 'Jardim: paisagismo',
+  'jardim-hidroponia': 'Jardim: hidroponia',
+  'jardim-sustentavel': 'Jardim: jardim sustentável',
+  'jardim-halloween': 'Jardim: decoração de halloween',
+  'colonial': 'Dicas de arquitetura em estilo colonial',
+  'industrial': 'Dicas de arquitetura em estilo industrial',
+  'moderno': 'Dicas de arquitetura em estilo moderno',
+  'neolitico': 'Dicas de arquitetura em estilo neolítico',
+  'europeu': 'Dicas de arquitetura em estilo europeu',
+  'nordico': 'Dicas de arquitetura em estilo nórdico',
+  'neo-classico': 'Dicas de arquitetura em estilo neo clássico',
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -62,7 +95,8 @@ serve(async (req) => {
     if (topics.length === 0) {
       throw new Error('Nenhum tema configurado no piloto automático');
     }
-    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+    const randomTopicId = topics[Math.floor(Math.random() * topics.length)];
+    const randomTopic = TOPIC_PROMPTS[randomTopicId] || randomTopicId;
 
     // 5. Create a log entry
     const { data: logEntry } = await supabase
