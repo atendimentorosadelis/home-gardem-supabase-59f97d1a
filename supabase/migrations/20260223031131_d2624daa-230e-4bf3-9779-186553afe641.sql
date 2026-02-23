@@ -1,0 +1,1 @@
+UPDATE site_settings SET value = '{"enabled": false}'::jsonb WHERE key = 'newsletter_auto_send';
