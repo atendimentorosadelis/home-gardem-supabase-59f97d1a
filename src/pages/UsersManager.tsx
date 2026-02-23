@@ -188,9 +188,8 @@ function UsersManagerContent() {
     return matchesSearch && matchesRole;
   });
 
-  // Non-admin users for the Add Admin modal
-  const nonAdminUsers = users.filter(user => {
-    if (user.role === 'admin') return false;
+  // Users for the Add Admin modal (show all, indicate who is already admin)
+  const addAdminUsersList = users.filter(user => {
     if (!addAdminSearch) return true;
     const search = addAdminSearch.toLowerCase();
     return (
@@ -1109,14 +1108,14 @@ function UsersManagerContent() {
                 />
               </div>
 
-              {/* List of non-admin users */}
+              {/* List of registered users */}
               <div className="max-h-[300px] overflow-y-auto space-y-2 border rounded-lg p-2">
-                {nonAdminUsers.length === 0 ? (
+                {addAdminUsersList.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    {addAdminSearch ? 'Nenhum usuário encontrado' : 'Todos os usuários já são administradores'}
+                    Nenhum usuário encontrado
                   </p>
                 ) : (
-                  nonAdminUsers.map((user) => (
+                  addAdminUsersList.map((user) => (
                     <div
                       key={user.id}
                       className="flex items-center justify-between gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors"
@@ -1137,17 +1136,23 @@ function UsersManagerContent() {
                           </p>
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setRoleAction({ user, action: 'promote' });
-                          setRoleDialogOpen(true);
-                          setAddAdminModalOpen(false);
-                        }}
-                      >
-                        <ShieldCheck className="h-4 w-4 mr-1" />
-                        Promover
-                      </Button>
+                      {user.role === 'admin' ? (
+                        <Badge variant="secondary" className="shrink-0">
+                          Já é Admin
+                        </Badge>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setRoleAction({ user, action: 'promote' });
+                            setRoleDialogOpen(true);
+                            setAddAdminModalOpen(false);
+                          }}
+                        >
+                          <ShieldCheck className="h-4 w-4 mr-1" />
+                          Promover
+                        </Button>
+                      )}
                     </div>
                   ))
                 )}
