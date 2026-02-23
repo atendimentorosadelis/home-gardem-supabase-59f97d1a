@@ -873,7 +873,7 @@ function SettingsContent() {
                     <li>Em Sites → ads.txt, copie o conteúdo gerado e cole no campo acima</li>
                     <li>Salve as configurações</li>
                   </ol>
-                  <p className="text-xs text-amber-600 mt-2">⚠️ Após salvar, atualize manualmente o arquivo <code className="bg-muted px-1 rounded">public/ads.txt</code> com o conteúdo configurado.</p>
+                  <p className="text-xs text-green-600 mt-2">✅ O arquivo <code className="bg-muted px-1 rounded">/ads.txt</code> é servido automaticamente com o conteúdo salvo aqui.</p>
                 </div>
               </CardContent>
             </Card>

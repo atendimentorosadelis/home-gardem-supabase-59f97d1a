@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.generate-sitemap]
 verify_jwt = false
+
+[functions.serve-ads-txt]
+verify_jwt = false
