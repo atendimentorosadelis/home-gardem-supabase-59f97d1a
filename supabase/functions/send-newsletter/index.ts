@@ -110,7 +110,7 @@ serve(async (req) => {
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: "HomeGarden <onboarding@resend.dev>",
+            from: "HomeGarden <newsletter@familiarde.com.br>",
             to: [subscriber.email],
             subject: `🌿 ${articleTitle}`,
             html: htmlContent,
