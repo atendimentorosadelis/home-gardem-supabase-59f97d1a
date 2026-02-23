@@ -45,6 +45,7 @@ import AutoPilot from "./pages/AutoPilot";
 import SuperAdminPanel from "./pages/SuperAdminPanel";
 import VideosManager from "./pages/VideosManager";
 import VideoAutoPilot from "./pages/VideoAutoPilot";
+import UploadLogo from "./pages/UploadLogo";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const App = () => (
               <Route path="/admin/videos" element={<AdminRoute><VideosManager /></AdminRoute>} />
               <Route path="/admin/video-autopilot" element={<AdminRoute><VideoAutoPilot /></AdminRoute>} />
 
+              <Route path="/upload-logo-temp" element={<UploadLogo />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
