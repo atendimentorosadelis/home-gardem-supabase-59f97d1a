@@ -804,6 +804,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_article_likes: {
+        Args: { p_article_id: string; p_ip_hash: string }
+        Returns: number
+      }
       is_current_user_admin: { Args: never; Returns: boolean }
       register_affiliate_click: {
         Args: {
