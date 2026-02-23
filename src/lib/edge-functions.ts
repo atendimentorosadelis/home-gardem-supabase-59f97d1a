@@ -84,4 +84,5 @@ export const EDGE_FUNCTIONS = {
   SERVE_ADS_TXT: 'serve-ads-txt',
   GENERATE_EMOTIONAL_CONCLUSION: 'generate-emotional-conclusion',
   ORCHESTRATE_ARTICLE_GENERATION: 'orchestrate-article-generation',
+  GENERATE_TITLE_SUGGESTIONS: 'generate-title-suggestions',
 } as const;

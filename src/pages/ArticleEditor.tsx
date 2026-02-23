@@ -25,6 +25,7 @@ import { useAffiliateClickStats } from '@/hooks/use-affiliate-clicks';
 import { useEmotionalConclusion } from '@/hooks/use-emotional-conclusion';
 import { resizeImage, getImageDimensions } from '@/utils/imageUtils';
 import { useSendNewsletter } from '@/hooks/use-send-newsletter';
+import { TitleExcerptSuggestionButton } from '@/components/dashboard/TitleExcerptSuggestions';
 
 const BANNER_DIMENSIONS = {
   desktop: { width: 1300, height: 250 },
@@ -1122,7 +1123,17 @@ export default function ArticleEditor() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Título</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="title">Título</Label>
+                    <TitleExcerptSuggestionButton
+                      type="title"
+                      currentTitle={title}
+                      currentExcerpt={excerpt}
+                      body={body}
+                      category={category}
+                      onSelectTitle={(newTitle) => handleTitleChange(newTitle)}
+                    />
+                  </div>
                   <Input id="title" value={title} onChange={(e) => handleTitleChange(e.target.value)} placeholder="Digite o título do artigo" />
                 </div>
                 <div className="space-y-2">
@@ -1131,7 +1142,28 @@ export default function ArticleEditor() {
                   <p className="text-xs text-muted-foreground">URL: /{category || 'categoria'}/{slug || 'slug'}</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="excerpt">Resumo</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="excerpt">Resumo</Label>
+                    <TitleExcerptSuggestionButton
+                      type="excerpt"
+                      currentTitle={title}
+                      currentExcerpt={excerpt}
+                      body={body}
+                      category={category}
+                      onSelectExcerpt={(newExcerpt) => setExcerpt(newExcerpt)}
+                    />
+                    <TitleExcerptSuggestionButton
+                      type="both"
+                      currentTitle={title}
+                      currentExcerpt={excerpt}
+                      body={body}
+                      category={category}
+                      onSelectBoth={(newTitle, newExcerpt) => {
+                        handleTitleChange(newTitle);
+                        setExcerpt(newExcerpt);
+                      }}
+                    />
+                  </div>
                   <Textarea id="excerpt" value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Breve descrição do artigo para listagens e SEO" rows={3} />
                 </div>
                 <div className="space-y-2">
