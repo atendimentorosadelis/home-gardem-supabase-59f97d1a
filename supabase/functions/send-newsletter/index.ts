@@ -103,7 +103,7 @@ serve(async (req) => {
         <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
           <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">
-            © ${new Date().getFullYear()} HomeGarden — Seu guia completo de jardinagem
+            © ${new Date().getFullYear()} HomeGarden — Seu guia de casa, jardim, decoração e arquitetura
           </p>
           <p style="margin:8px 0 0;">
             <a href="${unsubscribeUrl}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">Cancelar inscrição</a>
