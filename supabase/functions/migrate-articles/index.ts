@@ -186,6 +186,72 @@ serve(async (req) => {
       }
     }
 
+    // Migrate article views
+    let viewsMigrated = 0;
+    try {
+      const { data: newArticles } = await serviceSupabase
+        .from('content_articles')
+        .select('id, slug');
+      const { data: oldArticlesWithId } = await oldSupabase
+        .from('content_articles')
+        .select('id, slug');
+
+      if (newArticles && oldArticlesWithId) {
+        const oldIdToSlug = new Map(oldArticlesWithId.map(a => [a.id, a.slug]));
+        const slugToNewId = new Map(newArticles.map(a => [a.slug, a.id]));
+
+        // Fetch views in batches (old DB may have many)
+        let offset = 0;
+        const batchSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const { data: oldViews, error: viewsError } = await oldSupabase
+            .from('article_views')
+            .select('*')
+            .range(offset, offset + batchSize - 1)
+            .order('viewed_at', { ascending: true });
+
+          if (viewsError) {
+            console.error('Error fetching old views:', viewsError.message);
+            break;
+          }
+
+          if (!oldViews || oldViews.length === 0) {
+            hasMore = false;
+            break;
+          }
+
+          const viewsToInsert = [];
+          for (const view of oldViews) {
+            const slug = oldIdToSlug.get(view.article_id);
+            const newId = slug ? slugToNewId.get(slug) : null;
+            if (newId) {
+              const { id, article_id, ...rest } = view;
+              viewsToInsert.push({ ...rest, article_id: newId });
+            }
+          }
+
+          if (viewsToInsert.length > 0) {
+            const { error: insertError } = await serviceSupabase
+              .from('article_views')
+              .insert(viewsToInsert);
+            if (!insertError) {
+              viewsMigrated += viewsToInsert.length;
+            } else {
+              console.error('Error inserting views batch:', insertError.message);
+            }
+          }
+
+          offset += batchSize;
+          if (oldViews.length < batchSize) hasMore = false;
+        }
+      }
+      console.log(`Migrated ${viewsMigrated} article views`);
+    } catch (viewErr) {
+      console.error('Views migration error (non-fatal):', viewErr);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -194,6 +260,7 @@ serve(async (req) => {
         skipped,
         conclusionsMigrated,
         videosMigrated,
+        viewsMigrated,
         errors: errors.length > 0 ? errors : undefined,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
