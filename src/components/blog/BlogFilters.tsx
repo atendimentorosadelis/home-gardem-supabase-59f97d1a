@@ -1,22 +1,16 @@
-import { Search, X, Palette, Home, Leaf, Building2, Trees, Hammer, Recycle, Sofa, TrendingUp, Lightbulb, CalendarHeart, LayoutGrid, Clock, Heart, SortAsc, SortDesc, Armchair, UtensilsCrossed, Bed, Bath, Laptop, ChefHat, Waves, TreeDeciduous, Flower2, Mountain, Fence, Sprout, Castle, Landmark, Factory, HomeIcon, Boxes, PaintBucket, Sparkles, Wrench, PackageOpen, Sun, Zap, Moon, Ghost, Gift, PartyPopper, TreePine, Egg, HeartHandshake } from "lucide-react";
+import { Search, X, LayoutGrid, Home, Leaf, Building2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Category {
-  name: string;
-  slug: string;
-}
+import { ALL_SUB_NICHES } from "@/data/blog-categories";
 
 export type SortOption = "recent" | "popular" | "az" | "za";
 
@@ -25,165 +19,41 @@ interface BlogFiltersProps {
   onSearchChange: (value: string) => void;
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  categories: Category[];
-  isLoadingCategories?: boolean;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   onSubNicheClick?: (niche: string) => void;
 }
 
-// Category icons mapping
-const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+const parentCategoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   'all': LayoutGrid,
-  // Design Interno
-  'sala': Armchair,
-  'sala-de-jantar': UtensilsCrossed,
-  'lareira': Home,
-  'area-gourmet': ChefHat,
-  'quarto': Bed,
-  'banheiro': Bath,
-  'escritorio': Laptop,
-  'cozinha': UtensilsCrossed,
-  'varanda': Sun,
-  'area-de-servico': Wrench,
-  'piscina': Waves,
-  // Jardim
+  'design-interno': Home,
   'jardim': Leaf,
-  'decoracao-jardim': Palette,
-  'cuidados-plantacao': Sprout,
-  'jardim-vertical': Fence,
-  'suculentas-cactos': Sprout,
-  'horta-de-ervas': Leaf,
-  'flores-ornamentais': Flower2,
-  'paisagismo': Mountain,
-  'hidroponia': Waves,
-  'jardim-sustentavel': Recycle,
-  'decoracao-halloween': Ghost,
-  // Arquitetura
-  'colonial': Castle,
-  'industrial': Factory,
-  'moderno': Sparkles,
-  'neolitico': Landmark,
-  'europeu': Building2,
-  'nordico': HomeIcon,
-  'neo-classico': Landmark,
+  'arquitetura': Building2,
 };
-
-// All sub-niches/themes as a flat list
-interface SubNiche {
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-const allSubNiches: SubNiche[] = [
-  // Design Interno - Áreas Sociais
-  { name: 'Sala de Estar', icon: Armchair },
-  { name: 'Sala de Jantar', icon: UtensilsCrossed },
-  { name: 'Lareira', icon: Home },
-  { name: 'Área Gourmet', icon: ChefHat },
-  { name: 'Varanda', icon: Sun },
-  // Design Interno - Áreas Íntimas
-  { name: 'Quarto', icon: Bed },
-  { name: 'Banheiro', icon: Bath },
-  { name: 'Closet', icon: PackageOpen },
-  { name: 'Escritório', icon: Laptop },
-  { name: 'Home Office', icon: Laptop },
-  // Design Interno - Áreas de Serviço
-  { name: 'Cozinha', icon: UtensilsCrossed },
-  { name: 'Área de Serviço', icon: Wrench },
-  { name: 'Lavanderia', icon: Waves },
-  { name: 'Piscina', icon: Waves },
-  // Jardim
-  { name: 'Jardim', icon: Leaf },
-  { name: 'Jardim Vertical', icon: Fence },
-  { name: 'Suculentas', icon: Sprout },
-  { name: 'Paisagismo', icon: Mountain },
-  { name: 'Horta Urbana', icon: Leaf },
-  { name: 'Flores', icon: Flower2 },
-  { name: 'Gramados', icon: TreeDeciduous },
-  { name: 'Dicas de Decoração Jardim', icon: Palette },
-  { name: 'Cuidados com Plantação', icon: Sprout },
-  { name: 'Halloween', icon: Ghost },
-  // Plantas de Interior
-  { name: 'Folhagens', icon: Leaf },
-  { name: 'Orquídeas', icon: Flower2 },
-  { name: 'Cactos', icon: Sprout },
-  { name: 'Palmeiras', icon: Trees },
-  { name: 'Plantas Pendentes', icon: TreeDeciduous },
-  // Arquitetura
-  { name: 'Arquitetura Moderna', icon: HomeIcon },
-  { name: 'Arquitetura Colonial', icon: Castle },
-  { name: 'Arquitetura Contemporânea', icon: Building2 },
-  { name: 'Arquitetura Sustentável', icon: Recycle },
-  { name: 'Arquitetura Minimalista', icon: Boxes },
-  // Decoração - Estilos
-  { name: 'Minimalista', icon: Boxes },
-  { name: 'Rústico', icon: TreeDeciduous },
-  { name: 'Moderno', icon: Sparkles },
-  { name: 'Clássico', icon: Landmark },
-  { name: 'Boho', icon: Flower2 },
-  { name: 'Industrial', icon: Factory },
-  // DIY e Projetos
-  { name: 'Móveis DIY', icon: Sofa },
-  { name: 'Decoração DIY', icon: PaintBucket },
-  { name: 'Reforma', icon: Wrench },
-  { name: 'Organização', icon: Boxes },
-  { name: 'Reciclagem', icon: Recycle },
-  // Sustentabilidade
-  { name: 'Energia Solar', icon: Sun },
-  { name: 'Compostagem', icon: Sprout },
-  { name: 'Reuso de Água', icon: Waves },
-  { name: 'Materiais Eco', icon: Leaf },
-  // Tendências
-  { name: 'Tendências 2026', icon: Sparkles },
-  { name: 'Cores do Ano', icon: Palette },
-  { name: 'Materiais em Alta', icon: Boxes },
-  { name: 'Estilos Emergentes', icon: TrendingUp },
-  // Iluminação
-  { name: 'Iluminação Natural', icon: Sun },
-  { name: 'Iluminação LED', icon: Lightbulb },
-  { name: 'Iluminação Decorativa', icon: Sparkles },
-  { name: 'Iluminação Funcional', icon: Zap },
-  { name: 'Automação', icon: Moon },
-  // Datas Comemorativas
-  { name: 'Natal', icon: TreePine },
-  { name: 'Páscoa', icon: Egg },
-  { name: 'Halloween', icon: Ghost },
-  { name: 'Dia das Mães', icon: HeartHandshake },
-  { name: 'Festas', icon: PartyPopper },
-];
 
 export function BlogFilters({
   search,
   onSearchChange,
   selectedCategory,
   onCategoryChange,
-  categories,
-  isLoadingCategories,
   sortBy,
   onSortChange,
   onSubNicheClick,
 }: BlogFiltersProps) {
   const { t } = useTranslation();
 
-  // Get translated category name
-  const getCategoryName = (slug: string): string => {
-    if (slug === "all") return t("blog.allCategories");
-    const cat = categories.find(c => c.slug === slug);
-    if (cat) return cat.name;
-    const key = `categories.${slug}`;
-    const translated = t(key);
-    return translated !== key ? translated : slug;
+  const parentLabels: Record<string, string> = {
+    'all': t("blog.allCategories", "Todos"),
+    'design-interno': "Design Interno",
+    'jardim': "Jardim",
+    'arquitetura': "Arquitetura",
   };
 
-  // Get icon for category
-  const getCategoryIcon = (slug: string) => {
-    return categoryIcons[slug] || LayoutGrid;
-  };
+  const parentKeys = ['all', 'design-interno', 'jardim', 'arquitetura'];
 
   return (
     <div className="space-y-8">
-      {/* Search Bar & Sort */}
+      {/* Search Bar & Themes Dropdown */}
       <div className="flex flex-col sm:flex-row gap-4 max-w-3xl mx-auto">
         <div className="relative flex-1 group">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
@@ -230,7 +100,7 @@ export function BlogFilters({
                   <span className="font-medium">{t("blog.allThemes", "Todos os Temas")}</span>
                 </div>
               </SelectItem>
-              {allSubNiches.map((niche) => {
+              {ALL_SUB_NICHES.map((niche) => {
                 const NicheIcon = niche.icon;
                 return (
                   <SelectItem key={niche.name} value={niche.name} className="rounded-xl">
@@ -248,48 +118,33 @@ export function BlogFilters({
         </Select>
       </div>
 
-      {/* Category Filters - Horizontal Pills */}
-      <div className="relative -mx-6 px-6 md:mx-0 md:px-0">
-        {/* Gradient fade left */}
-        <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none md:hidden z-10" />
-
-        <div className="flex md:flex-wrap md:justify-center gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide snap-x snap-mandatory">
-          {isLoadingCategories ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-12 w-32 rounded-full flex-shrink-0" />
-            ))
-          ) : (
-            categories.map((category) => {
-              const Icon = getCategoryIcon(category.slug);
-              const isSelected = selectedCategory === category.slug;
-              return (
-                <button
-                  key={category.slug}
-                  onClick={() => onCategoryChange(category.slug)}
-                  className={cn(
-                    "relative inline-flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-full transition-all duration-300 flex-shrink-0 snap-start group overflow-hidden",
-                    isSelected
-                      ? "bg-primary text-primary-foreground shadow-xl shadow-primary/30"
-                      : "bg-card border-2 border-border/50 text-muted-foreground hover:border-primary/50 hover:text-foreground hover:shadow-lg"
-                  )}
-                >
-                  {/* Hover glow effect */}
-                  {!isSelected && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  )}
-                  <Icon className={cn(
-                    "h-4 w-4 relative z-10 transition-transform group-hover:scale-110",
-                    isSelected && "drop-shadow-md"
-                  )} />
-                  <span className="whitespace-nowrap relative z-10">{getCategoryName(category.slug)}</span>
-                </button>
-              );
-            })
-          )}
-        </div>
-
-        {/* Gradient fade right */}
-        <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden z-10" />
+      {/* Parent Category Filters - Only 4 buttons */}
+      <div className="flex flex-wrap justify-center gap-3">
+        {parentKeys.map((key) => {
+          const Icon = parentCategoryIcons[key];
+          const isSelected = selectedCategory === key;
+          return (
+            <button
+              key={key}
+              onClick={() => onCategoryChange(key)}
+              className={cn(
+                "relative inline-flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-full transition-all duration-300 group overflow-hidden",
+                isSelected
+                  ? "bg-primary text-primary-foreground shadow-xl shadow-primary/30"
+                  : "bg-card border-2 border-border/50 text-muted-foreground hover:border-primary/50 hover:text-foreground hover:shadow-lg"
+              )}
+            >
+              {!isSelected && (
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              )}
+              <Icon className={cn(
+                "h-4 w-4 relative z-10 transition-transform group-hover:scale-110",
+                isSelected && "drop-shadow-md"
+              )} />
+              <span className="whitespace-nowrap relative z-10">{parentLabels[key]}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

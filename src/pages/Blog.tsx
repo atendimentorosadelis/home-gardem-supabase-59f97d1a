@@ -204,8 +204,6 @@ export default function Blog() {
               onSearchChange={setSearch}
               selectedCategory={selectedCategory}
               onCategoryChange={handleCategoryChange}
-              categories={categories}
-              isLoadingCategories={isLoadingCategories}
               sortBy={sortBy}
               onSortChange={setSortBy}
               onSubNicheClick={handleSubNicheClick}
