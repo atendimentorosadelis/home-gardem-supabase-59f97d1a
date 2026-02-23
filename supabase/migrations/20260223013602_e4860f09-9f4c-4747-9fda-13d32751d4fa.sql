@@ -1,0 +1,1 @@
+INSERT INTO public.newsletter_subscribers (email, is_active) VALUES ('wallistonluiz@gmail.com', true);
