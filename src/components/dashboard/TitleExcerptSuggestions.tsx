@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCw, Check, Sparkles } from 'lucide-react';
+import { Loader2, RefreshCw, Check, Sparkles, RefreshCcw } from 'lucide-react';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -98,7 +98,7 @@ export function TitleExcerptSuggestionButton({
         onClick={handleOpen}
         title={`Refazer ${label}`}
       >
-        <Sparkles className="h-4 w-4" />
+        <RefreshCcw className="h-4 w-4" />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
