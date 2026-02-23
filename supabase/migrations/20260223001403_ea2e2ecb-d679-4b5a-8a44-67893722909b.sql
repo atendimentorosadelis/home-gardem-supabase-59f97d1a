@@ -1,0 +1,1 @@
+ALTER TABLE public.auto_generation_config ADD COLUMN IF NOT EXISTS random_all_topics boolean DEFAULT false;

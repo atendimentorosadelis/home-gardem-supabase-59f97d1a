@@ -300,6 +300,7 @@ export type Database = {
           enabled: boolean | null
           id: string
           publish_immediately: boolean | null
+          random_all_topics: boolean | null
           topics: Json | null
           updated_at: string
           updated_by: string | null
@@ -309,6 +310,7 @@ export type Database = {
           enabled?: boolean | null
           id?: string
           publish_immediately?: boolean | null
+          random_all_topics?: boolean | null
           topics?: Json | null
           updated_at?: string
           updated_by?: string | null
@@ -318,6 +320,7 @@ export type Database = {
           enabled?: boolean | null
           id?: string
           publish_immediately?: boolean | null
+          random_all_topics?: boolean | null
           topics?: Json | null
           updated_at?: string
           updated_by?: string | null

@@ -325,27 +325,27 @@ function AutoPilotContent() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 pr-4">
                     <Label className="flex items-center gap-2">
-                      <Zap className={cn("h-4 w-4", config?.topics && config.topics.length > 1 ? "text-emerald-500" : "text-muted-foreground")} />
-                      Tema Aleatório
+                      <Zap className={cn("h-4 w-4", (config as any)?.random_all_topics ? "text-emerald-500" : "text-muted-foreground")} />
+                      Tema Aleatório Total
                     </Label>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Quando ativado, escolhe um tema aleatoriamente entre os selecionados a cada geração
+                      {(config as any)?.random_all_topics ? (
+                        <span className="text-emerald-600 dark:text-emerald-400">
+                          <strong>Ligado:</strong> Sorteia de <strong>todos os temas existentes</strong> automaticamente
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 dark:text-amber-400">
+                          <strong>Desligado:</strong> Usa apenas os temas selecionados acima
+                        </span>
+                      )}
                     </p>
                   </div>
                   <Switch
-                    checked={config?.topics ? config.topics.length > 1 : false}
-                    disabled={true}
-                    className="opacity-60"
+                    checked={(config as any)?.random_all_topics || false}
+                    onCheckedChange={(checked) => updateConfig({ random_all_topics: checked } as any)}
+                    disabled={isUpdating}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded-lg">
-                  💡 Selecione <strong>2 ou mais temas</strong> acima para ativar a escolha aleatória automaticamente.
-                  {config?.topics && config.topics.length > 1 && (
-                    <span className="text-emerald-600 dark:text-emerald-400 block mt-1">
-                      ✅ Aleatório ativo — {config.topics.length} temas selecionados
-                    </span>
-                  )}
-                </p>
 
                 <div className="flex items-center justify-between">
                   <div className="flex-1 pr-4">
