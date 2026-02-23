@@ -66,7 +66,6 @@ serve(async (req) => {
     }
 
     const siteUrl = "https://blank-canvas-maker-5273.lovable.app";
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
     const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
 
