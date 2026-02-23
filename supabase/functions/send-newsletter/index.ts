@@ -107,7 +107,7 @@ serve(async (req) => {
       console.error("[send-newsletter] Error creating history:", historyError);
     }
 
-    const siteUrl = "https://blank-canvas-maker-5273.lovable.app";
+    const siteUrl = "https://homegardenmanual.com";
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
     const trackOpenUrl = `${supabaseUrl}/functions/v1/track-newsletter-open`;
     const trackClickUrl = `${supabaseUrl}/functions/v1/track-newsletter-click`;
