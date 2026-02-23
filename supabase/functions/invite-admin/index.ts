@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
 
-    // Verify caller is admin
+    // Verify caller is admin (or service role bootstrap)
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Não autorizado' }), {
@@ -26,25 +26,34 @@ Deno.serve(async (req) => {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user: caller }, error: authError } = await supabaseAdmin.auth.getUser(token)
-    if (authError || !caller) {
-      return new Response(JSON.stringify({ error: 'Token inválido' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
+    
+    // Allow service role key as bootstrap mechanism (check both auth header and apikey)
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const apikeyHeader = req.headers.get('apikey') || ''
+    const isServiceRole = token === serviceRoleKey || apikeyHeader === serviceRoleKey
 
-    // Check if caller is admin
-    const { data: callerRole } = await supabaseAdmin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', caller.id)
-      .eq('role', 'admin')
-      .single()
+    
+    if (!isServiceRole) {
+      const { data: { user: caller }, error: authError } = await supabaseAdmin.auth.getUser(token)
+      if (authError || !caller) {
+        return new Response(JSON.stringify({ error: 'Token inválido' }), {
+          status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
 
-    if (!callerRole) {
-      return new Response(JSON.stringify({ error: 'Acesso negado' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
+      // Check if caller is admin
+      const { data: callerRole } = await supabaseAdmin
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', caller.id)
+        .eq('role', 'admin')
+        .single()
+
+      if (!callerRole) {
+        return new Response(JSON.stringify({ error: 'Acesso negado' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
     }
 
     const { email, username, password } = await req.json()
