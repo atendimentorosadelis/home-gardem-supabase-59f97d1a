@@ -2,10 +2,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-async function searchYouTube(query: string): Promise<{ videoId: string; title: string; url: string } | null> {
+async function searchYouTube(query: string, excludeVideoIds: string[] = []): Promise<{ videoId: string; title: string; url: string } | null> {
   try {
     const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%3D%3D`;
     
@@ -23,48 +23,66 @@ async function searchYouTube(query: string): Promise<{ videoId: string; title: s
 
     const html = await response.text();
     
-    // Extract ytInitialData JSON from the HTML
+    // Collect ALL video IDs from HTML
+    const allVideoIds: { videoId: string; title: string }[] = [];
+
+    // Try to extract from ytInitialData
     const dataMatch = html.match(/var ytInitialData = ({.*?});<\/script>/s);
-    if (!dataMatch) {
-      console.error('Could not find ytInitialData in YouTube response');
-      // Fallback: try to extract video IDs directly from HTML
-      const videoIdMatch = html.match(/\/watch\?v=([a-zA-Z0-9_-]{11})/);
-      if (videoIdMatch) {
-        const videoId = videoIdMatch[1];
-        // Get title via oEmbed (no API key needed)
-        const title = await getVideoTitle(videoId);
-        return {
-          videoId,
-          title: title || query,
-          url: `https://www.youtube.com/watch?v=${videoId}`,
-        };
+    if (dataMatch) {
+      try {
+        const data = JSON.parse(dataMatch[1]);
+        const contents = data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents;
+        if (contents) {
+          for (const section of contents) {
+            const items = section?.itemSectionRenderer?.contents;
+            if (!items) continue;
+            for (const item of items) {
+              const videoRenderer = item?.videoRenderer;
+              if (videoRenderer?.videoId) {
+                allVideoIds.push({
+                  videoId: videoRenderer.videoId,
+                  title: videoRenderer.title?.runs?.[0]?.text || query,
+                });
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing ytInitialData:', e);
       }
-      return null;
     }
 
-    const data = JSON.parse(dataMatch[1]);
-    
-    // Navigate the nested structure to find video results
-    const contents = data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents;
-    if (!contents) return null;
-
-    for (const section of contents) {
-      const items = section?.itemSectionRenderer?.contents;
-      if (!items) continue;
-
-      for (const item of items) {
-        const videoRenderer = item?.videoRenderer;
-        if (videoRenderer?.videoId) {
-          return {
-            videoId: videoRenderer.videoId,
-            title: videoRenderer.title?.runs?.[0]?.text || query,
-            url: `https://www.youtube.com/watch?v=${videoRenderer.videoId}`,
-          };
+    // Fallback: extract video IDs directly from HTML
+    if (allVideoIds.length === 0) {
+      const regex = /\/watch\?v=([a-zA-Z0-9_-]{11})/g;
+      const seen = new Set<string>();
+      let match;
+      while ((match = regex.exec(html)) !== null) {
+        if (!seen.has(match[1])) {
+          seen.add(match[1]);
+          allVideoIds.push({ videoId: match[1], title: '' });
         }
       }
     }
 
-    return null;
+    console.log(`Found ${allVideoIds.length} videos, excluding ${excludeVideoIds.length} IDs`);
+
+    // Filter out excluded video IDs
+    const filtered = allVideoIds.filter(v => !excludeVideoIds.includes(v.videoId));
+    
+    if (filtered.length === 0) {
+      // If all are excluded, return the first non-excluded from all
+      if (allVideoIds.length > 0) {
+        const pick = allVideoIds[0];
+        const title = pick.title || await getVideoTitle(pick.videoId) || query;
+        return { videoId: pick.videoId, title, url: `https://www.youtube.com/watch?v=${pick.videoId}` };
+      }
+      return null;
+    }
+
+    const pick = filtered[0];
+    const title = pick.title || await getVideoTitle(pick.videoId) || query;
+    return { videoId: pick.videoId, title, url: `https://www.youtube.com/watch?v=${pick.videoId}` };
   } catch (error) {
     console.error('Error searching YouTube:', error);
     return null;
@@ -118,25 +136,42 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Build search query from article info
-    const searchTerms = [article.title];
-    if (article.main_subject) searchTerms.push(article.main_subject);
-    const searchQuery = searchTerms.join(' ').substring(0, 100);
+    // Check if there's an existing video to exclude
+    const { data: existingVideo } = await supabase
+      .from('article_videos')
+      .select('youtube_video_id')
+      .eq('article_id', articleId)
+      .maybeSingle();
 
-    console.log(`Searching YouTube for: "${searchQuery}"`);
+    const excludeIds = existingVideo?.youtube_video_id ? [existingVideo.youtube_video_id] : [];
 
-    const result = await searchYouTube(searchQuery);
+    // Build search queries - try multiple variations to get different results
+    const searchVariations = [
+      article.title,
+      article.keywords ? `${article.title} ${article.keywords.split(',')[0]?.trim()}` : null,
+      article.main_subject ? `${article.main_subject} dicas` : null,
+      article.category ? `${article.title} ${article.category}` : null,
+    ].filter(Boolean) as string[];
+
+    console.log(`Searching YouTube for article: "${article.title}", excluding: [${excludeIds.join(', ')}]`);
+
+    let result = null;
+
+    for (const query of searchVariations) {
+      console.log(`Trying search: "${query.substring(0, 80)}"`);
+      result = await searchYouTube(query, excludeIds);
+      if (result) break;
+    }
 
     if (!result) {
-      return new Response(JSON.stringify({ success: false, error: 'No video found for this topic' }), {
+      return new Response(JSON.stringify({ success: false, error: 'Nenhum vídeo diferente encontrado para este tema' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log(`Found video: ${result.title} (${result.videoId})`);
+    console.log(`Found new video: ${result.title} (${result.videoId})`);
 
     if (saveToDb) {
-      // Upsert into article_videos
       const { error: upsertError } = await supabase
         .from('article_videos')
         .upsert({
