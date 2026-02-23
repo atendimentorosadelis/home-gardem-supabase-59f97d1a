@@ -325,6 +325,31 @@ function AutoPilotContent() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 pr-4">
                     <Label className="flex items-center gap-2">
+                      <Zap className={cn("h-4 w-4", config?.topics && config.topics.length > 1 ? "text-emerald-500" : "text-muted-foreground")} />
+                      Tema Aleatório
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Quando ativado, escolhe um tema aleatoriamente entre os selecionados a cada geração
+                    </p>
+                  </div>
+                  <Switch
+                    checked={config?.topics ? config.topics.length > 1 : false}
+                    disabled={true}
+                    className="opacity-60"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded-lg">
+                  💡 Selecione <strong>2 ou mais temas</strong> acima para ativar a escolha aleatória automaticamente.
+                  {config?.topics && config.topics.length > 1 && (
+                    <span className="text-emerald-600 dark:text-emerald-400 block mt-1">
+                      ✅ Aleatório ativo — {config.topics.length} temas selecionados
+                    </span>
+                  )}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 pr-4">
+                    <Label className="flex items-center gap-2">
                       {config?.publish_immediately ? (
                         <Send className="h-4 w-4 text-emerald-500" />
                       ) : (
