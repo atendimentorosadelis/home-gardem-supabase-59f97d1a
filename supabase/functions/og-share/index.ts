@@ -37,10 +37,13 @@ serve(async (req) => {
     const title = article?.title || 'Home & Garden Manual';
     const description = article?.excerpt || 'Dicas, tutoriais e guias completas para criar seu jardim perfeito.';
     
-    // Converter imagem para JPEG via wsrv.nl (proxy de imagem gratuito)
+    // Usar a URL direta da imagem do Supabase Storage
+    // Crawlers modernos (WhatsApp, Facebook, Twitter) suportam WebP
     let ogImage = fallbackImage;
+    let ogImageType = 'image/jpeg';
     if (article?.cover_image) {
-      ogImage = `https://wsrv.nl/?url=${encodeURIComponent(article.cover_image)}&w=1200&h=630&fit=cover&output=jpg&q=85`;
+      ogImage = article.cover_image;
+      ogImageType = article.cover_image.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
     }
     
     const articleCategory = article?.category_slug || category || '';
@@ -59,7 +62,7 @@ serve(async (req) => {
   <meta property="og:title" content="${escapeHtml(title)}" />
   <meta property="og:description" content="${escapeHtml(description)}" />
   <meta property="og:image" content="${escapeAttr(ogImage)}" />
-  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:type" content="${ogImageType}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="${escapeHtml(title)}" />
