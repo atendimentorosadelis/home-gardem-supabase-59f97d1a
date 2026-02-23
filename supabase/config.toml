@@ -59,3 +59,6 @@ verify_jwt = false
 
 [functions.serve-ads-txt]
 verify_jwt = false
+
+[functions.notify-article-ready]
+verify_jwt = false
