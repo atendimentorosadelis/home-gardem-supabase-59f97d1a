@@ -6,17 +6,38 @@ const corsHeaders = {
 };
 
 const categories = [
-  { name: 'Decoração', slug: 'decoracao' },
-  { name: 'Design Interno', slug: 'design-interno' },
+  // Design Interno
+  { name: 'Sala', slug: 'sala' },
+  { name: 'Sala de Jantar', slug: 'sala-de-jantar' },
+  { name: 'Lareira', slug: 'lareira' },
+  { name: 'Área Gourmet', slug: 'area-gourmet' },
+  { name: 'Quarto', slug: 'quarto' },
+  { name: 'Banheiro', slug: 'banheiro' },
+  { name: 'Escritório', slug: 'escritorio' },
+  { name: 'Cozinha', slug: 'cozinha' },
+  { name: 'Varanda', slug: 'varanda' },
+  { name: 'Área de Serviço', slug: 'area-de-servico' },
+  { name: 'Piscina', slug: 'piscina' },
+  // Jardim
   { name: 'Jardim', slug: 'jardim' },
-  { name: 'Arquitetura', slug: 'arquitetura' },
-  { name: 'Plantas de Interior', slug: 'plantas-interior' },
-  { name: 'DIY e Projetos', slug: 'diy-projetos' },
-  { name: 'Sustentabilidade', slug: 'sustentabilidade' },
-  { name: 'Móveis e Organização', slug: 'moveis-organizacao' },
-  { name: 'Tendências', slug: 'tendencias' },
-  { name: 'Iluminação', slug: 'iluminacao' },
-  { name: 'Datas Comemorativas', slug: 'datas-comemorativas' },
+  { name: 'Decoração de Jardim', slug: 'decoracao-jardim' },
+  { name: 'Cuidados com Plantação', slug: 'cuidados-plantacao' },
+  { name: 'Jardim Vertical', slug: 'jardim-vertical' },
+  { name: 'Suculentas e Cactos', slug: 'suculentas-cactos' },
+  { name: 'Horta de Ervas', slug: 'horta-de-ervas' },
+  { name: 'Flores Ornamentais', slug: 'flores-ornamentais' },
+  { name: 'Paisagismo', slug: 'paisagismo' },
+  { name: 'Hidroponia', slug: 'hidroponia' },
+  { name: 'Jardim Sustentável', slug: 'jardim-sustentavel' },
+  { name: 'Decoração de Halloween', slug: 'decoracao-halloween' },
+  // Arquitetura
+  { name: 'Colonial', slug: 'colonial' },
+  { name: 'Industrial', slug: 'industrial' },
+  { name: 'Moderno', slug: 'moderno' },
+  { name: 'Neolítico', slug: 'neolitico' },
+  { name: 'Europeu', slug: 'europeu' },
+  { name: 'Nórdico', slug: 'nordico' },
+  { name: 'Neo Clássico', slug: 'neo-classico' },
 ];
 
 function generateSlug(title: string): string {
@@ -437,7 +458,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 {
   "title": "Título acolhedor e interessante (máximo 70 caracteres)",
   "excerpt": "Resumo variado e pessoal",
-  "category": "DEVE ser EXATAMENTE uma destas: Decoração, Design Interno, Jardim, Arquitetura, Plantas de Interior, DIY e Projetos, Sustentabilidade, Móveis e Organização, Tendências, Iluminação, Datas Comemorativas",
+  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
@@ -689,26 +710,64 @@ Retorne APENAS JSON válido (sem markdown code blocks):
     if (!categoryMatch) {
       // Infer from topic
       const topicLower = topic.toLowerCase();
-      if (/jardim|flores|plant|horta|suculenta|cacto|paisagismo|hidroponia|ervas/i.test(topicLower)) {
+      if (/sala\s*de\s*jantar/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'sala-de-jantar');
+      } else if (/\bsala\b/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'sala');
+      } else if (/lareira/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'lareira');
+      } else if (/gourmet|churrasq/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'area-gourmet');
+      } else if (/quarto|dormir/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'quarto');
+      } else if (/banheiro/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'banheiro');
+      } else if (/escrit[oó]rio/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'escritorio');
+      } else if (/cozinha/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'cozinha');
+      } else if (/varanda/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'varanda');
+      } else if (/[aá]rea\s*de\s*servi[cç]o/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'area-de-servico');
+      } else if (/piscina/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'piscina');
+      } else if (/halloween/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'decoracao-halloween');
+      } else if (/hidroponia/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'hidroponia');
+      } else if (/paisagismo/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'paisagismo');
+      } else if (/suculenta|cacto/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'suculentas-cactos');
+      } else if (/ervas|horta/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'horta-de-ervas');
+      } else if (/flores|ornament/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'flores-ornamentais');
+      } else if (/jardim\s*vertical/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'jardim-vertical');
+      } else if (/jardim\s*sustent/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'jardim-sustentavel');
+      } else if (/cuidado.*planta|plantação/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'cuidados-plantacao');
+      } else if (/decoração.*jardim|jardim.*decoração/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'decoracao-jardim');
+      } else if (/jardim/i.test(topicLower)) {
         categoryMatch = categories.find(c => c.slug === 'jardim');
-      } else if (/plantas?\s*(de\s*)?interior|indoor/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'plantas-interior');
-      } else if (/arquitetura|colonial|industrial|moderno|neo|europeu|nord/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'arquitetura');
-      } else if (/design\s*interno|sala|quarto|banheiro|cozinha|escritorio|varanda|lareira|gourmet/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'design-interno');
-      } else if (/iluminação|luminária|luz|led/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'iluminacao');
-      } else if (/sustentáv|ecológic|recicl/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'sustentabilidade');
-      } else if (/diy|faça\s*você|projeto/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'diy-projetos');
-      } else if (/móve|organiz|estante|armário/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'moveis-organizacao');
-      } else if (/tendência|trend/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'tendencias');
-      } else if (/halloween|natal|páscoa|comemorativ/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'datas-comemorativas');
+      } else if (/colonial/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'colonial');
+      } else if (/industrial/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'industrial');
+      } else if (/moderno/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'moderno');
+      } else if (/neol[ií]t/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'neolitico');
+      } else if (/europeu/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'europeu');
+      } else if (/n[oó]rdico/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'nordico');
+      } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
+        categoryMatch = categories.find(c => c.slug === 'neo-classico');
       }
       
       if (categoryMatch) {
@@ -716,8 +775,9 @@ Retorne APENAS JSON válido (sem markdown code blocks):
       }
     }
     
-    const categorySlug = categoryMatch?.slug || 'decoracao';
-    const categoryName = categoryMatch?.name || 'Decoração';
+    // Fallback to Jardim instead of Decoração
+    const categorySlug = categoryMatch?.slug || 'jardim';
+    const categoryName = categoryMatch?.name || 'Jardim';
 
     const slug = generateSlug(validatedTitle);
     const readTime = calculateReadTime(articleData.content);
