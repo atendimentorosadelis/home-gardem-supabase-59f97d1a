@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Allow anon upload for site assets" ON storage.objects;
