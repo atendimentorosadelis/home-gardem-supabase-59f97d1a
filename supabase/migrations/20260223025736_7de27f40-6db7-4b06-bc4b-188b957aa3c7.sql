@@ -1,0 +1,1 @@
+INSERT INTO site_settings (key, value) VALUES ('newsletter_auto_send', '{"enabled": true}'::jsonb) ON CONFLICT (key) DO UPDATE SET value = '{"enabled": true}'::jsonb;
