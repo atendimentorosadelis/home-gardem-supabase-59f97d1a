@@ -58,6 +58,7 @@ const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
   { name: 'Jardim Sustentável', slug: 'jardim-sustentavel', icon: Recycle },
   { name: 'Decoração de Halloween', slug: 'decoracao-halloween', icon: PartyPopper },
   // Arquitetura
+  { name: 'Arquitetura', slug: 'arquitetura', icon: Building2 },
   { name: 'Colonial', slug: 'colonial', icon: Building2 },
   { name: 'Industrial', slug: 'industrial', icon: Building2 },
   { name: 'Moderno', slug: 'moderno', icon: Building2 },
@@ -66,6 +67,7 @@ const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
   { name: 'Nórdico', slug: 'nordico', icon: Building2 },
   { name: 'Neo Clássico', slug: 'neo-classico', icon: Building2 },
   // Genéricas
+  { name: 'Design Interno', slug: 'design-interno', icon: Home },
   { name: 'Decoração', slug: 'decoracao', icon: Palette },
   { name: 'Plantas de Interior', slug: 'plantas-interior', icon: Leaf },
   { name: 'DIY e Projetos', slug: 'diy-projetos', icon: Hammer },
