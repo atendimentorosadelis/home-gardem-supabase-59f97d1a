@@ -694,88 +694,92 @@ Retorne APENAS JSON válido (sem markdown code blocks):
     const validatedTitle = validateAndSanitizeTitle(articleData.title, topic);
     const validatedExcerpt = validateAndSanitizeExcerpt(articleData.excerpt, validatedTitle, topic);
     
-    // Smart category matching: exact match first, then partial, then topic-based inference
-    let categoryMatch = categories.find(c => 
-      c.name.toLowerCase() === articleData.category?.toLowerCase()
-    );
+    // PRIORITY 1: Infer category from the TOPIC (most reliable - user chose it)
+    let categoryMatch: typeof categories[0] | undefined = undefined;
+    const topicLower = topic.toLowerCase();
     
+    // Specific topic patterns - checked FIRST for accuracy
+    if (/sala\s*de\s*jantar/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'sala-de-jantar');
+    } else if (/\bsala\b/i.test(topicLower) && !/jantar/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'sala');
+    } else if (/lareira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'lareira');
+    } else if (/gourmet|churrasq/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'area-gourmet');
+    } else if (/quarto|dormir/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'quarto');
+    } else if (/banheiro/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'banheiro');
+    } else if (/escrit[oó]rio/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'escritorio');
+    } else if (/cozinha/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'cozinha');
+    } else if (/varanda/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'varanda');
+    } else if (/[aá]rea\s*de\s*servi[cç]o/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'area-de-servico');
+    } else if (/piscina/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'piscina');
+    } else if (/halloween/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'decoracao-halloween');
+    } else if (/hidroponia/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'hidroponia');
+    } else if (/paisagismo/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'paisagismo');
+    } else if (/suculenta|cacto/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'suculentas-cactos');
+    } else if (/ervas|horta/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'horta-de-ervas');
+    } else if (/flores|ornament/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'flores-ornamentais');
+    } else if (/jardim\s*vertical/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'jardim-vertical');
+    } else if (/jardim\s*sustent/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'jardim-sustentavel');
+    } else if (/cuidado.*planta|planta[çc][ãa]o/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'cuidados-plantacao');
+    } else if (/decora[çc][ãa]o.*jardim|jardim.*decora[çc][ãa]o/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'decoracao-jardim');
+    } else if (/neol[ií]t/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'neolitico');
+    } else if (/colonial/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'colonial');
+    } else if (/industrial/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'industrial');
+    } else if (/moderno/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'moderno');
+    } else if (/europeu/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'europeu');
+    } else if (/n[oó]rdico/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'nordico');
+    } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'neo-classico');
+    } else if (/jardim/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'jardim');
+    }
+
+    if (categoryMatch) {
+      console.log(`[Category] Matched from topic "${topic}": ${categoryMatch.name} (${categoryMatch.slug})`);
+    }
+
+    // PRIORITY 2: If topic didn't match, try AI-returned category
     if (!categoryMatch && articleData.category) {
-      // Try partial match
-      const aiCat = articleData.category.toLowerCase();
       categoryMatch = categories.find(c => 
-        aiCat.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(aiCat)
+        c.name.toLowerCase() === articleData.category.toLowerCase()
       );
-    }
-    
-    if (!categoryMatch) {
-      // Infer from topic
-      const topicLower = topic.toLowerCase();
-      if (/sala\s*de\s*jantar/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'sala-de-jantar');
-      } else if (/\bsala\b/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'sala');
-      } else if (/lareira/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'lareira');
-      } else if (/gourmet|churrasq/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'area-gourmet');
-      } else if (/quarto|dormir/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'quarto');
-      } else if (/banheiro/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'banheiro');
-      } else if (/escrit[oó]rio/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'escritorio');
-      } else if (/cozinha/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'cozinha');
-      } else if (/varanda/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'varanda');
-      } else if (/[aá]rea\s*de\s*servi[cç]o/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'area-de-servico');
-      } else if (/piscina/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'piscina');
-      } else if (/halloween/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'decoracao-halloween');
-      } else if (/hidroponia/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'hidroponia');
-      } else if (/paisagismo/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'paisagismo');
-      } else if (/suculenta|cacto/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'suculentas-cactos');
-      } else if (/ervas|horta/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'horta-de-ervas');
-      } else if (/flores|ornament/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'flores-ornamentais');
-      } else if (/jardim\s*vertical/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'jardim-vertical');
-      } else if (/jardim\s*sustent/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'jardim-sustentavel');
-      } else if (/cuidado.*planta|plantação/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'cuidados-plantacao');
-      } else if (/decoração.*jardim|jardim.*decoração/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'decoracao-jardim');
-      } else if (/jardim/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'jardim');
-      } else if (/colonial/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'colonial');
-      } else if (/industrial/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'industrial');
-      } else if (/moderno/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'moderno');
-      } else if (/neol[ií]t/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'neolitico');
-      } else if (/europeu/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'europeu');
-      } else if (/n[oó]rdico/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'nordico');
-      } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
-        categoryMatch = categories.find(c => c.slug === 'neo-classico');
+      if (!categoryMatch) {
+        const aiCat = articleData.category.toLowerCase();
+        categoryMatch = categories.find(c => 
+          aiCat.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(aiCat)
+        );
       }
-      
       if (categoryMatch) {
-        console.log(`[Category] Inferred from topic "${topic}": ${categoryMatch.name}`);
+        console.log(`[Category] Matched from AI response: ${categoryMatch.name} (${categoryMatch.slug})`);
       }
     }
-    
-    // Fallback to Jardim instead of Decoração
+
+    // Fallback to Jardim
     const categorySlug = categoryMatch?.slug || 'jardim';
     const categoryName = categoryMatch?.name || 'Jardim';
 
