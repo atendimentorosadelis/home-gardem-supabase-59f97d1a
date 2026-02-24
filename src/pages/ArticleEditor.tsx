@@ -1306,23 +1306,9 @@ export default function ArticleEditor() {
             <Card className="border-border/50">
               <CardHeader><CardTitle>Categoria</CardTitle></CardHeader>
               <CardContent>
-                <Select value={category} onValueChange={setCategory}>
+                <Select value={category || undefined} onValueChange={setCategory}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria">
-                      {category && (() => {
-                        const selectedCat = CATEGORIES.find(c => c.slug === category);
-                        if (selectedCat) {
-                          const Icon = selectedCat.icon;
-                          return (
-                            <span className="flex items-center gap-2">
-                              <Icon className="h-4 w-4 text-primary" />
-                              {selectedCat.name}
-                            </span>
-                          );
-                        }
-                        return null;
-                      })()}
-                    </SelectValue>
+                    <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
                     {CATEGORIES.map((cat) => {
