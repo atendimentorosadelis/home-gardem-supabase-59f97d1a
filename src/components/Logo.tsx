@@ -27,7 +27,7 @@ export function Logo({ className = "" }: LogoProps) {
 
   return (
     <Link to="/" className={`flex items-center group ${className}`} onClick={handleClick}>
-      <img src={logoSrc} alt="Home Garden" width={200} height={80} className="h-20 w-auto" />
+      <img src={logoSrc} alt="Home Garden" width={200} height={80} loading="eager" decoding="async" fetchPriority="low" className="h-20 w-auto" />
     </Link>
   );
 }
