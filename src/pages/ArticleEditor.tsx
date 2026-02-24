@@ -33,10 +33,40 @@ const BANNER_DIMENSIONS = {
 };
 
 const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
-  { name: 'Decoração', slug: 'decoracao', icon: Palette },
-  { name: 'Design Interno', slug: 'design-interno', icon: Home },
+  // Design Interno
+  { name: 'Sala', slug: 'sala', icon: Sofa },
+  { name: 'Sala de Jantar', slug: 'sala-de-jantar', icon: Home },
+  { name: 'Lareira', slug: 'lareira', icon: Home },
+  { name: 'Área Gourmet', slug: 'area-gourmet', icon: Home },
+  { name: 'Quarto', slug: 'quarto', icon: Home },
+  { name: 'Banheiro', slug: 'banheiro', icon: Home },
+  { name: 'Escritório', slug: 'escritorio', icon: Home },
+  { name: 'Cozinha', slug: 'cozinha', icon: Home },
+  { name: 'Varanda', slug: 'varanda', icon: Home },
+  { name: 'Área de Serviço', slug: 'area-de-servico', icon: Home },
+  { name: 'Piscina', slug: 'piscina', icon: Home },
+  // Jardim
   { name: 'Jardim', slug: 'jardim', icon: Flower2 },
-  { name: 'Arquitetura', slug: 'arquitetura', icon: Building2 },
+  { name: 'Decoração de Jardim', slug: 'decoracao-jardim', icon: Flower2 },
+  { name: 'Cuidados com Plantação', slug: 'cuidados-plantacao', icon: Leaf },
+  { name: 'Jardim Vertical', slug: 'jardim-vertical', icon: Leaf },
+  { name: 'Suculentas e Cactos', slug: 'suculentas-cactos', icon: Leaf },
+  { name: 'Horta de Ervas', slug: 'horta-de-ervas', icon: Leaf },
+  { name: 'Flores Ornamentais', slug: 'flores-ornamentais', icon: Flower2 },
+  { name: 'Paisagismo', slug: 'paisagismo', icon: Flower2 },
+  { name: 'Hidroponia', slug: 'hidroponia', icon: Leaf },
+  { name: 'Jardim Sustentável', slug: 'jardim-sustentavel', icon: Recycle },
+  { name: 'Decoração de Halloween', slug: 'decoracao-halloween', icon: PartyPopper },
+  // Arquitetura
+  { name: 'Colonial', slug: 'colonial', icon: Building2 },
+  { name: 'Industrial', slug: 'industrial', icon: Building2 },
+  { name: 'Moderno', slug: 'moderno', icon: Building2 },
+  { name: 'Neolítico', slug: 'neolitico', icon: Building2 },
+  { name: 'Europeu', slug: 'europeu', icon: Building2 },
+  { name: 'Nórdico', slug: 'nordico', icon: Building2 },
+  { name: 'Neo Clássico', slug: 'neo-classico', icon: Building2 },
+  // Genéricas
+  { name: 'Decoração', slug: 'decoracao', icon: Palette },
   { name: 'Plantas de Interior', slug: 'plantas-interior', icon: Leaf },
   { name: 'DIY e Projetos', slug: 'diy-projetos', icon: Hammer },
   { name: 'Sustentabilidade', slug: 'sustentabilidade', icon: Recycle },
