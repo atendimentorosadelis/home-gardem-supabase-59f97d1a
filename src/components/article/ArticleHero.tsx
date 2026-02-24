@@ -24,6 +24,8 @@ export function ArticleHero({ image, title }: ArticleHeroProps) {
         <img
           src={image}
           alt={title}
+          width={1200}
+          height={675}
           className="w-full h-full object-cover scale-110"
         />
       </div>

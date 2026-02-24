@@ -40,7 +40,10 @@ export function Footer() {
               <img
                 src={logoSrc}
                 alt="HomeGarden"
-                className={`h-20 w-auto transition-opacity duration-300 ${showLogo ? 'opacity-100' : 'opacity-0'}`}
+                width={200}
+                height={80}
+                loading="lazy"
+                className={`h-20 w-auto ${showLogo ? 'opacity-100' : 'opacity-0'}`}
               />
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-md">
