@@ -7,6 +7,8 @@ export function GoogleAnalytics() {
   const [gaId, setGaId] = useState<string>(FALLBACK_GA_ID);
 
   useEffect(() => {
+    // Defer GA fetch to after page is interactive
+    const id = requestIdleCallback?.(() => fetchGaId()) ?? setTimeout(fetchGaId, 3000);
     async function fetchGaId() {
       try {
         const { data, error } = await (supabase as any)
@@ -25,7 +27,7 @@ export function GoogleAnalytics() {
         // Use fallback
       }
     }
-    fetchGaId();
+    return () => { if (typeof id === 'number') clearTimeout(id); };
   }, []);
 
   useEffect(() => {
