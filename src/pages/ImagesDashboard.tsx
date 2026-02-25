@@ -489,10 +489,9 @@ function ImagesDashboardContent() {
       const { data, error } = await invokeEdgeFunction('generate-article-image', {
         articleId: image.article_id,
         title: image.article_title,
-        imageType: image.image_type,
+        type: image.image_type,
         imageIndex: image.image_index,
         regenerate: true,
-        // Passar contexto visual para consistência
         mainSubject: articleData?.main_subject || '',
         visualContext: articleData?.visual_context || '',
         category: articleData?.category || 'decoracao',

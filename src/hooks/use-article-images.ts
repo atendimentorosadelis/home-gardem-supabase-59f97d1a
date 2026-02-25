@@ -50,21 +50,23 @@ export function useArticleImages({ postId, title, category, tags, count = 6 }: U
       }
 
       const generatedImages: GeneratedImage[] = [];
-      const prompts = [
-        title,
-        `${title} inspiração visual`,
-        `${title} design moderno`,
-        `${title} estilo contemporâneo`,
-        `${title} decoração elegante`,
-        `${title} ambiente acolhedor`
+      const galleryStyles = [
+        'wide-angle front view establishing shot',
+        'medium shot from left side, showing furniture arrangement',
+        'close-up macro shot, focusing on textures and materials',
+        'shot from right side, alternative perspective',
+        'low angle dramatic shot from floor level',
+        'high angle bird eye overview, showing full spatial layout',
       ].slice(0, count);
 
-      for (const prompt of prompts) {
+      for (let i = 0; i < galleryStyles.length; i++) {
         try {
           const { data, error: fnError } = await invokeEdgeFunction('generate-article-image', {
-            title: prompt,
+            title,
             category,
-            tags
+            tags,
+            type: 'gallery',
+            customPrompt: `${title}, ${galleryStyles[i]}`,
           });
 
           if (fnError) continue;
