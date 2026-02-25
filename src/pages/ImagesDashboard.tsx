@@ -482,13 +482,16 @@ function ImagesDashboardContent() {
       // Buscar contexto visual do artigo para manter consistência
       const { data: articleData } = await supabase
         .from('content_articles')
-        .select('main_subject, visual_context, gallery_prompts, category, tags')
+        .select('slug, main_subject, visual_context, gallery_prompts, category, tags')
         .eq('id', image.article_id)
         .maybeSingle();
+
+      console.log('[Regenerate] Sending request for', image.article_title, 'type:', image.image_type, 'index:', image.image_index);
 
       const { data, error } = await invokeEdgeFunction('generate-article-image', {
         articleId: image.article_id,
         title: image.article_title,
+        slug: articleData?.slug || '',
         type: image.image_type,
         imageIndex: image.image_index,
         regenerate: true,
@@ -500,6 +503,8 @@ function ImagesDashboardContent() {
           ? articleData.gallery_prompts[image.image_index]
           : undefined,
       });
+
+      console.log('[Regenerate] Response:', data);
 
       if (error) throw error;
 
