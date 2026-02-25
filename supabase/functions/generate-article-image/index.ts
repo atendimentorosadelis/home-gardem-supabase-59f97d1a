@@ -7,22 +7,35 @@ const corsHeaders = {
 };
 
 const subjectTranslations: Record<string, string> = {
-  'lareira': 'fireplace', 'jardim': 'garden', 'plantas': 'plants',
+  'horta de ervas': 'herb garden', 'horta': 'vegetable garden', 'ervas': 'herb garden',
+  'ervas aromáticas': 'aromatic herb garden', 'temperos': 'herb and spice garden',
+  'flores ornamentais': 'ornamental flowers', 'flores': 'flower garden',
+  'orquídeas': 'orchids', 'rosas': 'rose garden', 'girassol': 'sunflower garden',
+  'neolítico': 'neolithic stone architecture', 'sustentável': 'sustainable green design',
+  'paisagismo': 'landscape design', 'compostagem': 'composting garden',
+  'lareira': 'fireplace', 'jardim vertical': 'vertical garden', 'jardim': 'garden',
+  'plantas de interior': 'indoor plants', 'plantas': 'plants',
   'suculentas': 'succulent plants', 'cactos': 'cactus plants',
-  'decoração': 'home decor', 'pergolado': 'pergola', 'varanda': 'balcony',
-  'piscina': 'swimming pool', 'churrasqueira': 'barbecue grill',
+  'decoração': 'home decor', 'pergolado': 'pergola', 'varanda': 'balcony garden',
+  'piscina': 'swimming pool', 'churrasqueira': 'barbecue grill area',
   'cozinha': 'kitchen', 'sala de jantar': 'dining room',
   'sala de estar': 'living room', 'sala': 'living room',
   'quarto': 'bedroom', 'banheiro': 'bathroom', 'escritório': 'home office',
   'área gourmet': 'gourmet area', 'área de serviço': 'laundry room',
+  'iluminação': 'lighting design', 'móveis': 'furniture design',
+  'tapete': 'rug and carpet design', 'cortina': 'curtain and drapes',
+  'terraço': 'terrace garden', 'quintal': 'backyard garden',
 };
 
 function extractSubjectFromTitle(title: string): string {
   const lowerTitle = title.toLowerCase();
-  for (const [pt, en] of Object.entries(subjectTranslations)) {
+  // Sort by key length descending so multi-word phrases match first (e.g. "horta de ervas" before "horta")
+  const sortedEntries = Object.entries(subjectTranslations).sort((a, b) => b[0].length - a[0].length);
+  for (const [pt, en] of sortedEntries) {
     if (lowerTitle.includes(pt)) return en;
   }
-  return 'home interior design element';
+  // Fallback: use the title itself as subject description instead of a generic "home interior"
+  return title;
 }
 
 serve(async (req) => {
