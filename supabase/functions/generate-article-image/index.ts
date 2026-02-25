@@ -70,8 +70,9 @@ serve(async (req) => {
     if (type === 'cover') {
       prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
     } else {
-      const galleryPrompt = customPrompt || `${subject}, detailed professional photography`;
-      prompt = `${galleryPrompt}. Setting: ${setting}. Professional interior photography, sharp focus. ${antiTextClause}.`;
+      // Always prefix with the translated subject so the image matches the category
+      const galleryDetail = customPrompt || 'detailed professional photography';
+      prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. Professional interior photography, sharp focus. ${antiTextClause}.`;
     }
 
     console.log(`Generating ${type} image: ${prompt.substring(0, 100)}...`);
