@@ -79,15 +79,30 @@ export function useFullArticleGeneration() {
   // Load persisted state on mount
   const persistedState = loadPersistedState();
 
-  // Check if there are steps still in loading state (generation was interrupted)
-  const hasLoadingSteps = persistedState?.steps?.some(s => s.status === 'loading') ?? false;
+  // If generation was interrupted (loading steps exist but page reloaded),
+  // mark those steps as error instead of keeping them stuck forever
+  const fixedSteps = (() => {
+    if (!persistedState?.steps) return undefined;
+    const hasLoadingSteps = persistedState.steps.some(s => s.status === 'loading');
+    if (hasLoadingSteps && persistedState.isGenerating) {
+      // Generation was interrupted - mark loading/pending as error
+      return persistedState.steps.map(step =>
+        step.status === 'loading'
+          ? { ...step, status: 'error' as const, detail: 'Interrompido' }
+          : step.status === 'pending'
+            ? { ...step, status: 'cancelled' as const }
+            : step
+      );
+    }
+    return persistedState.steps;
+  })();
 
-  // Restore isGenerating if it was persisted OR if there are loading steps
-  const [isGenerating, setIsGenerating] = useState(persistedState?.isGenerating ?? hasLoadingSteps);
+  // Never restore isGenerating as true - the process isn't actually running after reload
+  const [isGenerating, setIsGenerating] = useState(false);
   const [article, setArticle] = useState<GeneratedArticle | null>(persistedState?.article ?? null);
   const [startTime, setStartTime] = useState<number | null>(persistedState?.startTime ?? null);
   const [articleSavedId, setArticleSavedId] = useState<string | null>(persistedState?.articleSavedId ?? null);
-  const [steps, setSteps] = useState<GenerationStep[]>(persistedState?.steps ?? DEFAULT_STEPS);
+  const [steps, setSteps] = useState<GenerationStep[]>(fixedSteps ?? persistedState?.steps ?? DEFAULT_STEPS);
   const [currentTopic, setCurrentTopic] = useState<string>(persistedState?.topic ?? '');
 
   const cancelledRef = useRef(false);
