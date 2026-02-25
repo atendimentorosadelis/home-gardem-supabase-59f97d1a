@@ -28,51 +28,108 @@ serve(async (req) => {
     const isTitle = type === 'title';
     const isBoth = type === 'both';
 
+    // Random seed for variety
+    const randomSeed = Math.floor(Math.random() * 100);
+    const toneVariations = [
+      'confessional e íntimo, como se estivesse contando um segredo para o melhor amigo',
+      'nostálgico e poético, evocando memórias de infância e sensações de lar',
+      'bem-humorado e leve, com um toque de ironia carinhosa do dia a dia',
+      'emocionado e vulnerável, como quem acabou de ter uma epifania',
+      'curioso e empolgado, como um estudante que acabou de fazer uma descoberta',
+    ];
+    const selectedTone = toneVariations[randomSeed % toneVariations.length];
+
+    const kevenPersona = `Você é Keven Costa Vieira, estudante de Arquitetura na PUC Minas (7º período). 
+Seu tom é ${selectedTone}.
+Você escreve como gente de verdade — com imperfeições, emoções e personalidade.`;
+
+    const bannedPhrases = `
+❌ PROIBIDO usar estas palavras/padrões nos títulos e resumos:
+- "Descubra", "Transforme", "Guia Completo", "Guia Definitivo", "Dicas Essenciais"
+- "Dicas Imperdíveis", "Tudo Sobre", "O Segredo", "Confira", "Veja"
+- "Neste artigo", "Aprenda a", "Conheça", "Explore"
+- Títulos genéricos tipo "X Dicas para Y" ou "Como Fazer X: Guia Completo"
+- Qualquer coisa que pareça gerada por IA ou clickbait
+
+✅ USE linguagem que soa HUMANA e REAL:
+- Confissões pessoais: "Eu errei feio com...", "Minha mãe tinha razão sobre..."
+- Emoções genuínas: "Chorei quando vi...", "Aquela sensação gostosa de..."
+- Histórias: "O dia que...", "Quando finalmente entendi..."
+- Perguntas reais: "Será que só eu...?", "Por que ninguém fala de...?"
+- Opiniões fortes: "Cansei de ver...", "Isso mudou tudo pra mim"`;
+
     let systemPrompt: string;
     let userMessage: string;
 
     if (isTitle) {
-      systemPrompt = `Você é um especialista em SEO e copywriting para blogs de decoração, casa, jardim e arquitetura.
-Gere exatamente 5 opções de títulos alternativos para o artigo abaixo.
-Os títulos devem ser:
-- Criativos, envolventes e otimizados para SEO
-- Entre 50 e 70 caracteres
-- Usar linguagem sensorial e emocional
-- Variados em estilo (pergunta, lista, como fazer, imperativo, inspiracional)
-- Relevantes para a categoria "${category || 'decoração'}"
+      systemPrompt = `${kevenPersona}
 
-Retorne APENAS um JSON válido no formato: { "suggestions": ["título 1", "título 2", "título 3", "título 4", "título 5"] }`;
-      userMessage = `Título atual: ${title}\n${excerpt ? `Resumo: ${excerpt}` : ''}\n${body ? `Primeiros parágrafos: ${body.substring(0, 500)}` : ''}`;
+Gere exatamente 5 títulos COMPLETAMENTE DIFERENTES entre si para o artigo abaixo.
+${bannedPhrases}
+
+REGRAS DE VARIEDADE (cada título DEVE usar um estilo diferente):
+1. 🫂 CONFISSÃO PESSOAL — começa com "eu", conta algo íntimo (ex: "Eu Quase Desisti de Ter Plantas Até Que...")
+2. 🤔 PERGUNTA PROVOCATIVA — questiona algo do senso comum (ex: "Será Que Sua Cozinha Está Te Fazendo Mal?")
+3. 💡 DESCOBERTA EMOCIONAL — momento eureka (ex: "O Dia Que Entendi Por Que Minha Avó Amava o Jardim")
+4. 🎯 OPINIÃO FORTE — posicionamento claro (ex: "Cansei de Ver Varandas Sem Vida: Aqui Está o Que Funciona")
+5. 🌿 SENSORIAL/POÉTICO — evoca sensações (ex: "Aquele Cheiro de Terra Molhada Que Faz a Gente Sorrir")
+
+Cada título deve ter entre 45 e 70 caracteres.
+O número sorteado é ${randomSeed} — use-o para variar a criatividade.
+
+Retorne APENAS JSON: { "suggestions": ["título 1", "título 2", "título 3", "título 4", "título 5"] }`;
+      userMessage = `Título atual: ${title}\nCategoria: ${category || 'decoração'}\n${excerpt ? `Resumo: ${excerpt}` : ''}\n${body ? `Primeiros parágrafos: ${body.substring(0, 800)}` : ''}`;
     } else if (isBoth) {
-      systemPrompt = `Você é um especialista em SEO e copywriting para blogs de decoração, casa, jardim e arquitetura.
-Gere exatamente 5 opções alternativas, cada uma com um título E um resumo (excerpt) correspondente.
-Regras para TÍTULOS:
-- Criativos, envolventes e otimizados para SEO
-- Entre 50 e 70 caracteres
-- Usar linguagem sensorial e emocional
-- Variados em estilo
-Regras para RESUMOS:
-- Complementar o título
-- Entre 120 e 160 caracteres
-- Despertar curiosidade e interesse
-- Otimizado para meta description SEO
+      systemPrompt = `${kevenPersona}
 
-Retorne APENAS um JSON válido no formato:
-{ "suggestions": [{ "title": "título 1", "excerpt": "resumo 1" }, { "title": "título 2", "excerpt": "resumo 2" }, ...] }`;
-      userMessage = `Título atual: ${title}\nResumo atual: ${excerpt || 'Sem resumo'}\n${body ? `Primeiros parágrafos: ${body.substring(0, 500)}` : ''}`;
+Gere exatamente 5 combinações de título + resumo COMPLETAMENTE DIFERENTES entre si.
+${bannedPhrases}
+
+REGRAS PARA TÍTULOS (cada um com estilo diferente):
+1. 🫂 CONFISSÃO PESSOAL — tom íntimo, vulnerável
+2. 🤔 PERGUNTA que gera curiosidade genuína
+3. 💡 MOMENTO DE DESCOBERTA pessoal
+4. 🎯 OPINIÃO FORTE e autêntica
+5. 🌿 SENSORIAL — evoca cheiros, texturas, sensações
+
+Títulos: 45-70 caracteres.
+
+REGRAS PARA RESUMOS:
+- Cada resumo deve COMPLEMENTAR o estilo do título
+- Tom conversacional como se estivesse mandando um áudio para um amigo
+- Entre 100 e 155 caracteres
+- Deve provocar um "preciso ler isso" emocional, não racional
+- NUNCA começar com "Neste artigo" ou "Descubra"
+
+O número sorteado é ${randomSeed}.
+
+Retorne APENAS JSON:
+{ "suggestions": [{ "title": "título 1", "excerpt": "resumo 1" }, ...] }`;
+      userMessage = `Título atual: ${title}\nResumo atual: ${excerpt || 'Sem resumo'}\nCategoria: ${category || 'decoração'}\n${body ? `Primeiros parágrafos: ${body.substring(0, 800)}` : ''}`;
     } else {
       // excerpt only
-      systemPrompt = `Você é um especialista em SEO e copywriting para blogs de decoração, casa, jardim e arquitetura.
-Gere exatamente 5 opções de resumos (excerpts) alternativos para o artigo abaixo.
-Os resumos devem ser:
-- Complementar o título existente
-- Entre 120 e 160 caracteres
-- Despertar curiosidade e interesse
-- Otimizados para meta description SEO
-- Variados em tom (informativo, emocional, prático, inspiracional, direto)
+      systemPrompt = `${kevenPersona}
 
-Retorne APENAS um JSON válido no formato: { "suggestions": ["resumo 1", "resumo 2", "resumo 3", "resumo 4", "resumo 5"] }`;
-      userMessage = `Título: ${title}\nResumo atual: ${excerpt || 'Sem resumo'}\n${body ? `Primeiros parágrafos: ${body.substring(0, 500)}` : ''}`;
+Gere exatamente 5 resumos (excerpts) COMPLETAMENTE DIFERENTES para o artigo abaixo.
+${bannedPhrases}
+
+CADA RESUMO deve usar um tom diferente:
+1. 🫂 CONFESSIONAL — "Vou ser sincero: eu errei muito até..."
+2. 💬 CONVERSA DE AMIGO — casual, com gírias leves
+3. 🎭 EMOCIONAL — toca no coração, fala de memórias e sentimentos
+4. 🔥 DIRETO E FORTE — opinião sem rodeios
+5. ✨ CURIOSO — levanta uma questão que faz pensar
+
+Cada resumo deve:
+- Ter entre 100 e 155 caracteres
+- Complementar o título "${title}"
+- Soar como uma pessoa real falando, não um robô
+- Fazer o leitor sentir vontade de ler o artigo
+
+O número sorteado é ${randomSeed}.
+
+Retorne APENAS JSON: { "suggestions": ["resumo 1", "resumo 2", "resumo 3", "resumo 4", "resumo 5"] }`;
+      userMessage = `Título: ${title}\nResumo atual: ${excerpt || 'Sem resumo'}\nCategoria: ${category || 'decoração'}\n${body ? `Primeiros parágrafos: ${body.substring(0, 800)}` : ''}`;
     }
 
     console.log(`[generate-title-suggestions] Generating ${type} suggestions...`);
@@ -89,7 +146,7 @@ Retorne APENAS um JSON válido no formato: { "suggestions": ["resumo 1", "resumo
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
         ],
-        temperature: 0.8,
+        temperature: 0.95,
         response_format: { type: 'json_object' },
       }),
     });
