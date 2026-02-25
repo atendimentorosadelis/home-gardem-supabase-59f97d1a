@@ -508,9 +508,14 @@ function ImagesDashboardContent() {
 
       if (error) throw error;
 
+      // Update selectedImage with new URL if dialog is open
+      if (data?.imageUrl && selectedImage?.id === image.id) {
+        setSelectedImage({ ...image, public_url: data.imageUrl });
+      }
+
       toast({
         title: 'Imagem regenerada',
-        description: 'A nova imagem foi gerada com sucesso em WebP',
+        description: `${image.image_type === 'cover' ? 'Capa' : `Galeria ${image.image_index + 1}`} regenerada com sucesso`,
       });
 
       // Refresh images
@@ -554,7 +559,7 @@ function ImagesDashboardContent() {
         const { error } = await invokeEdgeFunction('generate-article-image', {
           articleId: image.article_id,
           title: image.article_title,
-          imageType: image.image_type,
+          type: image.image_type,
           imageIndex: image.image_index,
           regenerate: true,
           mainSubject: articleData?.main_subject || '',
