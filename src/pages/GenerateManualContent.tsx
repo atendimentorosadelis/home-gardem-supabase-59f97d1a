@@ -117,6 +117,7 @@ const JARDIM_TEMAS_GERAIS: SubnicheItem[] = [
   { id: 'jardim-sustentavel', label: 'Jardim Sustentável', icon: Recycle },
   { id: 'jardim-halloween', label: 'Halloween', icon: Ghost },
   { id: 'jardim-nomes-cuidados', label: 'Nomes e Cuidados Plantas e Flores', icon: Flower2 },
+  { id: 'jardim-hortas-ervas-cuidados', label: 'Hortas, Ervas e Cuidados', icon: Sprout },
 ];
 
 const ARQUITETURA_SUBNICHES: SubnicheItem[] = [

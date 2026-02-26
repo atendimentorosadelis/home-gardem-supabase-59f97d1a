@@ -31,6 +31,7 @@ const TOPIC_PROMPTS: Record<string, string> = {
   'jardim-sustentavel': 'Jardim: jardim sustentável',
   'jardim-halloween': 'Jardim: decoração de halloween',
   'jardim-nomes-cuidados': 'Jardim: nomes e cuidados plantas e flores',
+  'jardim-hortas-ervas-cuidados': 'Jardim: hortas ervas e cuidados com hortaliças',
   'colonial': 'Dicas de arquitetura em estilo colonial',
   'industrial': 'Dicas de arquitetura em estilo industrial',
   'moderno': 'Dicas de arquitetura em estilo moderno',
