@@ -315,23 +315,18 @@ const CopyForFacebookCard = ({
           <CopyButton field="excerpt" onClick={() => copyToClipboard(excerpt, 'excerpt')} label="Copiar Resumo" />
         )}
         {body && (
-          <CopyButton field="body" onClick={() => copyToClipboard(stripMarkdown(body), 'body')} label="Copiar Texto Completo" />
+          <CopyButton field="body" onClick={() => {
+            const hashtags = tags && tags.length > 0
+              ? '\n\n' + tags.map(t => `#${t.toLowerCase().replace(/\s+/g, '')}`).join(' ')
+              : '';
+            copyToClipboard(stripMarkdown(body) + hashtags, 'body');
+          }} label="Copiar Texto Completo" />
         )}
         {emotionalConclusion && (
           <CopyButton field="conclusion" onClick={() => copyToClipboard(emotionalConclusion, 'conclusion')} label="Copiar Conclusão Emocional" />
         )}
         {articleUrl && (
           <CopyButton field="url" onClick={() => copyToClipboard(articleUrl, 'url')} label="Copiar URL do Artigo" />
-        )}
-        {tags && tags.length > 0 && (
-          <CopyButton
-            field="hashtags"
-            onClick={() => {
-              const hashtags = tags.map(t => `#${t.toLowerCase().replace(/\s+/g, '')}`).join(' ');
-              copyToClipboard(hashtags, 'hashtags');
-            }}
-            label={`Copiar Hashtags (${tags.length})`}
-          />
         )}
 
         {/* Images */}
