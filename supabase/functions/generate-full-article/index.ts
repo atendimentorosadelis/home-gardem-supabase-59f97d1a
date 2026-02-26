@@ -483,9 +483,12 @@ Retorne APENAS JSON válido (sem markdown code blocks):
     const isPlantFlowerNamesTopic = /nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores/i.test(topic.toLowerCase());
 
     const plantFlowerInstructions = isPlantFlowerNamesTopic ? `
-INSTRUÇÕES ESPECIAIS PARA ESTE TEMA (Nomes e Cuidados Plantas e Flores):
-- A IA deve ESCOLHER UMA planta ou flor ESPECÍFICA para o artigo (ex: Rosa, Orquídea Phalaenopsis, Lavanda, Suculenta Echeveria, etc.)
-- O título DEVE conter o nome da planta/flor escolhida
+INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e Flores):
+- A IA deve ESCOLHER UMA planta ou flor ESPECÍFICA para o artigo (ex: Rosa, Orquídea Phalaenopsis, Lavanda, Suculenta Echeveria, Hortênsia, Jasmim, Girassol, etc.)
+- REGRA CRÍTICA DO TÍTULO: O título DEVE OBRIGATORIAMENTE conter o NOME ESPECÍFICO da planta/flor escolhida. 
+  EXEMPLOS CORRETOS: "Lavanda: o perfume roxo que transformou minha varanda", "Orquídea Phalaenopsis: a flor que me ensinou paciência", "Hortênsia: por que eu choro toda vez que ela floresce"
+  EXEMPLOS ERRADOS (PROIBIDOS): "Jardim: o que aprendi na prática", "O segredo das flores", "Meu canteiro favorito" — títulos genéricos SEM o nome da planta são PROIBIDOS.
+- O título deve ser pessoal, charmoso e em primeira pessoa, MAS SEMPRE mencionando o nome da planta/flor.
 - O artigo DEVE incluir obrigatoriamente:
   * Nome popular e nome científico da planta/flor
   * Origem geográfica da espécie
