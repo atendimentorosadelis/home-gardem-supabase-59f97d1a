@@ -379,10 +379,11 @@ const CopyForFacebookCard = ({
 
 // Social Media Ready Post Cards
 const SocialMediaPostCards = ({
-  title, excerpt, coverImage, category, slug, emotionalConclusion
+  title, excerpt, coverImage, category, slug, emotionalConclusion, tags
 }: {
   title: string; excerpt: string; coverImage: string;
   category: string; slug: string; emotionalConclusion: string | null;
+  tags: string[];
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [copyingImage, setCopyingImage] = useState<string | null>(null);
@@ -458,6 +459,10 @@ const SocialMediaPostCards = ({
   const fbImageUrl = getJpgUrl(1200, 630);
   const igImageUrl = getJpgUrl(1080, 1350);
 
+  const articleHashtags = tags.length > 0
+    ? tags.map(t => `#${t.replace(/\s+/g, '').toLowerCase()}`).join(' ')
+    : '#decoração #casa #jardim #design #homedecor #homegardenmanual';
+
   const fbPostText = [
     `🏡 ${title}`,
     '',
@@ -467,7 +472,7 @@ const SocialMediaPostCards = ({
     '',
     articleUrl ? `📖 Leia mais: ${articleUrl}` : '',
     '',
-    '#decoração #casa #jardim #design #homedecor #homegardenmanual',
+    articleHashtags,
   ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n').trim();
 
   const igPostText = [
@@ -479,7 +484,7 @@ const SocialMediaPostCards = ({
     '',
     articleUrl ? `🔗 Link na bio: ${articleUrl}` : '',
     '',
-    '#decoração #casa #jardim #design #plantasdeinterior #homedecor #arquitetura #homegardenmanual',
+    articleHashtags,
   ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n').trim();
 
   const CopyBtn = ({ field, onClick, label, icon }: { field: string; onClick: () => void; label: string; icon?: React.ReactNode }) => (
@@ -1490,6 +1495,7 @@ export default function ArticleEditor() {
               category={category}
               slug={slug}
               emotionalConclusion={emotionalConclusion?.conclusion_text || null}
+              tags={tags}
             />
 
             {/* Affiliate Banner */}
