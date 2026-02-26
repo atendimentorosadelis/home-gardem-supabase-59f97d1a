@@ -81,6 +81,9 @@ export function GenerationProgressHero({ steps, startTime, isGenerating, onCance
     }
   };
 
+  // Hide completely when no generation has started and not generating
+  if (!hasStarted && !isGenerating) return null;
+
   return (
     <div className="rounded-2xl border border-border/50 bg-card p-6 space-y-5">
       {/* Header */}
