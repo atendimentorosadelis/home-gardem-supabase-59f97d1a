@@ -20,9 +20,18 @@ import { PageViewTracker } from "@/components/PageViewTracker";
 function lazyRetry(factory: () => Promise<any>) {
   return lazy(() =>
     factory().catch(() => {
-      // Force reload on chunk load failure (new deploy invalidated old chunks)
-      window.location.reload();
-      return new Promise(() => {}); // Never resolves, page will reload
+      const key = 'lazyRetry_reload';
+      const lastReload = sessionStorage.getItem(key);
+      const now = Date.now().toString();
+      // Only reload if we haven't reloaded in the last 10 seconds (prevent loop)
+      if (!lastReload || Date.now() - parseInt(lastReload) > 10000) {
+        sessionStorage.setItem(key, now);
+        window.location.reload();
+        return new Promise(() => {}); // Never resolves, page will reload
+      }
+      // If already reloaded recently, show error
+      sessionStorage.removeItem(key);
+      return Promise.reject(new Error('Failed to load page after refresh. Please clear your browser cache.'));
     })
   );
 }
