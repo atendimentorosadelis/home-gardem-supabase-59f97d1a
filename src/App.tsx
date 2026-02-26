@@ -16,42 +16,53 @@ import { registerServiceWorker } from "@/utils/serviceWorker";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { PageViewTracker } from "@/components/PageViewTracker";
 
+// Helper to retry dynamic imports on chunk load failure (stale cache after deploy)
+function lazyRetry(factory: () => Promise<any>) {
+  return lazy(() =>
+    factory().catch(() => {
+      // Force reload on chunk load failure (new deploy invalidated old chunks)
+      window.location.reload();
+      return new Promise(() => {}); // Never resolves, page will reload
+    })
+  );
+}
+
 // Critical pages - loaded eagerly
 import Index from "./pages/Index";
 
 // Public pages - lazy loaded
-const Blog = lazy(() => import("./pages/Blog"));
-const Article = lazy(() => import("./pages/Article"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
-const GardenTips = lazy(() => import("./pages/GardenTips"));
-const IndoorPlants = lazy(() => import("./pages/IndoorPlants"));
-const Manuals = lazy(() => import("./pages/Manuals"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TermsOfUse = lazy(() => import("./pages/TermsOfUse"));
-const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
-const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const Blog = lazyRetry(() => import("./pages/Blog"));
+const Article = lazyRetry(() => import("./pages/Article"));
+const About = lazyRetry(() => import("./pages/About"));
+const Contact = lazyRetry(() => import("./pages/Contact"));
+const GardenTips = lazyRetry(() => import("./pages/GardenTips"));
+const IndoorPlants = lazyRetry(() => import("./pages/IndoorPlants"));
+const Manuals = lazyRetry(() => import("./pages/Manuals"));
+const PrivacyPolicy = lazyRetry(() => import("./pages/PrivacyPolicy"));
+const TermsOfUse = lazyRetry(() => import("./pages/TermsOfUse"));
+const CookiePolicy = lazyRetry(() => import("./pages/CookiePolicy"));
+const Unsubscribe = lazyRetry(() => import("./pages/Unsubscribe"));
+const NotFound = lazyRetry(() => import("./pages/NotFound"));
+const AdminLogin = lazyRetry(() => import("./pages/AdminLogin"));
 
 // Admin pages - lazy loaded
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const GenerateManualContent = lazy(() => import("./pages/GenerateManualContent"));
-const ArticlesManager = lazy(() => import("./pages/ArticlesManager"));
-const ArticleEditor = lazy(() => import("./pages/ArticleEditor"));
-const Profile = lazy(() => import("./pages/Profile"));
-const UsersManager = lazy(() => import("./pages/UsersManager"));
-const Settings = lazy(() => import("./pages/Settings"));
-const QueueMonitor = lazy(() => import("./pages/QueueMonitor"));
-const ImagesDashboard = lazy(() => import("./pages/ImagesDashboard"));
-const NewsletterManager = lazy(() => import("./pages/NewsletterManager"));
-const ContactMessagesManager = lazy(() => import("./pages/ContactMessagesManager"));
-const EmailTemplatesManager = lazy(() => import("./pages/EmailTemplatesManager"));
-const AffiliateDashboard = lazy(() => import("./pages/AffiliateDashboard"));
-const AutoPilot = lazy(() => import("./pages/AutoPilot"));
-const SuperAdminPanel = lazy(() => import("./pages/SuperAdminPanel"));
-const VideosManager = lazy(() => import("./pages/VideosManager"));
-const VideoAutoPilot = lazy(() => import("./pages/VideoAutoPilot"));
+const Dashboard = lazyRetry(() => import("./pages/Dashboard"));
+const GenerateManualContent = lazyRetry(() => import("./pages/GenerateManualContent"));
+const ArticlesManager = lazyRetry(() => import("./pages/ArticlesManager"));
+const ArticleEditor = lazyRetry(() => import("./pages/ArticleEditor"));
+const Profile = lazyRetry(() => import("./pages/Profile"));
+const UsersManager = lazyRetry(() => import("./pages/UsersManager"));
+const Settings = lazyRetry(() => import("./pages/Settings"));
+const QueueMonitor = lazyRetry(() => import("./pages/QueueMonitor"));
+const ImagesDashboard = lazyRetry(() => import("./pages/ImagesDashboard"));
+const NewsletterManager = lazyRetry(() => import("./pages/NewsletterManager"));
+const ContactMessagesManager = lazyRetry(() => import("./pages/ContactMessagesManager"));
+const EmailTemplatesManager = lazyRetry(() => import("./pages/EmailTemplatesManager"));
+const AffiliateDashboard = lazyRetry(() => import("./pages/AffiliateDashboard"));
+const AutoPilot = lazyRetry(() => import("./pages/AutoPilot"));
+const SuperAdminPanel = lazyRetry(() => import("./pages/SuperAdminPanel"));
+const VideosManager = lazyRetry(() => import("./pages/VideosManager"));
+const VideoAutoPilot = lazyRetry(() => import("./pages/VideoAutoPilot"));
 
 const queryClient = new QueryClient();
 
