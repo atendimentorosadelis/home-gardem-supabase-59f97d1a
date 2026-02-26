@@ -24,6 +24,8 @@ const subjectTranslations: Record<string, string> = {
   'área gourmet': 'outdoor gourmet area with barbecue grill, bar counter, poolside entertaining space, covered patio with rustic wood and stone',
   'area gourmet': 'outdoor gourmet area with barbecue grill, bar counter, poolside entertaining space, covered patio with rustic wood and stone',
   'área de serviço': 'laundry room',
+  'nomes e cuidados plantas e flores': 'beautiful flowering plant in garden setting, botanical photography',
+  'nomes e cuidados': 'plant care and flower species, botanical garden',
   'iluminação': 'lighting design', 'móveis': 'furniture design',
   'tapete': 'rug and carpet design', 'cortina': 'curtain and drapes',
   'terraço': 'terrace garden', 'quintal': 'backyard garden',
