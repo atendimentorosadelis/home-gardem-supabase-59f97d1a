@@ -1,0 +1,1 @@
+UPDATE content_articles SET category = 'Hortas, Ervas e Cuidados', category_slug = 'hortas-ervas-cuidados' WHERE id IN ('387dcad2-9305-4862-b2bb-2f3198aff332', '1f7c84fd-d135-49be-8b39-85f18d4ebf9f');
