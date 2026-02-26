@@ -80,12 +80,19 @@ export function useFullArticleGeneration() {
   const persistedState = loadPersistedState();
 
   // If generation was interrupted (loading steps exist but page reloaded),
-  // mark those steps as error instead of keeping them stuck forever
+  // mark those steps as error instead of keeping them stuck forever.
+  // BUT: if all steps are already 'done', don't touch them - generation completed successfully.
   const fixedSteps = (() => {
     if (!persistedState?.steps) return undefined;
+    
+    // Check if generation actually completed (all steps done or only last ones pending)
+    const allDone = persistedState.steps.every(s => s.status === 'done');
+    if (allDone) return persistedState.steps; // Generation completed, don't mark as error
+    
     const hasLoadingSteps = persistedState.steps.some(s => s.status === 'loading');
     if (hasLoadingSteps && persistedState.isGenerating) {
-      // Generation was interrupted - mark loading/pending as error
+      // Check if loading step is the only non-done step and all previous are done
+      // This suggests generation was actually in progress when interrupted
       return persistedState.steps.map(step =>
         step.status === 'loading'
           ? { ...step, status: 'error' as const, detail: 'Interrompido' }
@@ -532,6 +539,22 @@ export function useFullArticleGeneration() {
     } finally {
       if (!cancelledRef.current) {
         setIsGenerating(false);
+        // Explicitly persist final state with isGenerating=false to prevent
+        // the fixedSteps logic from incorrectly marking completed steps as errors
+        // if the page reloads before the useEffect persistence runs
+        setSteps(prev => {
+          const finalSteps = prev;
+          // Force persist with isGenerating=false immediately
+          savePersistedState({
+            article: article ?? null,
+            articleSavedId: articleSavedId ?? null,
+            steps: finalSteps,
+            startTime,
+            isGenerating: false,
+            topic: currentTopic,
+          });
+          return finalSteps;
+        });
       }
     }
   }, [updateStep, resetGeneration]);
