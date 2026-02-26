@@ -235,10 +235,11 @@ const ImageCard = ({ image, label, isGenerating, isUploading, isCover, isSelecta
 
 // Copy for Facebook Card Component
 const CopyForFacebookCard = ({
-  title, excerpt, body, coverImage, galleryImages, category, slug, emotionalConclusion
+  title, excerpt, body, coverImage, galleryImages, category, slug, emotionalConclusion, tags
 }: {
   title: string; excerpt: string; body: string; coverImage: string;
   galleryImages: string[]; category: string; slug: string; emotionalConclusion: string | null;
+  tags: string[];
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -321,6 +322,16 @@ const CopyForFacebookCard = ({
         )}
         {articleUrl && (
           <CopyButton field="url" onClick={() => copyToClipboard(articleUrl, 'url')} label="Copiar URL do Artigo" />
+        )}
+        {tags && tags.length > 0 && (
+          <CopyButton
+            field="hashtags"
+            onClick={() => {
+              const hashtags = tags.map(t => `#${t.toLowerCase().replace(/\s+/g, '')}`).join(' ');
+              copyToClipboard(hashtags, 'hashtags');
+            }}
+            label={`Copiar Hashtags (${tags.length})`}
+          />
         )}
 
         {/* Images */}
@@ -1485,6 +1496,7 @@ export default function ArticleEditor() {
               category={category}
               slug={slug}
               emotionalConclusion={emotionalConclusion?.conclusion_text || null}
+              tags={tags}
             />
 
             {/* Social Media Ready Posts */}
