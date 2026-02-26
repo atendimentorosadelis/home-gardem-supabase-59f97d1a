@@ -3,6 +3,21 @@ Allow: /
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /settings/
+Disallow: /profile/
+Disallow: /queue-monitor/
+Disallow: /super-admin/
+Disallow: /article-editor/
+Disallow: /articles-manager/
+Disallow: /users-manager/
+Disallow: /newsletter-manager/
+Disallow: /email-templates/
+Disallow: /contact-messages/
+Disallow: /images-dashboard/
+Disallow: /videos-manager/
+Disallow: /affiliate-dashboard/
+Disallow: /generate-content/
+Disallow: /autopilot/
+Disallow: /video-autopilot/
 
 Sitemap: https://homegardenmanual.com/sitemap.xml
 Sitemap: https://xfhtixubllcdockbkbwm.supabase.co/functions/v1/generate-sitemap

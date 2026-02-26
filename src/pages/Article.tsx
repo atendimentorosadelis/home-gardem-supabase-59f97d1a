@@ -244,7 +244,7 @@ const Article = () => {
   useEffect(() => {
     if (!post || !dbArticle) return;
 
-    const siteUrl = 'https://blank-canvas-maker-5273.lovable.app';
+    const siteUrl = 'https://homegardenmanual.com';
     const articleUrl = `${siteUrl}/${dbArticle.category_slug}/${dbArticle.slug}`;
     const articleImage = dbArticle.cover_image || `${siteUrl}/og-image.jpg`;
     const articleDescription = dbArticle.excerpt || post.title;
@@ -277,6 +277,40 @@ const Article = () => {
     setMeta('twitter:description', articleDescription);
     setMeta('twitter:image', articleImage);
 
+    // Canonical URL
+    let canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (!canonicalEl) {
+      canonicalEl = document.createElement('link');
+      canonicalEl.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalEl);
+    }
+    canonicalEl.setAttribute('href', articleUrl);
+
+    // JSON-LD structured data
+    let jsonLdEl = document.querySelector('script[data-type="article-jsonld"]');
+    if (!jsonLdEl) {
+      jsonLdEl = document.createElement('script');
+      jsonLdEl.setAttribute('type', 'application/ld+json');
+      jsonLdEl.setAttribute('data-type', 'article-jsonld');
+      document.head.appendChild(jsonLdEl);
+    }
+    jsonLdEl.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": post.title,
+      "description": articleDescription,
+      "image": articleImage,
+      "datePublished": dbArticle.published_at || '',
+      "dateModified": dbArticle.updated_at || dbArticle.published_at || '',
+      "author": { "@type": "Organization", "name": "Home Garden Manual", "url": "https://homegardenmanual.com" },
+      "publisher": { "@type": "Organization", "name": "Home Garden Manual", "logo": { "@type": "ImageObject", "url": "https://homegardenmanual.com/logo-email.png" } },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": articleUrl },
+      "url": articleUrl,
+      "wordCount": (post.content || '').split(/\s+/).length,
+      "articleSection": dbArticle.category || '',
+      "keywords": dbArticle.keywords || (dbArticle.tags || []).join(', '),
+    });
+
     return () => {
       document.title = 'Home Garden Manual - Decoration, Architecture, Design & Gardening';
       setMeta('og:title', 'Home Garden Manual - Decoration, Architecture, Design & Gardening');
@@ -284,6 +318,12 @@ const Article = () => {
       setMeta('og:image', `${siteUrl}/og-image.jpg`);
       setMeta('og:url', siteUrl);
       setMeta('og:type', 'website');
+      // Reset canonical
+      const canonicalReset = document.querySelector('link[rel="canonical"]');
+      if (canonicalReset) canonicalReset.setAttribute('href', 'https://homegardenmanual.com');
+      // Remove JSON-LD
+      const jsonLdReset = document.querySelector('script[data-type="article-jsonld"]');
+      if (jsonLdReset) jsonLdReset.remove();
     };
   }, [post, dbArticle]);
 
@@ -293,7 +333,11 @@ const Article = () => {
     const registerView = async () => {
       try {
         const sessionHash = btoa(navigator.userAgent + new Date().toDateString());
+        // Check if this visitor already viewed this article today
+        const storageKey = `viewed_${dbArticle.id}_${new Date().toDateString()}`;
+        if (sessionStorage.getItem(storageKey)) return;
         await supabase.from('article_views').insert({ article_id: dbArticle.id, viewer_ip: sessionHash });
+        sessionStorage.setItem(storageKey, '1');
       } catch { /* ignore */ }
     };
     registerView();
