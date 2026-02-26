@@ -31,6 +31,7 @@ const categories = [
   { name: 'Jardim Sustentável', slug: 'jardim-sustentavel' },
   { name: 'Decoração de Halloween', slug: 'decoracao-halloween' },
   { name: 'Nomes e Cuidados Plantas e Flores', slug: 'nomes-cuidados-plantas-flores' },
+  { name: 'Hortas, Ervas e Cuidados', slug: 'hortas-ervas-cuidados' },
   // Arquitetura
   { name: 'Colonial', slug: 'colonial' },
   { name: 'Industrial', slug: 'industrial' },
@@ -459,7 +460,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 {
   "title": "Título acolhedor e interessante (máximo 70 caracteres)",
   "excerpt": "Resumo variado e pessoal",
-  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
+  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
@@ -514,6 +515,46 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
 - CADA gallery prompt DEVE mencionar o nome da planta em inglês
 ` : '';
 
+    const isVegetableHerbCareTopic = /hortas.*ervas.*cuidados|hortas.*cuidados.*hortalic|cuidados.*hortalic/i.test(topic.toLowerCase());
+
+    const vegetableHerbInstructions = isVegetableHerbCareTopic ? `
+INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
+- A IA deve ESCOLHER UMA hortaliça, vegetal ou erva ESPECÍFICA para o artigo (ex: Alface, Couve, Cenoura, Tomate, Manjericão, Alecrim, Salsinha, Rúcula, Espinafre, Hortelã, Cebolinha, Beterraba, Rabanete, Pimentão, etc.)
+- REGRA CRÍTICA DO TÍTULO: O título DEVE OBRIGATORIAMENTE conter o NOME ESPECÍFICO da hortaliça/erva escolhida.
+  EXEMPLOS CORRETOS: "Manjericão: como essa erva aromática conquistou minha cozinha e meu jardim", "Alface Americana: tudo que aprendi cultivando em casa", "Couve-manteiga: a rainha da minha horta urbana"
+  EXEMPLOS ERRADOS (PROIBIDOS): "Horta: o que aprendi na prática", "Dicas de cultivo", "Minha horta favorita" — títulos genéricos SEM o nome da hortaliça/erva são PROIBIDOS.
+- O título deve ser pessoal, charmoso e em primeira pessoa, MAS SEMPRE mencionando o nome da hortaliça/erva.
+- O artigo DEVE incluir obrigatoriamente:
+  * Nome popular e nome científico da hortaliça/erva
+  * Origem geográfica da espécie
+  * Nutrientes principais e benefícios para a saúde
+  * Se faz bem ou mal para determinadas condições de saúde
+  * Tipos de cultivo (solo direto, vaso, hidroponia, canteiro elevado)
+  * Se gosta de sol direto, meia-sombra ou sombra
+  * Frequência ideal de rega
+  * Tipo de solo/substrato ideal e adubação
+  * Fertilizantes naturais recomendados (compostagem, bokashi, húmus de minhoca, etc.)
+  * Remédios naturais contra pragas (calda de fumo, óleo de neem, etc.)
+  * Pragas e doenças mais comuns e como combater
+  * Época ideal de plantio e colheita
+  * Tempo do plantio até a colheita
+  * Espaçamento entre mudas
+  * Receitas caseiras ou dicas culinárias com a hortaliça/erva
+  * Curiosidades sobre a espécie
+  * Se pode ser cultivada em apartamento
+- mainSubject DEVE ser o nome da hortaliça/erva em INGLÊS (ex: "fresh basil herb plant", "lettuce vegetable garden", "kale collard greens plant")
+- visualContext DEVE descrever a hortaliça/erva em um cenário de horta, canteiro ou vaso
+- galleryPrompts DEVEM mostrar a MESMA hortaliça/erva em 6 ângulos diferentes:
+  1. Visão geral da planta/hortaliça no canteiro ou vaso
+  2. Close-up das folhas/frutos com detalhes de textura
+  3. Detalhe das raízes ou sementes germinando
+  4. Hortaliça/erva sendo colhida à mão
+  5. Hortaliça/erva fresca em bancada de cozinha rústica
+  6. Composição da hortaliça/erva com outros ingredientes naturais
+- CADA gallery prompt DEVE mencionar o nome da hortaliça/erva em inglês
+- category DEVE ser "Hortas, Ervas e Cuidados"
+` : '';
+
     const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
 
 - Blog homegardenmanual.com focado em casa e jardim
@@ -525,7 +566,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}`;
+${plantFlowerInstructions}${vegetableHerbInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -765,6 +806,8 @@ ${plantFlowerInstructions}`;
       categoryMatch = categories.find(c => c.slug === 'paisagismo');
     } else if (/suculenta|cacto/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'suculentas-cactos');
+    } else if (/hortas.*ervas.*cuidados|cuidados.*hortalic/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'hortas-ervas-cuidados');
     } else if (/ervas|horta/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'horta-de-ervas');
     } else if (/flores|ornament/i.test(topicLower)) {

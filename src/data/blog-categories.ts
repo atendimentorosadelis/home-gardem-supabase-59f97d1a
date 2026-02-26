@@ -19,6 +19,7 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
     'suculentas-cactos', 'horta-de-ervas', 'flores-ornamentais',
     'paisagismo', 'hidroponia', 'jardim-sustentavel', 'decoracao-halloween',
     'nomes-cuidados-plantas-flores',
+    'hortas-ervas-cuidados',
   ],
   'arquitetura': [
     'colonial', 'industrial', 'moderno', 'neolitico',
@@ -97,4 +98,5 @@ export const ALL_SUB_NICHES: SubNiche[] = [
   { name: 'Hidroponia', icon: Waves },
   { name: 'Flores Ornamentais', icon: Flower2 },
   { name: 'Nomes e Cuidados Plantas e Flores', icon: Sprout },
+  { name: 'Hortas, Ervas e Cuidados', icon: Leaf },
 ];
