@@ -86,74 +86,102 @@ async function validateUrl(url: string): Promise<boolean> {
   }
 }
 
-const MANDATORY_EXTERNAL_LINKS = [
-  { text: "Casa Vogue Brasil", url: "https://casavogue.globo.com" },
-  { text: "ArchDaily Brasil", url: "https://www.archdaily.com.br" },
-  { text: "Leroy Merlin", url: "https://www.leroymerlin.com.br" },
+// Pool of diverse US-focused authority sites — randomly pick 3 per article for variety
+const US_AUTHORITY_LINKS_POOL = [
+  // Home & Garden
+  { text: "Better Homes & Gardens", url: "https://www.bhg.com/" },
+  { text: "The Spruce", url: "https://www.thespruce.com/" },
+  { text: "HGTV", url: "https://www.hgtv.com/" },
+  { text: "Martha Stewart Home", url: "https://www.marthastewart.com/home" },
+  { text: "House Beautiful", url: "https://www.housebeautiful.com/" },
+  { text: "Real Simple Home", url: "https://www.realsimple.com/home-organizing" },
+  // Architecture & Design
+  { text: "Architectural Digest", url: "https://www.architecturaldigest.com/" },
+  { text: "Dwell Magazine", url: "https://www.dwell.com/" },
+  { text: "ArchDaily", url: "https://www.archdaily.com/" },
+  { text: "Dezeen", url: "https://www.dezeen.com/" },
+  // Gardening
+  { text: "Gardening Know How", url: "https://www.gardeningknowhow.com/" },
+  { text: "The Old Farmer's Almanac", url: "https://www.almanac.com/gardening" },
+  { text: "Fine Gardening", url: "https://www.finegardening.com/" },
+  { text: "Gardener's Supply Company", url: "https://www.gardeners.com/" },
+  { text: "Epic Gardening", url: "https://www.epicgardening.com/" },
+  { text: "University Extension - Gardening", url: "https://extension.umn.edu/yard-and-garden" },
+  // DIY & Improvement
+  { text: "This Old House", url: "https://www.thisoldhouse.com/" },
+  { text: "Family Handyman", url: "https://www.familyhandyman.com/" },
+  { text: "Bob Vila", url: "https://www.bobvila.com/" },
+  { text: "Lowe's Home Improvement", url: "https://www.lowes.com/" },
+  { text: "The Home Depot", url: "https://www.homedepot.com/" },
 ];
 
-const FALLBACK_EXTERNAL_LINKS = [
-  { text: "Architectural Digest Design Guide", url: "https://www.architecturaldigest.com/architecture-design" },
-  { text: "Houzz Home Design Ideas", url: "https://awaytogarden.com/" },
-  { text: "The Spruce Home Improvement", url: "https://www.thespruce.com/home-improvement-and-repair-4127986" },
-  { text: "HGTV Design Inspiration", url: "https://www.hgtv.com/design" },
-  { text: "High Country Gardens", url: "https://www.highcountrygardens.com/" },
-  { text: "Better Homes & Gardens", url: "https://www.bhg.com/home-improvement/" },
-];
+// Select random subset from pool for diversity
+function getRandomFallbackLinks(count: number = 5): Array<{ text: string; url: string }> {
+  const shuffled = [...US_AUTHORITY_LINKS_POOL].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
 
 async function validateExternalLinks(
   links: Array<{ text: string; url: string }>,
-  minRequired: number = 3
+  minRequired: number = 5
 ): Promise<Array<{ text: string; url: string }>> {
   console.log(`Validating ${links?.length || 0} external links (minimum required: ${minRequired})...`);
   
   let validLinks: Array<{ text: string; url: string }> = [];
   
-  for (const mandatory of MANDATORY_EXTERNAL_LINKS) {
-    const isValid = await validateUrl(mandatory.url);
-    if (isValid) {
-      validLinks.push(mandatory);
-      console.log(`Mandatory link "${mandatory.text}" (${mandatory.url}): VALID`);
-    } else {
-      console.log(`Mandatory link "${mandatory.text}" (${mandatory.url}): INVALID`);
-    }
-  }
-  
+  // First: validate AI-generated links (these should be topic-specific and diverse)
   if (links && links.length > 0) {
-    const existingUrls = new Set(validLinks.map(l => l.url.toLowerCase()));
-    
     const validationResults = await Promise.all(
       links.map(async (link) => {
-        if (existingUrls.has(link.url.toLowerCase())) {
-          return { link, isValid: false };
-        }
         const isValid = await validateUrl(link.url);
         console.log(`AI link "${link.text}" (${link.url}): ${isValid ? 'VALID' : 'INVALID'}`);
         return { link, isValid };
       })
     );
     
-    const additionalLinks = validationResults
-      .filter(result => result.isValid)
-      .map(result => result.link);
-    
-    validLinks = [...validLinks, ...additionalLinks];
+    // Deduplicate by domain to ensure diversity
+    const usedDomains = new Set<string>();
+    for (const result of validationResults) {
+      if (!result.isValid) continue;
+      try {
+        const domain = new URL(result.link.url).hostname.replace('www.', '');
+        if (!usedDomains.has(domain)) {
+          validLinks.push(result.link);
+          usedDomains.add(domain);
+        }
+      } catch {
+        validLinks.push(result.link);
+      }
+    }
   }
   
-  console.log(`Valid links: ${validLinks.length}`);
+  console.log(`Valid AI links: ${validLinks.length}`);
   
+  // Second: fill gaps with random fallback links from US authority pool
   if (validLinks.length < minRequired) {
     console.log(`Adding fallback links to reach minimum of ${minRequired}...`);
     
-    const existingUrls = new Set(validLinks.map(l => l.url.toLowerCase()));
+    const existingDomains = new Set(
+      validLinks.map(l => { try { return new URL(l.url).hostname.replace('www.', ''); } catch { return l.url; } })
+    );
     
-    for (const fallback of FALLBACK_EXTERNAL_LINKS) {
+    const fallbacks = getRandomFallbackLinks(10); // Get more than needed, will filter
+    for (const fallback of fallbacks) {
       if (validLinks.length >= minRequired) break;
       
-      if (!existingUrls.has(fallback.url.toLowerCase())) {
-        validLinks.push(fallback);
-        existingUrls.add(fallback.url.toLowerCase());
-        console.log(`Added fallback link: ${fallback.text}`);
+      try {
+        const domain = new URL(fallback.url).hostname.replace('www.', '');
+        if (!existingDomains.has(domain)) {
+          // Validate fallback too
+          const isValid = await validateUrl(fallback.url);
+          if (isValid) {
+            validLinks.push(fallback);
+            existingDomains.add(domain);
+            console.log(`Added fallback link: ${fallback.text}`);
+          }
+        }
+      } catch {
+        continue;
       }
     }
   }
@@ -419,6 +447,15 @@ Desenvolva 6-8 seções detalhadas sobre ${topic}.
 
 Os links devem aparecer DENTRO do texto de forma natural.
 
+⚠️ REGRAS CRÍTICAS PARA LINKS EXTERNOS (externalLinks):
+- OBRIGATÓRIO: 5-8 links externos DIFERENTES em cada artigo
+- PRIORIDADE: sites AMERICANOS (.com) — The Spruce, Better Homes & Gardens, HGTV, Architectural Digest, Martha Stewart, This Old House, Bob Vila, Gardening Know How, Fine Gardening, Epic Gardening, Old Farmer's Almanac, etc.
+- PROIBIDO: NÃO use sempre os mesmos sites. Varie os links conforme o TEMA do artigo.
+- PROIBIDO: NÃO use links brasileiros (casavogue.globo.com, archdaily.com.br, leroymerlin.com.br)
+- Os links DEVEM ser URLs REAIS que existam — use URLs de páginas principais dos sites (ex: https://www.thespruce.com/, https://www.bhg.com/)
+- CADA link deve ser relevante ao tema específico do artigo
+- NÃO repita o mesmo domínio mais de uma vez
+
 💡 DICAS VISUAIS (obrigatório 3-4 no artigo)
 
 ## 3. TABELA COMPARATIVA OBRIGATÓRIA (mínimo 7 linhas)
@@ -474,7 +511,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
-  "externalLinks": [{"text": "Nome descritivo", "url": "https://url.com"}],
+  "externalLinks": [{"text": "Descriptive name of US authority site", "url": "https://real-us-site.com/relevant-page"}],
   "mainSubject": "elemento principal em INGLÊS",
   "visualContext": "ambiente completo em INGLÊS",
   "galleryPrompts": ["6 prompts do MESMO CÔMODO em ângulos diferentes"]
