@@ -527,10 +527,16 @@ export function useFullArticleGeneration() {
       console.error('Article generation error:', error);
 
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      // Shorten error for step detail display
+      const shortError = errorMessage.length > 60 ? errorMessage.substring(0, 57) + '...' : errorMessage;
 
-      // Mark current step as error
+      // Mark current loading step as error WITH the real error message
       setSteps(prev => prev.map(step =>
-        step.status === 'loading' ? { ...step, status: 'error' } : step
+        step.status === 'loading'
+          ? { ...step, status: 'error', detail: shortError }
+          : step.status === 'pending'
+            ? { ...step, status: 'cancelled' }
+            : step
       ));
 
       toast.error(`Erro ao gerar artigo: ${errorMessage}`);
@@ -539,21 +545,24 @@ export function useFullArticleGeneration() {
     } finally {
       if (!cancelledRef.current) {
         setIsGenerating(false);
-        // Explicitly persist final state with isGenerating=false to prevent
-        // the fixedSteps logic from incorrectly marking completed steps as errors
-        // if the page reloads before the useEffect persistence runs
+        // Force-persist final state synchronously using functional updaters
+        // to capture the CURRENT values (not stale closure values)
         setSteps(prev => {
-          const finalSteps = prev;
-          // Force persist with isGenerating=false immediately
-          savePersistedState({
-            article: article ?? null,
-            articleSavedId: articleSavedId ?? null,
-            steps: finalSteps,
-            startTime,
-            isGenerating: false,
-            topic: currentTopic,
+          // Use a microtask to persist after React has batched updates
+          queueMicrotask(() => {
+            try {
+              const currentState = sessionStorage.getItem(STORAGE_KEY);
+              const parsed = currentState ? JSON.parse(currentState) : {};
+              savePersistedState({
+                ...parsed,
+                steps: prev,
+                isGenerating: false,
+              });
+            } catch (e) {
+              console.error('[Generation] Failed to persist final state:', e);
+            }
           });
-          return finalSteps;
+          return prev;
         });
       }
     }

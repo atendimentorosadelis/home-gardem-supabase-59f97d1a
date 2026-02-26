@@ -55,12 +55,21 @@ export function GenerationProgressHero({ steps, startTime, isGenerating, onCance
   const { getProviderShortLabel } = useImageProvider();
   const progress = calculateProgress(steps);
   
+  const isCompleted = steps.length > 0 && steps.every(s => s.status === 'done');
+  const hasError = steps.some(s => s.status === 'error');
+  const hasStarted = steps.some(s => s.status !== 'pending');
 
   useEffect(() => {
-    if (!startTime || !isGenerating) return;
+    if (!startTime) return;
+    // Keep timer running while generating; freeze final value when done
+    if (!isGenerating && hasStarted) {
+      setElapsed((Date.now() - startTime) / 1000);
+      return;
+    }
+    if (!isGenerating) return;
     const interval = setInterval(() => setElapsed((Date.now() - startTime) / 1000), 1000);
     return () => clearInterval(interval);
-  }, [startTime, isGenerating]);
+  }, [startTime, isGenerating, hasStarted]);
 
   const getStepIcon = (status: GenerationStep['status']) => {
     switch (status) {
@@ -88,8 +97,10 @@ export function GenerationProgressHero({ steps, startTime, isGenerating, onCance
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {isGenerating && startTime && (
-            <Badge variant="secondary">{formatTime(elapsed)}</Badge>
+          {startTime && hasStarted && (
+            <Badge variant={isCompleted ? "default" : hasError ? "destructive" : "secondary"}>
+              {formatTime(elapsed)}
+            </Badge>
           )}
           <Badge variant="outline">{getProviderShortLabel()}</Badge>
           {isGenerating && onCancel && (
@@ -131,6 +142,16 @@ export function GenerationProgressHero({ steps, startTime, isGenerating, onCance
             )}>
               {step.label}
             </span>
+            {step.detail && step.status === 'error' && (
+              <span className="text-xs text-destructive/80 max-w-[200px] truncate" title={step.detail}>
+                ({step.detail})
+              </span>
+            )}
+            {step.detail && step.status !== 'error' && step.status !== 'pending' && (
+              <span className="text-xs text-muted-foreground">
+                {step.detail}
+              </span>
+            )}
           </div>
         ))}
       </div>
