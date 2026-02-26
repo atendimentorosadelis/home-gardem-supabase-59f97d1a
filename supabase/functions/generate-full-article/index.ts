@@ -806,7 +806,9 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
       categoryMatch = categories.find(c => c.slug === 'paisagismo');
     } else if (/suculenta|cacto/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'suculentas-cactos');
-    } else if (/hortas.*ervas.*cuidados|cuidados.*hortalic/i.test(topicLower)) {
+    } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores|nomes.*cuidados/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
+    } else if (/hortas.*ervas.*cuidados|hortas.*cuidados|cuidados.*hortalic|hortas.*ervas/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'hortas-ervas-cuidados');
     } else if (/ervas|horta/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'horta-de-ervas');
@@ -834,8 +836,6 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
       categoryMatch = categories.find(c => c.slug === 'nordico');
     } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'neo-classico');
-    } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
     } else if (/jardim/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'jardim');
     }
