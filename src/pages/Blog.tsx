@@ -71,6 +71,8 @@ export default function Blog() {
   });
 
   const handleCategoryChange = (category: string) => {
+    setSearch("");
+    setDebouncedSearch("");
     setSelectedCategory(category);
   };
 
