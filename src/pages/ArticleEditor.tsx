@@ -57,6 +57,8 @@ const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
   { name: 'Hidroponia', slug: 'hidroponia', icon: Leaf },
   { name: 'Jardim Sustentável', slug: 'jardim-sustentavel', icon: Recycle },
   { name: 'Decoração de Halloween', slug: 'decoracao-halloween', icon: PartyPopper },
+  { name: 'Nomes e Cuidados Plantas e Flores', slug: 'nomes-cuidados-plantas-flores', icon: Flower2 },
+  { name: 'Hortas, Ervas e Cuidados', slug: 'hortas-ervas-cuidados', icon: Leaf },
   // Arquitetura
   { name: 'Arquitetura', slug: 'arquitetura', icon: Building2 },
   { name: 'Colonial', slug: 'colonial', icon: Building2 },
