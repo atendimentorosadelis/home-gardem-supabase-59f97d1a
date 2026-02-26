@@ -75,10 +75,10 @@ const App = () => (
         <ImageApprovalProvider>
         <NavigationBlockProvider>
         <TooltipProvider>
-          <GoogleAnalytics />
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <GoogleAnalytics />
             <ScrollToTop />
             <PageViewTracker />
             <Suspense fallback={<PageLoader />}>
