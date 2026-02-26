@@ -30,6 +30,7 @@ const categories = [
   { name: 'Hidroponia', slug: 'hidroponia' },
   { name: 'Jardim Sustentável', slug: 'jardim-sustentavel' },
   { name: 'Decoração de Halloween', slug: 'decoracao-halloween' },
+  { name: 'Nomes e Cuidados Plantas e Flores', slug: 'nomes-cuidados-plantas-flores' },
   // Arquitetura
   { name: 'Colonial', slug: 'colonial' },
   { name: 'Industrial', slug: 'industrial' },
@@ -458,7 +459,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 {
   "title": "Título acolhedor e interessante (máximo 70 caracteres)",
   "excerpt": "Resumo variado e pessoal",
-  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
+  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
@@ -479,6 +480,37 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 
 - content DEVE OBRIGATORIAMENTE incluir "## Perguntas Frequentes" com 8-12 perguntas numeradas em negrito`;
 
+    const isPlantFlowerNamesTopic = /nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores/i.test(topic.toLowerCase());
+
+    const plantFlowerInstructions = isPlantFlowerNamesTopic ? `
+INSTRUÇÕES ESPECIAIS PARA ESTE TEMA (Nomes e Cuidados Plantas e Flores):
+- A IA deve ESCOLHER UMA planta ou flor ESPECÍFICA para o artigo (ex: Rosa, Orquídea Phalaenopsis, Lavanda, Suculenta Echeveria, etc.)
+- O título DEVE conter o nome da planta/flor escolhida
+- O artigo DEVE incluir obrigatoriamente:
+  * Nome popular e nome científico da planta/flor
+  * Origem geográfica da espécie
+  * Se gosta de sol direto, meia-sombra ou sombra
+  * Frequência ideal de rega (quantas vezes por dia/semana)
+  * Tipo de solo/substrato ideal
+  * Temperatura ideal de cultivo
+  * Se é comestível ou não
+  * Se é tóxica/venenosa para humanos ou pets
+  * Doenças e pragas mais comuns
+  * Época de floração
+  * Dicas de poda e manutenção
+  * Curiosidades sobre a espécie
+- mainSubject DEVE ser o nome da planta/flor em INGLÊS (ex: "Phalaenopsis orchid", "Lavender plant", "Echeveria succulent")
+- visualContext DEVE descrever a planta/flor em um cenário de jardim ou vaso decorativo
+- galleryPrompts DEVEM mostrar a MESMA planta/flor em 6 ângulos diferentes:
+  1. Visão geral da planta inteira
+  2. Close-up da flor/folhagem
+  3. Detalhe das raízes ou caule
+  4. Planta em vaso decorativo
+  5. Planta no jardim/canteiro
+  6. Arranjo ou composição com outras plantas
+- CADA gallery prompt DEVE mencionar o nome da planta em inglês
+` : '';
+
     const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
 
 - Blog homegardenmanual.com focado em casa e jardim
@@ -489,7 +521,8 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 - Inclua valores ESPECÍFICOS em Reais
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO em ângulos diferentes
-- content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito`;
+- content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
+${plantFlowerInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -755,6 +788,8 @@ Retorne APENAS JSON válido (sem markdown code blocks):
       categoryMatch = categories.find(c => c.slug === 'nordico');
     } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'neo-classico');
+    } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
     } else if (/jardim/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'jardim');
     }
