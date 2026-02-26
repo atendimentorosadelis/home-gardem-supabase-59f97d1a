@@ -429,7 +429,7 @@ Os links devem aparecer DENTRO do texto de forma natural.
 
 ## 6. ERROS COMUNS A EVITAR - COM HISTÓRIAS (350-450 palavras)
 
-## 7. QUANTO CUSTA? VALORES DETALHADOS EM REAIS (200-300 palavras)
+## 7. QUANTO CUSTA? VALORES DETALHADOS EM DÓLARES/USD (200-300 palavras)
 
 ## 8. FAQ - PERGUNTAS FREQUENTES (400-500 palavras)
 
@@ -549,7 +549,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
   * COMO AGUAR: frequência exata de rega (quantas vezes por dia ou por semana), quantidade de água recomendada, e HORÁRIO IDEAL para aguar (ex: manhã cedo antes das 9h ou fim da tarde após as 16h) — explicar POR QUÊ esse horário é melhor
   * COMO CUIDAR: poda, replantio, proteção contra frio/calor extremo, sinais de que a planta precisa de atenção
   * BENEFÍCIOS PARA A SAÚDE: nutrientes principais (vitaminas, minerais), para quais condições de saúde faz bem, e se há contraindicações
-  * VALOR ESTIMADO: preço médio de mudas e sementes em Reais (R$), onde comprar (mercados, floriculturas, online), e custo-benefício do cultivo caseiro vs comprar pronto
+  * VALOR ESTIMADO: preço médio de mudas e sementes em Dólares (USD/$), onde comprar (garden centers, nurseries, online), e custo-benefício do cultivo caseiro vs comprar pronto
   * TIPOS DE FERTILIZANTE: fertilizantes naturais recomendados com detalhes (compostagem, bokashi, húmus de minhoca, casca de ovo triturada, borra de café, etc.) — frequência de adubação e como aplicar
   * Remédios naturais contra pragas (calda de fumo, óleo de neem, água com sabão neutro, etc.) — como preparar e aplicar
   * Pragas e doenças mais comuns e como identificar e combater
@@ -581,7 +581,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
 - Tom: confissão íntima de um estudante de arquitetura apaixonado
 - MÍNIMO 2.200 palavras
 - Inclua tabela comparativa com 7+ linhas
-- Inclua valores ESPECÍFICOS em Reais
+- Inclua valores ESPECÍFICOS em Dólares (USD)
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
@@ -914,7 +914,7 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
 
 1. **Qual é o orçamento ideal para ${topicLower}?**
 
-Depende muito do tamanho do projeto e dos materiais escolhidos. Na minha experiência, é possível começar com investimentos a partir de R$ 500 para projetos menores.
+Depende muito do tamanho do projeto e dos materiais escolhidos. Na minha experiência, é possível começar com investimentos a partir de $50 para projetos menores.
 
 2. **Quanto tempo leva para fazer ${topicLower}?**
 
