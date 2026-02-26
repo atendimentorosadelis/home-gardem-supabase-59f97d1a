@@ -445,16 +445,18 @@ function GenerateManualContentPage() {
           </div>
         </div>
 
-        {/* Progress Section */}
-        <div ref={progressRef}>
-          <GenerationProgressHero
-            steps={steps}
-            startTime={startTime ?? undefined}
-            isGenerating={isGenerating}
-            onCancel={cancelGeneration}
-            topic={currentTopic}
-          />
-        </div>
+        {/* Progress Section - hide when preview/approval is showing */}
+        {!showPreview && !showImageApproval && (
+          <div ref={progressRef}>
+            <GenerationProgressHero
+              steps={steps}
+              startTime={startTime ?? undefined}
+              isGenerating={isGenerating}
+              onCancel={cancelGeneration}
+              topic={currentTopic}
+            />
+          </div>
+        )}
 
         {/* Category Selection Cards */}
         {showCategorySelection && (
