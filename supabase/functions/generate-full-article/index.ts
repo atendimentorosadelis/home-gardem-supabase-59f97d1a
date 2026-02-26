@@ -524,24 +524,25 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
   EXEMPLOS CORRETOS: "Manjericão: como essa erva aromática conquistou minha cozinha e meu jardim", "Alface Americana: tudo que aprendi cultivando em casa", "Couve-manteiga: a rainha da minha horta urbana"
   EXEMPLOS ERRADOS (PROIBIDOS): "Horta: o que aprendi na prática", "Dicas de cultivo", "Minha horta favorita" — títulos genéricos SEM o nome da hortaliça/erva são PROIBIDOS.
 - O título deve ser pessoal, charmoso e em primeira pessoa, MAS SEMPRE mencionando o nome da hortaliça/erva.
-- O artigo DEVE incluir obrigatoriamente:
+- O artigo DEVE incluir obrigatoriamente TODAS estas informações detalhadas:
   * Nome popular e nome científico da hortaliça/erva
   * Origem geográfica da espécie
-  * Nutrientes principais e benefícios para a saúde
-  * Se faz bem ou mal para determinadas condições de saúde
-  * Tipos de cultivo (solo direto, vaso, hidroponia, canteiro elevado)
-  * Se gosta de sol direto, meia-sombra ou sombra
-  * Frequência ideal de rega
-  * Tipo de solo/substrato ideal e adubação
-  * Fertilizantes naturais recomendados (compostagem, bokashi, húmus de minhoca, etc.)
-  * Remédios naturais contra pragas (calda de fumo, óleo de neem, etc.)
-  * Pragas e doenças mais comuns e como combater
-  * Época ideal de plantio e colheita
-  * Tempo do plantio até a colheita
-  * Espaçamento entre mudas
+  * COMO PLANTAR: passo a passo detalhado desde a preparação do solo/vaso até o plantio da muda ou semente (profundidade, espaçamento entre mudas, tipo de vaso ideal)
+  * COMO AGUAR: frequência exata de rega (quantas vezes por dia ou por semana), quantidade de água recomendada, e HORÁRIO IDEAL para aguar (ex: manhã cedo antes das 9h ou fim da tarde após as 16h) — explicar POR QUÊ esse horário é melhor
+  * COMO CUIDAR: poda, replantio, proteção contra frio/calor extremo, sinais de que a planta precisa de atenção
+  * BENEFÍCIOS PARA A SAÚDE: nutrientes principais (vitaminas, minerais), para quais condições de saúde faz bem, e se há contraindicações
+  * VALOR ESTIMADO: preço médio de mudas e sementes em Reais (R$), onde comprar (mercados, floriculturas, online), e custo-benefício do cultivo caseiro vs comprar pronto
+  * TIPOS DE FERTILIZANTE: fertilizantes naturais recomendados com detalhes (compostagem, bokashi, húmus de minhoca, casca de ovo triturada, borra de café, etc.) — frequência de adubação e como aplicar
+  * Remédios naturais contra pragas (calda de fumo, óleo de neem, água com sabão neutro, etc.) — como preparar e aplicar
+  * Pragas e doenças mais comuns e como identificar e combater
+  * Tipos de cultivo (solo direto, vaso, jardineira, hidroponia, canteiro elevado) — vantagens de cada um
+  * Se gosta de sol direto, meia-sombra ou sombra — quantas horas de sol por dia
+  * Tipo de solo/substrato ideal
+  * Época ideal de plantio e colheita (meses do ano)
+  * Tempo estimado do plantio até a primeira colheita
   * Receitas caseiras ou dicas culinárias com a hortaliça/erva
   * Curiosidades sobre a espécie
-  * Se pode ser cultivada em apartamento
+  * Se pode ser cultivada em apartamento (vasos, jardineiras na janela)
 - mainSubject DEVE ser o nome da hortaliça/erva em INGLÊS (ex: "fresh basil herb plant", "lettuce vegetable garden", "kale collard greens plant")
 - visualContext DEVE descrever a hortaliça/erva em um cenário de horta, canteiro ou vaso
 - galleryPrompts DEVEM mostrar a MESMA hortaliça/erva em 6 ângulos diferentes:
