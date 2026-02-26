@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const FALLBACK_GA_ID = "G-5TZK11NWMC";
@@ -44,10 +45,20 @@ export function GoogleAnalytics() {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', '${gaId}');
+      gtag('config', '${gaId}', { send_page_view: false });
     `;
     document.head.appendChild(inlineScript);
   }, [gaId]);
+
+  // Track SPA route changes
+  const location = useLocation();
+  useEffect(() => {
+    if (!gaId || !(window as any).gtag) return;
+    (window as any).gtag('event', 'page_view', {
+      page_path: location.pathname + location.search,
+      page_title: document.title,
+    });
+  }, [location.pathname, location.search, gaId]);
 
   return null;
 }
