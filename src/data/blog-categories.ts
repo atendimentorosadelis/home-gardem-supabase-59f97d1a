@@ -18,8 +18,7 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
     'jardim', 'decoracao-jardim', 'cuidados-plantacao', 'jardim-vertical',
     'suculentas-cactos', 'horta-de-ervas', 'flores-ornamentais',
     'paisagismo', 'hidroponia', 'jardim-sustentavel', 'decoracao-halloween',
-    'nomes-cuidados-plantas-flores',
-    'hortas-ervas-cuidados',
+    'nomes-cuidados-plantas-flores', 'hortas-ervas-cuidados',
   ],
   'arquitetura': [
     'colonial', 'industrial', 'moderno', 'neolitico',
