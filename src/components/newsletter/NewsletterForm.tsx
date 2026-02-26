@@ -16,6 +16,7 @@ interface NewsletterFormProps {
 export function NewsletterForm({ source = 'footer', className = '' }: NewsletterFormProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -41,6 +42,7 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
         .from('newsletter_subscribers')
         .insert({
           email: validation.data.toLowerCase(),
+          name: name.trim() || null,
           language: i18n.language || 'pt-BR',
         } as any);
 
@@ -59,6 +61,7 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
 
       setIsSubscribed(true);
       setEmail('');
+      setName('');
 
       toast({
         title: t('newsletter.success', '🎉 Inscrição realizada!'),
@@ -93,12 +96,20 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
         <Mail className="h-4 w-4" />
         {t('footer.newsletter', 'Receba nossas novidades')}
       </p>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder={t('newsletter.namePlaceholder', 'Your name')}
+        className="w-full px-4 py-3 text-sm bg-secondary border border-border rounded-full placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+        disabled={isSubmitting}
+      />
       <div className="flex gap-2">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder={t('footer.newsletterPlaceholder', 'Seu melhor e-mail')}
+          placeholder={t('footer.newsletterPlaceholder', 'Your best e-mail')}
           className="flex-1 px-4 py-3 text-sm bg-secondary border border-border rounded-full placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
           required
           disabled={isSubmitting}
@@ -112,7 +123,7 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              <span className="hidden sm:inline">{t('footer.subscribe', 'Inscrever')}</span>
+              <span className="hidden sm:inline">{t('footer.subscribe', 'Subscribe')}</span>
               <ArrowRight size={16} />
             </>
           )}
