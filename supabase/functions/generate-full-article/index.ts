@@ -776,9 +776,25 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
     let categoryMatch: typeof categories[0] | undefined = undefined;
     const topicLower = topic.toLowerCase();
     
-    // Specific topic patterns - checked FIRST for accuracy
-    if (/sala\s*de\s*jantar/i.test(topicLower)) {
+    // MOST SPECIFIC patterns checked FIRST - order matters!
+    // 1. Multi-word specific themes (must come before generic single-word matches)
+    if (/hortas.*ervas.*cuidados|hortas.*cuidados|cuidados.*hortalic|hortas.*ervas|jardim.*hortas/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'hortas-ervas-cuidados');
+    } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores|nomes.*cuidados/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
+    } else if (/sala\s*de\s*jantar/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'sala-de-jantar');
+    } else if (/[aá]rea\s*de\s*servi[cç]o/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'area-de-servico');
+    } else if (/jardim\s*vertical/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'jardim-vertical');
+    } else if (/jardim\s*sustent/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'jardim-sustentavel');
+    } else if (/decora[çc][ãa]o.*jardim|jardim.*decora[çc][ãa]o/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'decoracao-jardim');
+    } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'neo-classico');
+    // 2. Single-word specific matches
     } else if (/\bsala\b/i.test(topicLower) && !/jantar/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'sala');
     } else if (/lareira/i.test(topicLower)) {
@@ -795,8 +811,6 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
       categoryMatch = categories.find(c => c.slug === 'cozinha');
     } else if (/varanda/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'varanda');
-    } else if (/[aá]rea\s*de\s*servi[cç]o/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'area-de-servico');
     } else if (/piscina/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'piscina');
     } else if (/halloween/i.test(topicLower)) {
@@ -807,22 +821,13 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
       categoryMatch = categories.find(c => c.slug === 'paisagismo');
     } else if (/suculenta|cacto/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'suculentas-cactos');
-    } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores|nomes.*cuidados/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
-    } else if (/hortas.*ervas.*cuidados|hortas.*cuidados|cuidados.*hortalic|hortas.*ervas/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'hortas-ervas-cuidados');
-    } else if (/ervas|horta/i.test(topicLower)) {
+    } else if (/cuidado.*planta|planta[çc][ãa]o/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'cuidados-plantacao');
+    // 3. Generic single-word matches (LAST to avoid overriding specific ones)
+    } else if (/ervas|horta\b/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'horta-de-ervas');
     } else if (/flores|ornament/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'flores-ornamentais');
-    } else if (/jardim\s*vertical/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'jardim-vertical');
-    } else if (/jardim\s*sustent/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'jardim-sustentavel');
-    } else if (/cuidado.*planta|planta[çc][ãa]o/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'cuidados-plantacao');
-    } else if (/decora[çc][ãa]o.*jardim|jardim.*decora[çc][ãa]o/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'decoracao-jardim');
     } else if (/neol[ií]t/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'neolitico');
     } else if (/colonial/i.test(topicLower)) {
@@ -835,8 +840,6 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}`;
       categoryMatch = categories.find(c => c.slug === 'europeu');
     } else if (/n[oó]rdico/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'nordico');
-    } else if (/neo\s*cl[aá]ssico/i.test(topicLower)) {
-      categoryMatch = categories.find(c => c.slug === 'neo-classico');
     } else if (/jardim/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'jardim');
     }
