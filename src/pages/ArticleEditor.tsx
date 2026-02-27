@@ -68,6 +68,7 @@ const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
   { name: 'Europeu', slug: 'europeu', icon: Building2 },
   { name: 'Nórdico', slug: 'nordico', icon: Building2 },
   { name: 'Neo Clássico', slug: 'neo-classico', icon: Building2 },
+  { name: 'Dicas de Pintura', slug: 'dicas-de-pintura', icon: Palette },
   // Genéricas
   { name: 'Design Interno', slug: 'design-interno', icon: Home },
   { name: 'Decoração', slug: 'decoracao', icon: Palette },

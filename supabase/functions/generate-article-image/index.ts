@@ -53,6 +53,13 @@ const subjectTranslations: Record<string, string> = {
   'iluminação': 'lighting design', 'móveis': 'furniture design',
   'tapete': 'rug and carpet design', 'cortina': 'curtain and drapes',
   'terraço': 'terrace garden', 'quintal': 'backyard garden',
+  'dicas de pintura': 'wall painting techniques and textures, paint roller on wall, vibrant colors',
+  'pintura': 'wall painting techniques, paint roller, fresh painted wall, vibrant colors',
+  'textura': 'decorative wall texture finish, grafiato texture, artistic wall coating',
+  'cimento queimado': 'burnt cement wall finish, polished concrete texture, modern industrial wall',
+  'grafiato': 'grafiato textured wall finish, decorative plaster texture, exterior wall coating',
+  'verniz': 'wood varnish application, glossy wood finish, woodworking protection coating',
+  'tinta': 'interior wall paint colors, paint swatches, home painting project',
 };
 
 // Map architecture category slugs to detailed style-specific prompts
@@ -84,6 +91,10 @@ const architectureStylePrompts: Record<string, { subject: string; details: strin
   'neo-classico': {
     subject: 'neoclassical architecture exterior facade, grand Corinthian columns, symmetrical pediment, monumental staircase',
     details: 'neoclassical building with marble facade, ionic or corinthian columns, triangular pediment, balanced proportions, formal gardens',
+  },
+  'dicas-de-pintura': {
+    subject: 'professional wall painting techniques, paint roller applying color on wall, decorative textures, grafiato finish, burnt cement effect',
+    details: 'painting supplies arrangement, paint cans with vibrant color swatches, textured wall samples showing grafiato and burnt cement finishes, wood varnish application, professional painter tools, brush strokes on surface, before and after wall transformation',
   },
   'arquitetura': {
     subject: 'stunning architecture exterior facade, building front view, structural design, outdoor perspective',

@@ -22,7 +22,7 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
   ],
   'arquitetura': [
     'colonial', 'industrial', 'moderno', 'neolitico',
-    'europeu', 'nordico', 'neo-classico',
+    'europeu', 'nordico', 'neo-classico', 'dicas-de-pintura',
   ],
 };
 
@@ -98,4 +98,5 @@ export const ALL_SUB_NICHES: SubNiche[] = [
   { name: 'Flores Ornamentais', icon: Flower2 },
   { name: 'Nomes e Cuidados Plantas e Flores', icon: Sprout },
   { name: 'Hortas, Ervas e Cuidados', icon: Leaf },
+  { name: 'Dicas de Pintura', icon: PaintBucket },
 ];
