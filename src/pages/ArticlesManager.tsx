@@ -326,10 +326,10 @@ function ArticlesManagerContent() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+       <div className="space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Artigos</h1>
-          <p className="text-muted-foreground">Gerencie todos os artigos do site</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Artigos</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Gerencie todos os artigos do site</p>
         </div>
 
         <Card className="border-border/50">
@@ -340,15 +340,15 @@ function ArticlesManagerContent() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                <div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <ImageIcon className="h-5 w-5 text-muted-foreground shrink-0" />
+                <div className="min-w-0">
                   <Label htmlFor="approval-toggle" className="font-medium">Aprovação de Imagens</Label>
-                  <p className="text-sm text-muted-foreground">Revise e aprove cada imagem antes de salvar o artigo</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Revise e aprove cada imagem antes de salvar</p>
                 </div>
               </div>
-              <Switch id="approval-toggle" checked={requireApproval} onCheckedChange={setRequireApproval} />
+              <Switch id="approval-toggle" checked={requireApproval} onCheckedChange={setRequireApproval} className="shrink-0" />
             </div>
           </CardContent>
         </Card>
@@ -356,12 +356,12 @@ function ArticlesManagerContent() {
         {/* Migration Button */}
         <Card className="border-border/50">
           <CardContent className="py-4">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="min-w-0">
                 <p className="font-medium text-sm">Migrar Artigos do Supabase Antigo</p>
-                <p className="text-xs text-muted-foreground">Importa artigos, conclusões emocionais e vídeos. Duplicados são ignorados automaticamente.</p>
+                <p className="text-xs text-muted-foreground">Importa artigos, conclusões e vídeos. Duplicados ignorados.</p>
               </div>
-              <Button size="sm" variant="outline" onClick={handleMigrateArticles} disabled={isMigrating}>
+              <Button size="sm" variant="outline" onClick={handleMigrateArticles} disabled={isMigrating} className="shrink-0 w-full sm:w-auto">
                 {isMigrating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <DatabaseIcon className="h-4 w-4 mr-2" />}
                 {isMigrating ? 'Migrando...' : 'Migrar Artigos'}
               </Button>
@@ -381,14 +381,14 @@ function ArticlesManagerContent() {
                   )}
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 {selectedArticles.size > 0 && (
                   <Button variant="destructive" size="sm" onClick={() => setShowBulkDeleteDialog(true)} className="shrink-0">
                     <Trash2 className="h-4 w-4 mr-2" />Excluir ({selectedArticles.size})
                   </Button>
                 )}
                 <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-                  <SelectTrigger className="w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
+                  <SelectTrigger className="w-full sm:w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="published">Publicados</SelectItem>
@@ -528,7 +528,7 @@ function ArticlesManagerContent() {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+                <div className="flex flex-col items-center gap-3 mt-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>Exibindo</span>
                     <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
@@ -541,9 +541,9 @@ function ArticlesManagerContent() {
                     </Select>
                     <span>de {totalCount} ({startItem}-{endItem})</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                      <ChevronLeft className="h-4 w-4" />Anterior
+                  <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
+                    <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="h-8 px-2 sm:px-3">
+                      <ChevronLeft className="h-4 w-4" /><span className="hidden sm:inline">Anterior</span>
                     </Button>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -559,8 +559,8 @@ function ArticlesManagerContent() {
                         );
                       })}
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                      Próximo<ChevronRight className="h-4 w-4" />
+                    <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="h-8 px-2 sm:px-3">
+                      <span className="hidden sm:inline">Próximo</span><ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
