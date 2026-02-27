@@ -104,6 +104,7 @@ const DESIGN_AREAS_SERVICO: SubnicheItem[] = [
   { id: 'varanda', label: 'Varanda', icon: Sun },
   { id: 'area-servico', label: 'Área de Serviço', icon: WashingMachine },
   { id: 'piscina', label: 'Piscina', icon: Waves },
+  { id: 'dicas-de-pintura', label: 'Dicas de Pintura', icon: PaintBucket },
 ];
 
 const JARDIM_TEMAS_GERAIS: SubnicheItem[] = [
@@ -130,7 +131,6 @@ const ARQUITETURA_SUBNICHES: SubnicheItem[] = [
   { id: 'europeu', label: 'Europeu', icon: Church },
   { id: 'nordico', label: 'Nórdico', icon: Snowflake },
   { id: 'neo-classico', label: 'Neo Clássico', icon: Columns3 },
-  { id: 'dicas-de-pintura', label: 'Dicas de Pintura', icon: PaintBucket },
 ];
 
 function GenerateManualContentPage() {

@@ -92,10 +92,6 @@ const architectureStylePrompts: Record<string, { subject: string; details: strin
     subject: 'neoclassical architecture exterior facade, grand Corinthian columns, symmetrical pediment, monumental staircase',
     details: 'neoclassical building with marble facade, ionic or corinthian columns, triangular pediment, balanced proportions, formal gardens',
   },
-  'dicas-de-pintura': {
-    subject: 'professional wall painting techniques, paint roller applying color on wall, decorative textures, grafiato finish, burnt cement effect',
-    details: 'painting supplies arrangement, paint cans with vibrant color swatches, textured wall samples showing grafiato and burnt cement finishes, wood varnish application, professional painter tools, brush strokes on surface, before and after wall transformation',
-  },
   'arquitetura': {
     subject: 'stunning architecture exterior facade, building front view, structural design, outdoor perspective',
     details: 'impressive architectural structure, professional exterior photography, clear sky, landscaped surroundings',
