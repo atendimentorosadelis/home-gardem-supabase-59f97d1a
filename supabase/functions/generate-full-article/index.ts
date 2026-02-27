@@ -258,13 +258,17 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
   let galleryPrompts = data.galleryPrompts || [];
 
   if (!mainSubject || mainSubject.trim().length < 5) {
-    mainSubject = 'home interior design element';
+    mainSubject = 'home design element';
     console.warn('[ImageValidation] Invalid mainSubject, using fallback');
   }
 
   if (!visualContext || visualContext.trim().length < 5) {
-    visualContext = 'modern home interior with natural lighting';
-    console.warn('[ImageValidation] Invalid visualContext, using fallback');
+    const archKeywords = ['facade', 'exterior', 'colonial', 'industrial', 'modern building', 'neolithic', 'european', 'nordic', 'neoclassical', 'architecture'];
+    const isArch = archKeywords.some(k => mainSubject.toLowerCase().includes(k));
+    visualContext = isArch
+      ? 'building exterior facade, street view, clear sky, natural daylight'
+      : 'modern home interior with natural lighting';
+    console.warn('[ImageValidation] Invalid visualContext, using fallback:', visualContext);
   }
 
   const validation = validateGalleryPrompts(galleryPrompts, mainSubject);
@@ -570,6 +574,26 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
 - CADA gallery prompt DEVE mencionar o nome da planta em inglês
 ` : '';
 
+    const architectureSlugs = ['colonial', 'industrial', 'moderno', 'neolitico', 'europeu', 'nordico', 'neo-classico'];
+    const isArchitectureTopic = architectureSlugs.some(s => topicLower.includes(s)) || /arquitetura/i.test(topicLower);
+
+    const architectureInstructions = isArchitectureTopic ? `
+INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Arquitetura):
+⚠️ REGRA CRÍTICA DE IMAGENS: Todas as imagens devem ser de FACHADAS EXTERNAS e ESTRUTURAS EXTERNAS.
+- NUNCA gere imagens de interiores, móveis, salas internas ou ambientes internos.
+- mainSubject DEVE descrever a FACHADA ou ESTRUTURA EXTERNA do edifício em INGLÊS (ex: "colonial architecture exterior facade with ornate balconies", "modern building exterior with glass curtain wall")
+- visualContext DEVE descrever o AMBIENTE EXTERNO: rua, bairro, paisagem urbana, céu, jardim frontal (ex: "tree-lined residential street, clear blue sky, front yard with landscaping")
+- galleryPrompts DEVEM mostrar a MESMA EDIFICAÇÃO EXTERNA em 6 ângulos diferentes:
+  1. Fachada frontal completa (wide-angle front view of building exterior facade)
+  2. Detalhe arquitetônico externo (close-up of exterior architectural details, columns, moldings, window frames)
+  3. Vista lateral da edificação (side view of building exterior showing structural depth)
+  4. Vista angular dramática (low angle dramatic shot of building facade against sky)
+  5. Contexto urbano/paisagístico (building exterior in its urban/landscape context, street view)
+  6. Vista aérea ou de cima (high angle overview of building rooftop and exterior structure)
+- CADA gallery prompt DEVE incluir "exterior", "facade" ou "building exterior" e NUNCA "interior", "room", "indoor"
+- PROIBIDO nos prompts: "interior", "indoor", "room", "furniture", "living room", "bedroom", "kitchen"
+` : '';
+
     const isVegetableHerbCareTopic = /hortas.*ervas.*cuidados|hortas.*cuidados.*hortalic|cuidados.*hortalic/i.test(topic.toLowerCase());
 
     const vegetableHerbInstructions = isVegetableHerbCareTopic ? `
@@ -620,9 +644,9 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
 - Inclua tabela comparativa com 7+ linhas
 - Inclua valores ESPECÍFICOS em Dólares (USD)
 - NÃO GERE CONCLUSÃO EMOCIONAL
-- galleryPrompts: 6 prompts do MESMO CÔMODO em ângulos diferentes
+- galleryPrompts: 6 prompts do MESMO CÔMODO/EDIFICAÇÃO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}${vegetableHerbInstructions}`;
+${plantFlowerInstructions}${vegetableHerbInstructions}${architectureInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
