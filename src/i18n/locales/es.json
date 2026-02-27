@@ -13,6 +13,75 @@
     "logout": "Cerrar Sesión",
     "checkingPermissions": "Verificando permisos..."
   },
+  "common": {
+    "readMore": "Leer más",
+    "back": "Volver",
+    "loading": "Cargando...",
+    "theme": "Tema",
+    "language": "Idioma"
+  },
+  "article": {
+    "introLabel": "Introducción",
+    "tipLabel": "Consejo de Keven",
+    "warningLabel": "Atención",
+    "reflectionLabel": "Reflexión",
+    "didYouKnowLabel": "¿Sabías que?",
+    "readingTime": "de lectura",
+    "views": "vistas",
+    "by": "Por",
+    "share": "Compartir:",
+    "translating": "Traduciendo...",
+    "translated": "Traducido",
+    "showOriginal": "Ver original",
+    "showTranslation": "Ver traducción",
+    "relatedArticles": "Artículos Relacionados",
+    "relatedDescription": "Sigue explorando más contenido sobre",
+    "linkCopied": "¡Enlace copiado!",
+    "copyError": "Error al copiar",
+    "backToHome": "Volver al inicio",
+    "likes": "Me gusta",
+    "shareWhatsApp": "Compartir en WhatsApp",
+    "shareTwitter": "Compartir en X (Twitter)",
+    "shareFacebook": "Compartir en Facebook",
+    "savePinterest": "Guardar en Pinterest",
+    "copyLink": "Copiar enlace"
+  },
+  "categories": {
+    "decoracao": "Decoración",
+    "design-interno": "Diseño Interior",
+    "jardim": "Jardín",
+    "arquitetura": "Arquitectura",
+    "plantas-interior": "Plantas de Interior",
+    "diy-projetos": "DIY y Proyectos",
+    "diy": "DIY",
+    "sustentabilidade": "Sostenibilidad",
+    "moveis-organizacao": "Muebles y Organización",
+    "tendencias": "Tendencias",
+    "iluminacao": "Iluminación",
+    "datas-comemorativas": "Fechas Conmemorativas",
+    "default": "Artículo"
+  },
+  "categoryPages": {
+    "category": "Categoría",
+    "gardenTitle": "Consejos de Jardín",
+    "gardenDesc": "Consejos prácticos y perspectivas de expertos para ayudar a tu jardín a prosperar en todas las estaciones.",
+    "indoorPlantsTitle": "Plantas de Interior",
+    "indoorPlantsDesc": "Transforma tus espacios con plantas de interior. Guías de cuidado, consejos de decoración y recomendaciones de especies.",
+    "manualsTitle": "Manuales y DIY",
+    "manualsDesc": "Guías paso a paso completas para tus proyectos de jardinería y decoración.",
+    "noArticles": "No se encontraron artículos en esta categoría."
+  },
+  "postsGrid": {
+    "title": "Últimos Artículos",
+    "subtitle": "De Nuestro Blog"
+  },
+  "gallery": {
+    "title": "Galería de Inspiración",
+    "regenerate": "Regenerar",
+    "generating": "Generando...",
+    "imageAlt": "Imagen de inspiración",
+    "enlargedAlt": "Imagen ampliada"
+  },
   "nav": {
     "home": "Inicio",
     "blog": "Blog",

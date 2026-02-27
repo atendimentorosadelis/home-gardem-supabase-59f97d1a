@@ -110,7 +110,12 @@
     "translated": "Translated",
     "showOriginal": "View original",
     "likes": "Likes",
-    "showTranslation": "View translation"
+    "showTranslation": "View translation",
+    "introLabel": "Introduction",
+    "tipLabel": "Keven's Tip",
+    "warningLabel": "Warning",
+    "reflectionLabel": "Reflection",
+    "didYouKnowLabel": "Did You Know?"
   },
   "gallery": {
     "title": "Inspiration Gallery",
@@ -133,6 +138,16 @@
     "iluminacao": "Lighting",
     "datas-comemorativas": "Seasonal Holidays",
     "default": "Article"
+  },
+  "categoryPages": {
+    "category": "Category",
+    "gardenTitle": "Garden Tips",
+    "gardenDesc": "Practical advice and expert insights to help your garden thrive in every season.",
+    "indoorPlantsTitle": "Indoor Plants",
+    "indoorPlantsDesc": "Transform your spaces with indoor plants. Care guides, decoration tips, and species recommendations.",
+    "manualsTitle": "Manuals & DIY",
+    "manualsDesc": "Complete step-by-step guides for your gardening and decoration projects.",
+    "noArticles": "No articles found in this category."
   },
   "about": {
     "label": "About Us",
