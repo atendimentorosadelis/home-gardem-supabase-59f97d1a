@@ -407,7 +407,7 @@ function ArticlesManagerContent() {
               <div className="flex items-center justify-center h-48"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
             ) : articles.length > 0 ? (
               <>
-                <div className="hidden md:block rounded-md border border-border/50 overflow-hidden">
+                <div className="hidden lg:block rounded-md border border-border/50 overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/50">
@@ -495,7 +495,7 @@ function ArticlesManagerContent() {
                 </div>
 
                 {/* Mobile Cards */}
-                <div className="md:hidden space-y-3">
+                <div className="lg:hidden space-y-3">
                   {articles.map((article) => (
                     <div key={article.id} className={`border rounded-lg p-3 bg-card space-y-2 ${selectedArticles.has(article.id) ? 'border-primary/50 bg-primary/5' : ''}`}>
                       <div className="flex items-start justify-between gap-2">
