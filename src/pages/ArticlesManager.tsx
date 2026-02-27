@@ -497,29 +497,53 @@ function ArticlesManagerContent() {
                 {/* Mobile Cards */}
                 <div className="md:hidden space-y-3">
                   {articles.map((article) => (
-                    <div key={article.id} className="border rounded-lg p-4 bg-card space-y-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium line-clamp-2">{article.title}</p>
-                          {article.excerpt && <p className="text-sm text-muted-foreground line-clamp-1 mt-1">{article.excerpt}</p>}
+                    <div key={article.id} className={`border rounded-lg p-3 bg-card space-y-2 ${selectedArticles.has(article.id) ? 'border-primary/50 bg-primary/5' : ''}`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1 cursor-pointer" onClick={() => navigate(`/admin/articles/${article.id}`)}>
+                          <p className="font-medium text-sm line-clamp-2">{article.title}</p>
+                          {article.excerpt && <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{article.excerpt}</p>}
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 shrink-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/admin/articles/${article.id}`)}><Pencil className="h-4 w-4 mr-2" />Editar</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive" onClick={() => setDeleteArticle(article)}><Trash2 className="h-4 w-4 mr-2" />Excluir</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-0.5 shrink-0">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/admin/articles/${article.id}`)} title="Editar">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {getArticleUrl(article) && (
+                                <DropdownMenuItem asChild>
+                                  <a href={getArticleUrl(article)!} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                                    <Eye className="h-4 w-4 mr-2" />Visualizar<ExternalLink className="h-3 w-3 ml-auto opacity-50" />
+                                  </a>
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem onClick={() => navigate(`/admin/articles/${article.id}`)}><Pencil className="h-4 w-4 mr-2" />Editar</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => generateFAQMutation.mutate(article.id)} disabled={generatingFaqForId === article.id}>
+                                {generatingFaqForId === article.id ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <MessageSquarePlus className="h-4 w-4 mr-2" />}Gerar FAQ
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => generateConclusionMutation.mutate(article.id)} disabled={generatingConclusionForId === article.id}>
+                                {generatingConclusionForId === article.id ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Heart className="h-4 w-4 mr-2" />}Gerar Conclusão
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              {article.status === 'published' ? (
+                                <DropdownMenuItem onClick={() => updateStatusMutation.mutate({ id: article.id, status: 'draft' })}><FileText className="h-4 w-4 mr-2" />Despublicar</DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem onClick={() => updateStatusMutation.mutate({ id: article.id, status: 'published', title: article.title, article })}><Globe className="h-4 w-4 mr-2" />Publicar</DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteArticle(article)}><Trash2 className="h-4 w-4 mr-2" />Excluir</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge variant="outline" className="text-xs">{article.category || 'Sem categoria'}</Badge>
-                          <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-xs">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">{article.category || 'Sem categoria'}</Badge>
+                          <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0">
                             {article.status === 'published' ? 'Publicado' : 'Rascunho'}
                           </Badge>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1"><Eye className="h-3 w-3" />{viewCounts[article.id] || 0}</span>
-                          <span className="text-xs text-muted-foreground">{formatDate(article.published_at || article.created_at)}</span>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><Eye className="h-3 w-3" />{viewCounts[article.id] || 0}</span>
+                          <span className="text-[10px] text-muted-foreground">{formatDate(article.published_at || article.created_at)}</span>
                         </div>
                         <Checkbox checked={selectedArticles.has(article.id)} onCheckedChange={(checked) => handleSelectArticle(article.id, !!checked)} />
                       </div>
