@@ -166,25 +166,36 @@ function GenerateManualContentPage() {
   }, []);
 
   useEffect(() => {
-    if (article && !isGenerating && articleSavedId) {
-      // Check if the article was already published externally (e.g., from Articles Manager)
-      supabase
-        .from('content_articles')
-        .select('status')
-        .eq('id', articleSavedId)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data?.status === 'published') {
-            // Article was published elsewhere — clear the stale preview
-            resetToSelectionScreen();
-          } else {
-            setShowPreview(true);
-            setArticleSaved(true);
-          }
-        });
-    } else if (article && !isGenerating) {
-      setShowPreview(true);
-      setArticleSaved(true);
+    if (article && !isGenerating) {
+      // Always check the DB for the actual status before showing preview
+      const checkAndRestore = async () => {
+        // Try to find the article by ID or slug
+        let isPublished = false;
+        
+        if (articleSavedId) {
+          const { data } = await supabase
+            .from('content_articles')
+            .select('status')
+            .eq('id', articleSavedId)
+            .maybeSingle();
+          if (data?.status === 'published') isPublished = true;
+        } else if (article.slug) {
+          const { data } = await supabase
+            .from('content_articles')
+            .select('status')
+            .eq('slug', article.slug)
+            .maybeSingle();
+          if (data?.status === 'published') isPublished = true;
+        }
+
+        if (isPublished) {
+          resetToSelectionScreen();
+        } else {
+          setShowPreview(true);
+          setArticleSaved(true);
+        }
+      };
+      checkAndRestore();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
