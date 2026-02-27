@@ -127,11 +127,20 @@ serve(async (req) => {
       prompt = coverStyle;
     } else {
       const galleryDetail = customPrompt || 'detailed professional photography';
-      // For architecture: strip any "interior" words from the custom prompt
-      const cleanedDetail = isArchitectureSubject 
-        ? galleryDetail.replace(/\binterior\b/gi, 'exterior').replace(/\bindoor\b/gi, 'outdoor').replace(/\broom\b/gi, 'facade')
-        : galleryDetail;
-      prompt = `${subject}, ${cleanedDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+      if (isArchitectureSubject) {
+        // For architecture: ALWAYS force exterior/facade keywords in gallery prompts
+        const cleanedDetail = galleryDetail
+          .replace(/\binterior\b/gi, 'exterior')
+          .replace(/\bindoor\b/gi, 'outdoor')
+          .replace(/\broom\b/gi, 'facade')
+          .replace(/\bfurniture\b/gi, 'structural details')
+          .replace(/\bliving room\b/gi, 'building exterior')
+          .replace(/\bbedroom\b/gi, 'building facade')
+          .replace(/\bkitchen\b/gi, 'entrance');
+        prompt = `${subject}, exterior building facade, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+      } else {
+        prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+      }
     }
 
     console.log(`Generating ${type} image: ${prompt.substring(0, 100)}...`);

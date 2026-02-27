@@ -82,11 +82,11 @@ const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
 
 const IMAGE_PROMPTS = [
   { label: 'Capa', type: 'cover', promptSuffix: 'hero photograph, 16:9 aspect ratio, professional lighting' },
-  { label: 'Imagem 1', type: 'gallery', promptSuffix: 'detailed close-up shot, macro photography' },
-  { label: 'Imagem 2', type: 'gallery', promptSuffix: 'ambient lifestyle scene, cozy atmosphere' },
-  { label: 'Imagem 3', type: 'gallery', promptSuffix: 'practical application view, instructional style' },
-  { label: 'Imagem 4', type: 'gallery', promptSuffix: 'alternative perspective, creative angle' },
-  { label: 'Imagem 5', type: 'gallery', promptSuffix: 'beautiful setting, wide angle overview' },
+  { label: 'Imagem 1', type: 'gallery', promptSuffix: 'wide-angle establishing shot, full view, professional composition' },
+  { label: 'Imagem 2', type: 'gallery', promptSuffix: 'detailed close-up shot, textures and materials, macro photography' },
+  { label: 'Imagem 3', type: 'gallery', promptSuffix: 'side perspective view, structural details, creative angle' },
+  { label: 'Imagem 4', type: 'gallery', promptSuffix: 'low angle dramatic shot, looking upward, impressive scale' },
+  { label: 'Imagem 5', type: 'gallery', promptSuffix: 'high angle bird eye overview, full layout, wide perspective' },
 ];
 
 interface ArticleData {
