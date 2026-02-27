@@ -41,6 +41,7 @@ import {
   Sparkles,
   ArrowRight,
   Ghost,
+  PaintBucket,
   type LucideIcon
 } from 'lucide-react';
 import { AIIcon } from '@/components/AIIcon';
@@ -129,6 +130,7 @@ const ARQUITETURA_SUBNICHES: SubnicheItem[] = [
   { id: 'europeu', label: 'Europeu', icon: Church },
   { id: 'nordico', label: 'Nórdico', icon: Snowflake },
   { id: 'neo-classico', label: 'Neo Clássico', icon: Columns3 },
+  { id: 'dicas-de-pintura', label: 'Dicas de Pintura', icon: PaintBucket },
 ];
 
 function GenerateManualContentPage() {
