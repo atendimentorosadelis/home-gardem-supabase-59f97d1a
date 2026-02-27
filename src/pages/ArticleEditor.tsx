@@ -86,7 +86,7 @@ const IMAGE_PROMPTS = [
   { label: 'Imagem 2', type: 'gallery', promptSuffix: 'ambient lifestyle scene, cozy atmosphere' },
   { label: 'Imagem 3', type: 'gallery', promptSuffix: 'practical application view, instructional style' },
   { label: 'Imagem 4', type: 'gallery', promptSuffix: 'alternative perspective, creative angle' },
-  { label: 'Imagem 5', type: 'gallery', promptSuffix: 'beautiful home setting, interior design context' },
+  { label: 'Imagem 5', type: 'gallery', promptSuffix: 'beautiful setting, wide angle overview' },
 ];
 
 interface ArticleData {
@@ -939,7 +939,7 @@ export default function ArticleEditor() {
     let successCount = 0;
     let errorCount = 0;
     try {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < IMAGE_PROMPTS.length; i++) {
         setGeneratingImageIndex(i);
         try {
           const promptConfig = IMAGE_PROMPTS[i];
@@ -1000,7 +1000,7 @@ export default function ArticleEditor() {
 
       queryClient.invalidateQueries({ queryKey: ['article-edit', id] });
 
-      if (successCount === 6) {
+      if (successCount === IMAGE_PROMPTS.length) {
         toast.success('Todas as 6 imagens foram geradas com sucesso!');
       } else if (successCount > 0) {
         toast.warning(`${successCount} imagens geradas, ${errorCount} falharam`);
