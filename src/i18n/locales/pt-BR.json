@@ -110,7 +110,12 @@
     "translated": "Traduzido",
     "showOriginal": "Ver original",
     "likes": "Curtidas",
-    "showTranslation": "Ver tradução"
+    "showTranslation": "Ver tradução",
+    "introLabel": "Introdução",
+    "tipLabel": "Dica do Keven",
+    "warningLabel": "Atenção",
+    "reflectionLabel": "Reflexão",
+    "didYouKnowLabel": "Você Sabia?"
   },
   "gallery": {
     "title": "Galeria de Inspiração",
@@ -133,6 +138,16 @@
     "iluminacao": "Iluminação",
     "datas-comemorativas": "Datas Comemorativas",
     "default": "Artigo"
+  },
+  "categoryPages": {
+    "category": "Categoria",
+    "gardenTitle": "Dicas de Jardim",
+    "gardenDesc": "Conselhos práticos e insights de especialistas para ajudar seu jardim a prosperar em todas as estações.",
+    "indoorPlantsTitle": "Plantas Internas",
+    "indoorPlantsDesc": "Transforme seus espaços com plantas de interior. Guias de cuidado, dicas de decoração e recomendações de espécies.",
+    "manualsTitle": "Manuais & DIY",
+    "manualsDesc": "Guias passo a passo completos para seus projetos de jardinagem e decoração.",
+    "noArticles": "Nenhum artigo encontrado nesta categoria."
   },
   "about": {
     "label": "Sobre Nós",

@@ -526,7 +526,7 @@ const Article = () => {
               <div className="absolute left-0 top-4 md:top-6 bottom-4 md:bottom-6 w-1 bg-gradient-to-b from-primary via-primary/60 to-primary/20 rounded-full" />
               <div className="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-5 pl-3 md:pl-4 relative z-10">
                 <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md md:rounded-lg bg-primary/15 border border-primary/25"><BookOpen className="w-4 h-4 text-primary" /></div>
-                <span className="text-xs md:text-sm font-semibold text-primary uppercase tracking-wider">Introdução</span>
+                <span className="text-xs md:text-sm font-semibold text-primary uppercase tracking-wider">{t('article.introLabel')}</span>
               </div>
               <div className="space-y-3 md:space-y-4 relative z-10 pl-3 md:pl-4">{introContent}</div>
             </div>
@@ -582,7 +582,7 @@ const Article = () => {
               <div className="relative z-10 pl-3 md:pl-4">
                 <div className="flex items-center gap-2.5 md:gap-3 mb-2.5 md:mb-3">
                   <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md md:rounded-lg bg-primary/15 border border-primary/25"><Lightbulb className="w-4 h-4 text-primary" /></div>
-                  <span className="text-sm md:text-base font-semibold text-primary">Dica do Keven</span>
+                  <span className="text-sm md:text-base font-semibold text-primary">{t('article.tipLabel')}</span>
                 </div>
                 <div className="text-foreground/90 text-sm md:text-base leading-relaxed">{tipContent.map((line, i) => (<p key={i} className="mb-2 last:mb-0">{parseInlineAll(line)}</p>))}</div>
               </div>
@@ -605,7 +605,7 @@ const Article = () => {
               <div className="relative z-10 pl-3 md:pl-4">
                 <div className="flex items-center gap-2.5 md:gap-3 mb-2.5 md:mb-3">
                   <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md md:rounded-lg bg-amber-500/10 border border-amber-500/20"><AlertTriangle className="w-4 h-4 text-amber-500" /></div>
-                  <span className="text-sm md:text-base font-semibold text-amber-500">Atenção</span>
+                  <span className="text-sm md:text-base font-semibold text-amber-500">{t('article.warningLabel')}</span>
                 </div>
                 <div className="text-foreground/90 text-sm md:text-base leading-relaxed">{warningContent.map((line, i) => (<p key={i} className="mb-2 last:mb-0">{parseInlineAll(line)}</p>))}</div>
               </div>
@@ -632,7 +632,7 @@ const Article = () => {
                 </p>
                 <footer className="mt-4 flex items-center gap-3">
                   <div className="w-10 h-0.5 bg-gradient-to-r from-primary to-transparent rounded-full" />
-                  <span className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Reflexão</span>
+                  <span className="text-xs text-muted-foreground font-medium tracking-wide uppercase">{t('article.reflectionLabel')}</span>
                 </footer>
               </blockquote>
             </div>
@@ -654,7 +654,7 @@ const Article = () => {
               <div className="relative z-10 pl-3 md:pl-4">
                 <div className="flex items-center gap-2.5 md:gap-3 mb-2.5 md:mb-3">
                   <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-md md:rounded-lg bg-sky-500/10 border border-sky-500/20"><Sparkles className="w-4 h-4 text-sky-500" /></div>
-                  <span className="text-sm md:text-base font-semibold text-sky-500">Você Sabia?</span>
+                  <span className="text-sm md:text-base font-semibold text-sky-500">{t('article.didYouKnowLabel')}</span>
                 </div>
                 <div className="text-foreground/90 text-sm md:text-base leading-relaxed">{infoContent.map((line, i) => (<p key={i} className="mb-2 last:mb-0">{parseInlineAll(line)}</p>))}</div>
               </div>
@@ -691,22 +691,22 @@ const Article = () => {
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
 
-      if (trimmedLine.toLowerCase().includes('dica:') || trimmedLine.toLowerCase().includes('💡 dica')) {
+      if (/^(💡\s*)?(dica|tip|consejo):?\s*/i.test(trimmedLine.toLowerCase())) {
         flushList(); flushWarning(); flushQuote(); flushInfo();
         inTipBlock = true;
-        const c = trimmedLine.replace(/^(💡\s*)?dica:?\s*/i, '').trim();
+        const c = trimmedLine.replace(/^(💡\s*)?(dica|tip|consejo):?\s*/i, '').trim();
         if (c) tipContent.push(c); return;
       }
-      if (trimmedLine.toLowerCase().includes('atenção:') || trimmedLine.toLowerCase().includes('⚠️ atenção') || trimmedLine.toLowerCase().includes('cuidado:')) {
+      if (/^(⚠️\s*)?(atenção|atención|attention|warning|cuidado|caution):?\s*/i.test(trimmedLine.toLowerCase())) {
         flushList(); flushTip(); flushQuote(); flushInfo();
         inWarningBlock = true;
-        const c = trimmedLine.replace(/^(⚠️\s*)?(atenção|cuidado):?\s*/i, '').trim();
+        const c = trimmedLine.replace(/^(⚠️\s*)?(atenção|atención|attention|warning|cuidado|caution):?\s*/i, '').trim();
         if (c) warningContent.push(c); return;
       }
-      if (trimmedLine.toLowerCase().includes('você sabia') || trimmedLine.toLowerCase().includes('✨ você sabia') || trimmedLine.toLowerCase().includes('curiosidade:')) {
+      if (/^(✨\s*)?(você sabia\??|did you know\??|¿?sabías que\??|curiosidade|curiosity|curiosidad):?\s*/i.test(trimmedLine.toLowerCase())) {
         flushList(); flushTip(); flushWarning(); flushQuote();
         inInfoBlock = true;
-        const c = trimmedLine.replace(/^(✨\s*)?(você sabia\??|curiosidade):?\s*/i, '').trim();
+        const c = trimmedLine.replace(/^(✨\s*)?(você sabia\??|did you know\??|¿?sabías que\??|curiosidade|curiosity|curiosidad):?\s*/i, '').trim();
         if (c) infoContent.push(c); return;
       }
       if (trimmedLine.startsWith('>') || (trimmedLine.startsWith('"') && trimmedLine.endsWith('"'))) {
@@ -745,7 +745,7 @@ const Article = () => {
         if (!hasSeenFirstH2) { flushIntroCard(); hasSeenFirstH2 = true; }
         flushH2Card();
         const h2Title = line.replace('## ', '');
-        if (/FAQ|Perguntas\s+Frequentes/i.test(h2Title)) {
+        if (/FAQ|Perguntas\s+Frequentes|Frequently\s+Asked|Preguntas\s+Frecuentes/i.test(h2Title)) {
           inFaqSection = true;
           currentH2IconData = getNextH2Icon();
         } else {
