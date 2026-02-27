@@ -86,6 +86,8 @@ Deno.serve(async (req) => {
             })
           }
           userId = existingUser.id
+          // Update password for existing user
+          await supabaseAdmin.auth.admin.updateUserById(userId, { password })
         } else {
           throw createError
         }
