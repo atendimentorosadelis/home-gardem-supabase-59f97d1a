@@ -854,7 +854,7 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}${architectureInstructions
     
     // PRIORITY 1: Infer category from the TOPIC (most reliable - user chose it)
     let categoryMatch: typeof categories[0] | undefined = undefined;
-    const topicLower = topic.toLowerCase();
+    // topicLower already declared above (line 578)
     
     // MOST SPECIFIC patterns checked FIRST - order matters!
     // 1. Multi-word specific themes (must come before generic single-word matches)
