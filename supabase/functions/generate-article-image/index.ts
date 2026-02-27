@@ -83,28 +83,55 @@ serve(async (req) => {
 
     const {
       title, type = 'cover', customPrompt, visualContext, mainSubject,
-      slug, articleId, imageIndex = 0, regenerate = false,
+      slug, articleId, imageIndex = 0, regenerate = false, category,
     } = await req.json();
 
     if (!title && !customPrompt) throw new Error("Title or customPrompt is required");
 
     const subject = mainSubject || extractSubjectFromTitle(title || '');
-    // Detect architecture topics to use exterior defaults instead of interior
-    const architectureKeywords = ['architecture', 'facade', 'colonial', 'industrial', 'modern building', 'neolithic', 'european', 'nordic', 'neoclassical', 'sustainable green architecture', 'minimalist architecture'];
-    const isArchitectureSubject = architectureKeywords.some(k => subject.toLowerCase().includes(k));
-    const defaultSetting = isArchitectureSubject
-      ? 'stunning building exterior, street view, clear sky, professional architectural photography, natural daylight'
-      : 'beautiful home interior, professional photography, warm lighting';
-    const setting = visualContext || defaultSetting;
+    
+    // Detect architecture topics by category (primary) or subject keywords (fallback)
+    const architectureCategories = ['colonial', 'industrial', 'moderno', 'neolítico', 'neolitico', 'europeu', 'nórdico', 'nordico', 'neo clássico', 'neo classico', 'neo-classico', 'arquitetura'];
+    const architectureKeywords = ['architecture', 'facade', 'colonial architecture', 'industrial architecture', 'modern building', 'neolithic', 'european style', 'nordic architecture', 'neoclassical', 'sustainable green architecture', 'minimalist architecture', 'exterior facade', 'building exterior'];
+    const categoryLower = (category || '').toLowerCase().trim();
+    const isArchitectureSubject = architectureCategories.some(c => categoryLower === c || categoryLower.includes(c)) 
+      || architectureKeywords.some(k => subject.toLowerCase().includes(k));
+    
+    console.log(`[ImageGen] Category: "${category}", Subject: "${subject}", isArchitecture: ${isArchitectureSubject}`);
+    
+    const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
+    const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
+    
+    // For architecture: FORCE exterior setting, even overriding visualContext if it mentions "interior"
+    let setting: string;
+    if (isArchitectureSubject) {
+      if (visualContext && !visualContext.toLowerCase().includes('interior')) {
+        setting = visualContext;
+      } else {
+        setting = exteriorSetting;
+      }
+    } else {
+      setting = visualContext || interiorSetting;
+    }
     const antiTextClause = "no text, no words, no letters, no typography, no watermarks, no logos";
 
     let prompt: string;
+    const photoStyle = isArchitectureSubject 
+      ? 'Professional exterior architectural photography, building facade, outdoor perspective' 
+      : 'Professional interior photography';
+    
     if (type === 'cover') {
-      prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
+      const coverStyle = isArchitectureSubject
+        ? `${subject}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`
+        : `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
+      prompt = coverStyle;
     } else {
-      // Always prefix with the translated subject so the image matches the category
       const galleryDetail = customPrompt || 'detailed professional photography';
-      prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. Professional interior photography, sharp focus. ${antiTextClause}.`;
+      // For architecture: strip any "interior" words from the custom prompt
+      const cleanedDetail = isArchitectureSubject 
+        ? galleryDetail.replace(/\binterior\b/gi, 'exterior').replace(/\bindoor\b/gi, 'outdoor').replace(/\broom\b/gi, 'facade')
+        : galleryDetail;
+      prompt = `${subject}, ${cleanedDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
     }
 
     console.log(`Generating ${type} image: ${prompt.substring(0, 100)}...`);
