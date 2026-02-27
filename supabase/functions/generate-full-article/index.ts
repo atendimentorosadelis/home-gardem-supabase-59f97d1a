@@ -18,6 +18,7 @@ const categories = [
   { name: 'Varanda', slug: 'varanda' },
   { name: 'Área de Serviço', slug: 'area-de-servico' },
   { name: 'Piscina', slug: 'piscina' },
+  { name: 'Dicas de Pintura', slug: 'dicas-de-pintura' },
   // Jardim
   { name: 'Jardim', slug: 'jardim' },
   { name: 'Decoração de Jardim', slug: 'decoracao-jardim' },
@@ -511,7 +512,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 {
   "title": "Título acolhedor e interessante (máximo 70 caracteres)",
   "excerpt": "Resumo variado e pessoal",
-  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
+  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Dicas de Pintura, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
@@ -636,6 +637,41 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
 - category DEVE ser "Hortas, Ervas e Cuidados"
 ` : '';
 
+    const isPaintingTopic = /pintura|verniz|textura.*parede|cimento\s*queimado|grafiato|tinta.*parede|dicas.*pintura/i.test(topic.toLowerCase());
+
+    const paintingInstructions = isPaintingTopic ? `
+INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
+- O artigo deve ser um GUIA PRÁTICO e PESSOAL sobre técnicas de pintura, acabamentos e texturas para casa.
+- O Keven deve falar sobre suas experiências REAIS pintando paredes, ajudando a mãe a renovar a casa, experimentando texturas.
+- NÃO mencione "PUC Minas" ou "faculdade" na introdução — fale sobre experiência prática de pintura em casa.
+
+## CONTEÚDO OBRIGATÓRIO (TODOS estes tópicos devem aparecer no artigo):
+  * COMO PREPARAR A PAREDE: lixar, aplicar massa corrida, fundo preparador, selador — passo a passo detalhado
+  * TIPOS DE TINTA: acrílica, látex, esmalte sintético, tinta epóxi — diferenças, vantagens e quando usar cada uma
+  * COMO PINTAR UMA PAREDE: técnica correta com rolo, pincel e trincha — de cima para baixo, movimentos em W, quantas demãos
+  * EFEITO CIMENTO QUEIMADO: como fazer passo a passo, materiais necessários (argamassa, desempenadeira, selador), dicas de acabamento
+  * GRAFIATO/TEXTURA: como aplicar grafiato na parede, tipos de textura (rústica, lisa, riscada), ferramentas necessárias (desempenadeira dentada, rolo texturizado)
+  * VERNIZ PARA MADEIRA: tipos de verniz (marítimo, copal, poliuretano), como lixar e preparar a madeira, quantas demãos, tempo de secagem entre demãos
+  * PINTURA DECORATIVA: técnicas como esponjado, pátina, stencil, degradê, parede geométrica
+  * FERRAMENTAS ESSENCIAIS: tipos de rolo (lã, espuma, anti-gota), pincéis, bandejas, fita crepe, lona de proteção
+  * CÁLCULO DE TINTA: como calcular a quantidade de tinta necessária por metro quadrado
+  * CORES E COMBINAÇÕES: como escolher cores, usar o círculo cromático, combinações que funcionam
+  * ERROS COMUNS: pintar sem preparar a parede, não esperar secagem entre demãos, economizar na qualidade da tinta
+  * VALORES E ESTIMATIVAS EM DÓLARES (USD): preço médio de tintas, massa corrida, verniz, ferramentas — custo por cômodo
+  * TEMPO ESTIMADO: quanto tempo leva para pintar cada cômodo, secar entre demãos
+
+- mainSubject DEVE ser em INGLÊS: "wall painting techniques and decorative textures"
+- visualContext DEVE ser: "home interior wall being painted, paint supplies, colorful paint cans, roller and brushes"
+- galleryPrompts DEVEM mostrar 6 ângulos DIFERENTES de técnicas de pintura:
+  1. Pessoa aplicando tinta com rolo em parede (paint roller applying fresh color on interior wall)
+  2. Close-up de efeito cimento queimado (close-up of burnt cement polished concrete wall texture finish)
+  3. Aplicação de grafiato/textura (grafiato textured wall application with trowel, decorative plaster)
+  4. Verniz sendo aplicado em madeira (wood varnish application with brush, glossy protective coating on wood surface)
+  5. Ferramentas e latas de tinta organizadas (painting supplies arrangement, colorful paint cans, rollers, brushes, tape)
+  6. Parede com pintura decorativa geométrica (geometric decorative wall painting, modern accent wall design, tape patterns)
+- category DEVE ser "Dicas de Pintura"
+` : '';
+
     const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
 
 - Blog homegardenmanual.com focado em casa e jardim
@@ -647,7 +683,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO/EDIFICAÇÃO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}${vegetableHerbInstructions}${architectureInstructions}`;
+${plantFlowerInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -893,6 +929,8 @@ ${plantFlowerInstructions}${vegetableHerbInstructions}${architectureInstructions
       categoryMatch = categories.find(c => c.slug === 'varanda');
     } else if (/piscina/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'piscina');
+    } else if (/pintura|verniz|textura.*parede|cimento\s*queimado|grafiato|tinta.*parede/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'dicas-de-pintura');
     } else if (/halloween/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'decoracao-halloween');
     } else if (/hidroponia/i.test(topicLower)) {

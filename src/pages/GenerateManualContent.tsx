@@ -249,6 +249,10 @@ function GenerateManualContentPage() {
   const buildDesignTopic = () => {
     const allDesignSubniches = [...DESIGN_AREAS_SOCIAIS, ...DESIGN_AREAS_INTIMAS, ...DESIGN_AREAS_SERVICO];
     const labels = designSelected.map(id => allDesignSubniches.find(s => s.id === id)?.label).filter(Boolean);
+    // Special case: if "Dicas de Pintura" is selected, use a painting-specific topic
+    if (designSelected.includes('dicas-de-pintura')) {
+      return `Dicas de pintura: como pintar paredes, aplicar verniz, texturas e efeito cimento queimado`;
+    }
     return `Dicas de design interno para ${labels.join(', ').toLowerCase()}`;
   };
 
