@@ -55,14 +55,48 @@ const subjectTranslations: Record<string, string> = {
   'terraço': 'terrace garden', 'quintal': 'backyard garden',
 };
 
+// Map architecture category slugs to detailed style-specific prompts
+const architectureStylePrompts: Record<string, { subject: string; details: string }> = {
+  'colonial': {
+    subject: 'colonial architecture exterior facade, classic columns, ornate balconies, historical building front view, symmetrical design',
+    details: 'colonial style building with terracotta roof tiles, arched doorways, wrought iron railings, whitewashed walls, cobblestone courtyard',
+  },
+  'industrial': {
+    subject: 'industrial architecture exterior, exposed steel beams, brick facade, warehouse-style building exterior, raw materials',
+    details: 'industrial loft building with metal cladding, large factory windows, steel structural framework, urban gritty setting, concrete and steel',
+  },
+  'moderno': {
+    subject: 'modern contemporary architecture exterior facade, clean geometric lines, floor-to-ceiling glass windows, minimalist design',
+    details: 'modern building with flat roof, cantilevered volumes, white and concrete surfaces, infinity pool, sleek landscaping',
+  },
+  'neolitico': {
+    subject: 'neolithic stone architecture exterior, ancient megalithic structure, massive stone blocks, monumental building facade',
+    details: 'primitive stone construction, dolmen-inspired design, rough-hewn boulders, earthen materials, prehistoric monument aesthetic',
+  },
+  'europeu': {
+    subject: 'european classical architecture exterior facade, elegant ornamental stonework, grand entrance, mansard roof',
+    details: 'Haussmann-style building, Parisian balconies, carved stone cornices, tall shuttered windows, wrought iron details, cobblestone street',
+  },
+  'nordico': {
+    subject: 'nordic scandinavian architecture exterior facade, minimalist wood and glass design, nature-integrated building',
+    details: 'Scandinavian cabin with dark timber cladding, large panoramic windows, green roof, snow-covered landscape, birch trees, fjord setting',
+  },
+  'neo-classico': {
+    subject: 'neoclassical architecture exterior facade, grand Corinthian columns, symmetrical pediment, monumental staircase',
+    details: 'neoclassical building with marble facade, ionic or corinthian columns, triangular pediment, balanced proportions, formal gardens',
+  },
+  'arquitetura': {
+    subject: 'stunning architecture exterior facade, building front view, structural design, outdoor perspective',
+    details: 'impressive architectural structure, professional exterior photography, clear sky, landscaped surroundings',
+  },
+};
+
 function extractSubjectFromTitle(title: string): string {
   const lowerTitle = title.toLowerCase();
-  // Sort by key length descending so multi-word phrases match first (e.g. "horta de ervas" before "horta")
   const sortedEntries = Object.entries(subjectTranslations).sort((a, b) => b[0].length - a[0].length);
   for (const [pt, en] of sortedEntries) {
     if (lowerTitle.includes(pt)) return en;
   }
-  // Fallback: use the title itself as subject description instead of a generic "home interior"
   return title;
 }
 
@@ -88,21 +122,50 @@ serve(async (req) => {
 
     if (!title && !customPrompt) throw new Error("Title or customPrompt is required");
 
-    const subject = mainSubject || extractSubjectFromTitle(title || '');
-    
-    // Detect architecture topics by category (primary) or subject keywords (fallback)
+    // Detect architecture by category FIRST (most reliable), then by title/subject
     const architectureCategories = ['colonial', 'industrial', 'moderno', 'neolítico', 'neolitico', 'europeu', 'nórdico', 'nordico', 'neo clássico', 'neo classico', 'neo-classico', 'arquitetura'];
-    const architectureKeywords = ['architecture', 'facade', 'colonial architecture', 'industrial architecture', 'modern building', 'neolithic', 'european style', 'nordic architecture', 'neoclassical', 'sustainable green architecture', 'minimalist architecture', 'exterior facade', 'building exterior'];
-    const categoryLower = (category || '').toLowerCase().trim();
-    const isArchitectureSubject = architectureCategories.some(c => categoryLower === c || categoryLower.includes(c)) 
-      || architectureKeywords.some(k => subject.toLowerCase().includes(k));
+    const categoryLower = (category || '').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const categoryNormalized = (category || '').toLowerCase().trim();
     
-    console.log(`[ImageGen] Category: "${category}", Subject: "${subject}", isArchitecture: ${isArchitectureSubject}`);
+    // Find the matching architecture style from category
+    let matchedArchStyle: string | null = null;
+    for (const key of Object.keys(architectureStylePrompts)) {
+      const keyNorm = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (categoryLower === keyNorm || categoryLower.includes(keyNorm) || categoryNormalized === key || categoryNormalized.includes(key)) {
+        matchedArchStyle = key;
+        break;
+      }
+    }
+    
+    // Also check title for architecture keywords if category didn't match
+    if (!matchedArchStyle) {
+      const lowerTitle = (title || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      for (const key of Object.keys(architectureStylePrompts)) {
+        const keyNorm = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (lowerTitle.includes(keyNorm)) {
+          matchedArchStyle = key;
+          break;
+        }
+      }
+    }
+    
+    const isArchitectureSubject = !!matchedArchStyle;
+    
+    // For architecture: use the STYLE-SPECIFIC subject instead of generic extraction
+    let subject: string;
+    if (isArchitectureSubject && matchedArchStyle) {
+      subject = architectureStylePrompts[matchedArchStyle].subject;
+    } else {
+      subject = mainSubject || extractSubjectFromTitle(title || '');
+    }
+    
+    const archDetails = matchedArchStyle ? architectureStylePrompts[matchedArchStyle].details : '';
+    
+    console.log(`[ImageGen] Category: "${category}", MatchedStyle: "${matchedArchStyle}", Subject: "${subject.substring(0, 80)}...", isArchitecture: ${isArchitectureSubject}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
     
-    // For architecture: FORCE exterior setting, even overriding visualContext if it mentions "interior"
     let setting: string;
     if (isArchitectureSubject) {
       if (visualContext && !visualContext.toLowerCase().includes('interior')) {
@@ -121,14 +184,15 @@ serve(async (req) => {
       : 'Professional interior photography';
     
     if (type === 'cover') {
-      const coverStyle = isArchitectureSubject
-        ? `${subject}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`
-        : `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
-      prompt = coverStyle;
+      if (isArchitectureSubject) {
+        prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
+      } else {
+        prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
+      }
     } else {
       const galleryDetail = customPrompt || 'detailed professional photography';
       if (isArchitectureSubject) {
-        // For architecture: ALWAYS force exterior/facade keywords in gallery prompts
+        // Strip any interior keywords from the gallery detail
         const cleanedDetail = galleryDetail
           .replace(/\binterior\b/gi, 'exterior')
           .replace(/\bindoor\b/gi, 'outdoor')
@@ -137,7 +201,8 @@ serve(async (req) => {
           .replace(/\bliving room\b/gi, 'building exterior')
           .replace(/\bbedroom\b/gi, 'building facade')
           .replace(/\bkitchen\b/gi, 'entrance');
-        prompt = `${subject}, exterior building facade, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+        // Include BOTH the style subject AND the style details for consistency
+        prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
