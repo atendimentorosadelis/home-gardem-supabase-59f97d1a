@@ -12,7 +12,7 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
   'design-interno': [
     'sala', 'sala-de-jantar', 'lareira', 'area-gourmet',
     'quarto', 'banheiro', 'escritorio',
-    'cozinha', 'varanda', 'area-de-servico', 'piscina',
+    'cozinha', 'varanda', 'area-de-servico', 'piscina', 'dicas-de-pintura',
   ],
   'jardim': [
     'jardim', 'decoracao-jardim', 'cuidados-plantacao', 'jardim-vertical',
@@ -22,7 +22,7 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
   ],
   'arquitetura': [
     'colonial', 'industrial', 'moderno', 'neolitico',
-    'europeu', 'nordico', 'neo-classico', 'dicas-de-pintura',
+    'europeu', 'nordico', 'neo-classico',
   ],
 };
 
