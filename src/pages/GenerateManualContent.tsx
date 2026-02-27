@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Loader2,
@@ -165,7 +166,23 @@ function GenerateManualContentPage() {
   }, []);
 
   useEffect(() => {
-    if (article && !isGenerating) {
+    if (article && !isGenerating && articleSavedId) {
+      // Check if the article was already published externally (e.g., from Articles Manager)
+      supabase
+        .from('content_articles')
+        .select('status')
+        .eq('id', articleSavedId)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.status === 'published') {
+            // Article was published elsewhere — clear the stale preview
+            resetToSelectionScreen();
+          } else {
+            setShowPreview(true);
+            setArticleSaved(true);
+          }
+        });
+    } else if (article && !isGenerating) {
       setShowPreview(true);
       setArticleSaved(true);
     }
