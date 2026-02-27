@@ -89,7 +89,13 @@ serve(async (req) => {
     if (!title && !customPrompt) throw new Error("Title or customPrompt is required");
 
     const subject = mainSubject || extractSubjectFromTitle(title || '');
-    const setting = visualContext || 'beautiful home interior, professional photography, warm lighting';
+    // Detect architecture topics to use exterior defaults instead of interior
+    const architectureKeywords = ['architecture', 'facade', 'colonial', 'industrial', 'modern building', 'neolithic', 'european', 'nordic', 'neoclassical', 'sustainable green architecture', 'minimalist architecture'];
+    const isArchitectureSubject = architectureKeywords.some(k => subject.toLowerCase().includes(k));
+    const defaultSetting = isArchitectureSubject
+      ? 'stunning building exterior, street view, clear sky, professional architectural photography, natural daylight'
+      : 'beautiful home interior, professional photography, warm lighting';
+    const setting = visualContext || defaultSetting;
     const antiTextClause = "no text, no words, no letters, no typography, no watermarks, no logos";
 
     let prompt: string;
