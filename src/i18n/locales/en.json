@@ -49,7 +49,16 @@
     "resultsCountOne": "1 article found",
     "resultsCount": "{{count}} articles found",
     "errorTitle": "Error loading articles",
-    "errorDesc": "An error occurred while loading articles. Please try again."
+    "errorDesc": "An error occurred while loading articles. Please try again.",
+    "badge": "Explore Our Content",
+    "articlesLabel": "Articles",
+    "categoriesLabel": "Categories",
+    "readersLabel": "Readers",
+    "scrollToExplore": "Explore articles",
+    "ctaTitle": "Didn't find what you're looking for?",
+    "ctaDescription": "Explore all our categories or get in touch to suggest new content.",
+    "viewAllArticles": "View All Articles",
+    "pageOf": "Page {{current}} of {{total}}"
   },
   "footer": {
     "description": "Your complete guide to decoration, architecture, modern design, and gardening. Inspiration to transform every space in your home.",

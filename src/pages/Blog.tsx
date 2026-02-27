@@ -278,7 +278,7 @@ export default function Blog() {
                 </p>
                 {currentPage > 1 && (
                   <p className="text-sm text-muted-foreground">
-                    Página {currentPage} de {data?.totalPages}
+                    {t("blog.pageOf", { current: currentPage, total: data?.totalPages })}
                   </p>
                 )}
               </div>

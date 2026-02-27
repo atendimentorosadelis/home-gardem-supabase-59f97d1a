@@ -49,7 +49,16 @@
     "resultsCountOne": "1 artigo encontrado",
     "resultsCount": "{{count}} artigos encontrados",
     "errorTitle": "Erro ao carregar artigos",
-    "errorDesc": "Ocorreu um erro ao carregar os artigos. Por favor, tente novamente."
+    "errorDesc": "Ocorreu um erro ao carregar os artigos. Por favor, tente novamente.",
+    "badge": "Explore Nosso Conteúdo",
+    "articlesLabel": "Artigos",
+    "categoriesLabel": "Categorias",
+    "readersLabel": "Leitores",
+    "scrollToExplore": "Explorar artigos",
+    "ctaTitle": "Não encontrou o que procura?",
+    "ctaDescription": "Explore todas as nossas categorias ou entre em contato para sugestões de novos conteúdos.",
+    "viewAllArticles": "Ver Todos os Artigos",
+    "pageOf": "Página {{current}} de {{total}}"
   },
   "footer": {
     "description": "Seu guia completo sobre decoração, arquitetura, design moderno e jardinagem. Inspiração para transformar cada espaço da sua casa.",
