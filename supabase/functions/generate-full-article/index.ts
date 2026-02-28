@@ -46,171 +46,8 @@ const categories = [
 
 const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';
 
-const PLANT_SPECIES_POOL = [
-  // Orquídeas (múltiplas espécies)
-  { pt: 'Orquídea Phalaenopsis', en: 'Phalaenopsis orchid' },
-  { pt: 'Orquídea Dendrobium', en: 'Dendrobium orchid' },
-  { pt: 'Orquídea Cattleya', en: 'Cattleya orchid' },
-  { pt: 'Orquídea Vanda', en: 'Vanda orchid' },
-  { pt: 'Orquídea Oncidium', en: 'Oncidium orchid' },
-  { pt: 'Orquídea Cymbidium', en: 'Cymbidium orchid' },
-  { pt: 'Orquídea Paphiopedilum', en: 'Paphiopedilum orchid' },
-  { pt: 'Orquídea Miltônia', en: 'Miltonia orchid' },
-  { pt: 'Orquídea Epidendrum', en: 'Epidendrum orchid' },
-  { pt: 'Orquídea Zygopetalum', en: 'Zygopetalum orchid' },
-  // Rosas (múltiplas variedades)
-  { pt: 'Rosa Trepadeira', en: 'Climbing rose plant' },
-  { pt: 'Rosa Miniatura', en: 'Miniature rose plant' },
-  { pt: 'Rosa do Deserto', en: 'Desert rose adenium plant' },
-  { pt: 'Rosa Híbrida de Chá', en: 'Hybrid tea rose plant' },
-  { pt: 'Rosa Floribunda', en: 'Floribunda rose plant' },
-  { pt: 'Rosa Grandiflora', en: 'Grandiflora rose plant' },
-  // Lavandas (múltiplas espécies)
-  { pt: 'Lavanda Inglesa', en: 'English lavender lavandula angustifolia' },
-  { pt: 'Lavanda Francesa', en: 'French lavender lavandula dentata' },
-  { pt: 'Lavanda Espanhola', en: 'Spanish lavender lavandula stoechas' },
-  // Samambaias (múltiplas espécies)
-  { pt: 'Samambaia Americana', en: 'Boston fern nephrolepis exaltata' },
-  { pt: 'Samambaia Renda', en: 'Lace fern nephrolepis exaltata bostoniensis' },
-  { pt: 'Samambaia Paulista', en: 'Paulista fern nephrolepis' },
-  { pt: 'Samambaia Azul', en: 'Blue fern phlebodium aureum' },
-  { pt: 'Samambaia Chifre-de-veado', en: 'Staghorn fern platycerium' },
-  // Begônias (múltiplas espécies)
-  { pt: 'Begônia Rex', en: 'Rex begonia plant' },
-  { pt: 'Begônia Maculata', en: 'Polka dot begonia maculata' },
-  { pt: 'Begônia Tuberosa', en: 'Tuberous begonia plant' },
-  { pt: 'Begônia Asa-de-anjo', en: 'Angel wing begonia plant' },
-  // Filodendros (múltiplas espécies)
-  { pt: 'Filodendro Brasil', en: 'Philodendron brasil heartleaf' },
-  { pt: 'Filodendro Birkin', en: 'Philodendron birkin plant' },
-  { pt: 'Filodendro Pink Princess', en: 'Philodendron pink princess' },
-  { pt: 'Filodendro Xanadu', en: 'Philodendron xanadu plant' },
-  { pt: 'Filodendro Imperial', en: 'Philodendron imperial green' },
-  // Suculentas (múltiplas espécies)
-  { pt: 'Echeveria', en: 'Echeveria succulent plant' },
-  { pt: 'Haworthia', en: 'Haworthia succulent plant' },
-  { pt: 'Sedum', en: 'Sedum stonecrop succulent' },
-  { pt: 'Crassula Jade', en: 'Jade plant crassula ovata' },
-  { pt: 'Aloe Vera', en: 'Aloe vera plant' },
-  { pt: 'Sempervivum', en: 'Sempervivum hen and chicks succulent' },
-  { pt: 'Lithops', en: 'Lithops living stones plant' },
-  // Cactos (múltiplas espécies)
-  { pt: 'Cacto-candelabro', en: 'Candelabra cactus euphorbia' },
-  { pt: 'Cacto Bola', en: 'Barrel cactus echinocactus' },
-  { pt: 'Cacto Mandacaru', en: 'Mandacaru cactus cereus jamacaru' },
-  { pt: 'Cacto Palma', en: 'Prickly pear cactus opuntia' },
-  { pt: 'Flor-de-maio', en: 'Christmas cactus schlumbergera' },
-  // Lírios (múltiplas espécies)
-  { pt: 'Lírio-da-paz', en: 'Peace lily spathiphyllum' },
-  { pt: 'Lírio Asiático', en: 'Asiatic lily plant' },
-  { pt: 'Lírio Stargazer', en: 'Stargazer lily plant' },
-  { pt: 'Copo-de-leite', en: 'Calla lily zantedeschia' },
-  // Jasmins (múltiplas espécies)
-  { pt: 'Jasmim-dos-poetas', en: 'Poet jasmine jasminum officinale' },
-  { pt: 'Jasmim-manga', en: 'Plumeria frangipani plant' },
-  { pt: 'Jasmim-estrela', en: 'Star jasmine trachelospermum' },
-  { pt: 'Jasmim-árabe', en: 'Arabian jasmine jasminum sambac' },
-  // Dracenas (múltiplas espécies)
-  { pt: 'Dracena Marginata', en: 'Dracaena marginata dragon tree' },
-  { pt: 'Dracena Massangeana', en: 'Dracaena massangeana corn plant' },
-  { pt: 'Dracena Warneckii', en: 'Dracaena warneckii striped plant' },
-  { pt: 'Pleomele', en: 'Pleomele dracaena reflexa plant' },
-  // Palmeiras (múltiplas espécies)
-  { pt: 'Palmeira-ráfis', en: 'Lady palm rhapis excelsa' },
-  { pt: 'Palmeira Areca', en: 'Areca palm dypsis lutescens' },
-  { pt: 'Palmeira-leque', en: 'Fan palm livistona chinensis' },
-  // Antúrios (múltiplas espécies)
-  { pt: 'Antúrio Vermelho', en: 'Red anthurium andraeanum' },
-  { pt: 'Antúrio Clarinervium', en: 'Anthurium clarinervium velvet' },
-  { pt: 'Antúrio Crystallinum', en: 'Anthurium crystallinum plant' },
-  // Bromélias (múltiplas espécies)
-  { pt: 'Bromélia Guzmania', en: 'Guzmania bromeliad plant' },
-  { pt: 'Bromélia Neoregelia', en: 'Neoregelia bromeliad plant' },
-  { pt: 'Bromélia Vriesea', en: 'Vriesea bromeliad flaming sword' },
-  // Calateias (múltiplas espécies)
-  { pt: 'Calatéia Medallion', en: 'Calathea medallion prayer plant' },
-  { pt: 'Calatéia Orbifolia', en: 'Calathea orbifolia plant' },
-  { pt: 'Calatéia Zebrina', en: 'Calathea zebrina zebra plant' },
-  // Hibiscos (múltiplas espécies)
-  { pt: 'Hibisco Rosa-sinensis', en: 'Hibiscus rosa sinensis tropical' },
-  { pt: 'Hibisco Syriacus', en: 'Hibiscus syriacus rose of sharon' },
-  // Hortênsias (múltiplas)
-  { pt: 'Hortênsia Macrophylla', en: 'Hydrangea macrophylla bigleaf' },
-  { pt: 'Hortênsia Paniculata', en: 'Hydrangea paniculata panicle' },
-  // Espadas-de-são-jorge (múltiplas)
-  { pt: 'Espada-de-são-jorge', en: 'Snake plant sansevieria trifasciata' },
-  { pt: 'Lança-de-são-jorge', en: 'Cylindrical snake plant sansevieria cylindrica' },
-  { pt: 'Espada-de-são-jorge Moonshine', en: 'Sansevieria moonshine silver' },
-  // Peperômias (múltiplas)
-  { pt: 'Peperômia Melancia', en: 'Watermelon peperomia argyreia' },
-  { pt: 'Peperômia Obtusifolia', en: 'Baby rubber plant peperomia obtusifolia' },
-  { pt: 'Peperômia Caperata', en: 'Ripple peperomia caperata' },
-  // Marantas (múltiplas)
-  { pt: 'Maranta Leuconeura', en: 'Prayer plant maranta leuconeura' },
-  { pt: 'Maranta Lemon Lime', en: 'Lemon lime prayer plant maranta' },
-  // Plantas individuais (sem sub-espécies comuns)
-  { pt: 'Girassol', en: 'Sunflower helianthus annuus' },
-  { pt: 'Azaleia', en: 'Azalea rhododendron plant' },
-  { pt: 'Camélia', en: 'Camellia japonica plant' },
-  { pt: 'Violeta-africana', en: 'African violet saintpaulia' },
-  { pt: 'Costela-de-adão', en: 'Monstera deliciosa plant' },
-  { pt: 'Zamioculca', en: 'ZZ plant zamioculcas zamiifolia' },
-  { pt: 'Cróton', en: 'Croton codiaeum variegatum' },
-  { pt: 'Ficus lyrata', en: 'Fiddle leaf fig ficus lyrata' },
-  { pt: 'Pilea', en: 'Pilea peperomioides chinese money' },
-  { pt: 'Tulipa', en: 'Tulip tulipa plant' },
-  { pt: 'Margarida', en: 'Daisy bellis perennis plant' },
-  { pt: 'Gerânio', en: 'Geranium pelargonium plant' },
-  { pt: 'Dália', en: 'Dahlia flower plant' },
-  { pt: 'Cravo', en: 'Carnation dianthus caryophyllus' },
-  { pt: 'Bougainvillea', en: 'Bougainvillea spectabilis plant' },
-  { pt: 'Ipê-amarelo', en: 'Yellow trumpet tree tabebuia' },
-  { pt: 'Clúsia', en: 'Clusia rosea autograph tree' },
-  { pt: 'Jiboia', en: 'Pothos epipremnum aureum' },
-  { pt: 'Comigo-ninguém-pode', en: 'Dieffenbachia seguine plant' },
-  { pt: 'Crisântemo', en: 'Chrysanthemum morifolium plant' },
-  { pt: 'Petúnia', en: 'Petunia hybrida flower' },
-  { pt: 'Mandevilla', en: 'Mandevilla dipladenia vine' },
-  { pt: 'Agapanto', en: 'Agapanthus lily of the nile' },
-  { pt: 'Gardênia', en: 'Gardenia jasminoides cape jasmine' },
-  { pt: 'Kalanchoe', en: 'Kalanchoe blossfeldiana plant' },
-  { pt: 'Ixora', en: 'Ixora coccinea jungle geranium' },
-  { pt: 'Avenca', en: 'Maidenhair fern adiantum raddianum' },
-  { pt: 'Pacová', en: 'Philodendron martianum pacova' },
-  { pt: 'Helicônia', en: 'Heliconia lobster claw plant' },
-  { pt: 'Estrelícia', en: 'Bird of paradise strelitzia reginae' },
-  { pt: 'Moreia', en: 'Dietes bicolor fortnight lily' },
-  { pt: 'Bela-emília', en: 'Blue plumbago auriculata plant' },
-  { pt: 'Alamanda', en: 'Allamanda cathartica golden trumpet' },
-  { pt: 'Murta', en: 'Murraya paniculata orange jasmine' },
-  { pt: 'Pitangueira', en: 'Surinam cherry eugenia uniflora' },
-  { pt: 'Fícus Benjamina', en: 'Weeping fig ficus benjamina' },
-  { pt: 'Singônio', en: 'Syngonium podophyllum arrowhead' },
-  { pt: 'Columeia', en: 'Columnea goldfish plant' },
-  { pt: 'Clorofito', en: 'Spider plant chlorophytum comosum' },
-  { pt: 'Aspargo Plumoso', en: 'Asparagus plumosa fern' },
-  { pt: 'Ciclame', en: 'Cyclamen persicum plant' },
-  { pt: 'Gloxínia', en: 'Gloxinia sinningia speciosa' },
-  { pt: 'Lírio-do-vale', en: 'Lily of the valley convallaria' },
-  { pt: 'Alfazema', en: 'Lavandula latifolia spike lavender' },
-  { pt: 'Capuchinha', en: 'Nasturtium tropaeolum majus' },
-  { pt: 'Amor-perfeito', en: 'Pansy viola tricolor plant' },
-  { pt: 'Onze-horas', en: 'Portulaca grandiflora moss rose' },
-  { pt: 'Bico-de-papagaio', en: 'Poinsettia euphorbia pulcherrima' },
-  { pt: 'Flor-de-lótus', en: 'Lotus nelumbo nucifera flower' },
-  { pt: 'Magnólia', en: 'Magnolia grandiflora plant' },
-  { pt: 'Caliandra', en: 'Calliandra powder puff plant' },
-  { pt: 'Lantana', en: 'Lantana camara plant' },
-  { pt: 'Tumbérgia', en: 'Thunbergia grandiflora blue trumpet' },
-  { pt: 'Impatiens', en: 'Impatiens walleriana busy lizzie' },
-  { pt: 'Gazânia', en: 'Gazania rigens treasure flower' },
-  { pt: 'Verbena', en: 'Verbena hybrida plant' },
-  { pt: 'Tagetes', en: 'Marigold tagetes erecta plant' },
-  { pt: 'Astromélia', en: 'Alstroemeria peruvian lily' },
-  { pt: 'Prímula', en: 'Primrose primula vulgaris' },
-  { pt: 'Clívia', en: 'Clivia miniata bush lily' },
-  { pt: 'Amarílis', en: 'Amaryllis hippeastrum plant' },
-];
+// No static pool - AI dynamically chooses from unlimited botanical diversity
+// Anti-duplication is enforced via database blacklist only
 
 function normalizePlantName(value: string): string {
   return value
@@ -546,7 +383,7 @@ serve(async (req) => {
           .select('title, main_subject')
           .eq('category_slug', FLOWER_NAMES_CATEGORY_SLUG)
           .order('created_at', { ascending: false })
-          .limit(30);
+          .limit(50);
 
         const recentPlantNames = (recentFlowerArticles || [])
           .flatMap((row) => [
@@ -829,40 +666,43 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
       avoidPlantNames
         .map((name) => normalizePlantName(name))
         .filter((name) => name.length >= 3)
-    )].slice(0, 20);
+    )].slice(0, 50);
 
-    const allowedPlantSpecies = isPlantFlowerNamesTopic
-      ? PLANT_SPECIES_POOL.filter((species) =>
-          !normalizedAvoidPlantNames.some((blocked) =>
-            namesLikelySame(species.pt, blocked) || namesLikelySame(species.en, blocked)
-          )
-        )
-      : [];
-
-    const forcedPlantSpecies = allowedPlantSpecies.length > 0
-      ? allowedPlantSpecies[Math.floor(Math.random() * allowedPlantSpecies.length)]
-      : null;
-
-    if (forcedPlantSpecies) {
-      console.log(`[AntiDuplicate] Forced species selected: ${forcedPlantSpecies.pt} (${forcedPlantSpecies.en})`);
+    if (isPlantFlowerNamesTopic) {
+      console.log(`[AntiDuplicate] Blocked ${normalizedAvoidPlantNames.length} plant names from recent articles`);
     }
 
     const antiDuplicatePlantInstructions = isPlantFlowerNamesTopic && normalizedAvoidPlantNames.length > 0 ? `
 ## ANTI-REPETIÇÃO OBRIGATÓRIA (Nomes e Cuidados Plantas e Flores)
-- NÃO escolha nenhuma planta/flor desta lista: ${normalizedAvoidPlantNames.map((name) => `"${name}"`).join(', ')}
-- Escolha UMA espécie DIFERENTE da lista acima.
+- NÃO escolha nenhuma planta/flor desta lista de espécies JÁ PUBLICADAS: ${normalizedAvoidPlantNames.map((name) => `"${name}"`).join(', ')}
+- Escolha UMA espécie COMPLETAMENTE DIFERENTE das listadas acima.
 - O título e o mainSubject DEVEM trazer a nova espécie escolhida.
 - Se você escolher qualquer espécie da lista proibida, a resposta será descartada.
 ` : '';
 
-    const forcedPlantInstructions = forcedPlantSpecies ? `
-## ESPÉCIE OBRIGATÓRIA DESTA EXECUÇÃO
-- Você DEVE usar EXATAMENTE esta espécie no artigo inteiro:
-  - Nome em português: ${forcedPlantSpecies.pt}
-  - Nome em inglês para mainSubject: ${forcedPlantSpecies.en}
-- O título DEVE conter "${forcedPlantSpecies.pt}".
-- O mainSubject DEVE conter "${forcedPlantSpecies.en}".
-- NÃO substitua por Lavanda nem por qualquer outra espécie.
+    const forcedPlantInstructions = isPlantFlowerNamesTopic ? `
+## SELEÇÃO LIVRE DE ESPÉCIE - VARIEDADE ILIMITADA
+- Existem MILHARES de espécies de plantas e flores no mundo. Você tem LIBERDADE TOTAL para escolher QUALQUER espécie.
+- NÃO se limite a espécies populares como Lavanda, Orquídea ou Rosa. Explore a biodiversidade mundial!
+- Exemplos de famílias para explorar (mas NÃO se limite a estas):
+  * Orquídeas (Phalaenopsis, Dendrobium, Cattleya, Vanda, Oncidium, Cymbidium, Miltônia, Epidendrum, Zygopetalum, Brassia, Maxillaria...)
+  * Samambaias (Americana, Renda, Azul, Chifre-de-veado, Avenca, Asplenium, Pteris...)
+  * Suculentas (Echeveria, Haworthia, Sedum, Lithops, Crassula, Graptopetalum, Aeonium, Pachyphytum...)
+  * Cactos (Mandacaru, Flor-de-maio, Bola, Palma, Cereus, Gymnocalycium, Mammillaria, Astrophytum...)
+  * Palmeiras (Ráfis, Areca, Leque, Coqueiro-anão, Chamaedorea, Licuala...)
+  * Trepadeiras (Jasmim, Hera, Maracujá, Glicínia, Bignônia, Cipó-de-são-joão, Clerodendro...)
+  * Árvores ornamentais (Ipê, Jacarandá, Flamboyant, Quaresmeira, Paineira, Sibipiruna, Magnólia...)
+  * Plantas aquáticas (Lótus, Vitória-régia, Ninféia, Papiro, Aguapé...)
+  * Plantas carnívoras (Dioneia, Nepenthes, Sarracenia, Drosera, Pinguicula...)
+  * Gramíneas ornamentais (Capim-do-texas, Capim-limão, Festuca, Pennisetum, Miscanthus...)
+  * Arbustos (Buxinho, Murta, Azaleia, Camélia, Gardênia, Dama-da-noite, Jasmim-do-cabo...)
+  * Flores tropicais (Helicônia, Estrelícia, Alpínia, Bastão-do-imperador, Antúrio, Bromélia...)
+  * Plantas medicinais (Camomila, Arnica, Calêndula, Erva-cidreira, Boldo, Guaco, Babosa...)
+  * Plantas raras e exóticas (Flor-cadáver, Jade vine, Protea, Rafflesia, Planta-fantasma...)
+  * E MUITO MAIS: existem mais de 400.000 espécies de plantas no planeta!
+- Escolha uma espécie ESPECÍFICA (não genérica). Ex: "Filodendro Pink Princess" em vez de apenas "Filodendro".
+- Priorize espécies que AINDA NÃO foram abordadas (veja lista proibida acima).
+- Seja CRIATIVO e SURPREENDENTE na escolha — traga espécies que o leitor talvez nunca tenha ouvido falar!
 ` : '';
 
     const architectureInstructions = isArchitectureTopic ? `
