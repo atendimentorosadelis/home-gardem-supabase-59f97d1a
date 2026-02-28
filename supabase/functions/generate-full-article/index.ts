@@ -670,6 +670,12 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
   5. Ferramentas e latas de tinta organizadas (painting supplies arrangement, colorful paint cans, rollers, brushes, tape)
   6. Parede com pintura decorativa geométrica (geometric decorative wall painting, modern accent wall design, tape patterns)
 - category DEVE ser "Dicas de Pintura"
+
+⚠️ TAMANHO MÍNIMO REFORÇADO PARA DICAS DE PINTURA:
+- Este tema exige MUITOS detalhes técnicos. O artigo DEVE ter NO MÍNIMO 2.500 palavras.
+- Cada seção técnica (cimento queimado, grafiato, verniz, preparação, etc.) deve ter NO MÍNIMO 200 palavras cada.
+- NÃO resuma, NÃO pule etapas, NÃO encurte. O leitor precisa de um GUIA COMPLETO que ele possa seguir passo a passo.
+- Inclua medidas reais (metros quadrados, litros de tinta, gramas de massa), tempos de secagem em horas, e dicas de economia.
 ` : '';
 
     const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
