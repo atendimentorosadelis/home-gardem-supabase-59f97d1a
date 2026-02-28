@@ -316,8 +316,12 @@ serve(async (req) => {
       throw new Error("OPENAI_API_KEY is not configured");
     }
 
-    const { topic } = await req.json();
-    
+    const requestBody = await req.json().catch(() => ({}));
+    const topic = typeof requestBody.topic === 'string' ? requestBody.topic.trim() : '';
+    const avoidPlantNames = Array.isArray(requestBody.avoidPlantNames)
+      ? requestBody.avoidPlantNames.filter((name): name is string => typeof name === 'string')
+      : [];
+
     if (!topic) {
       throw new Error("Topic is required");
     }
@@ -579,6 +583,20 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
     const topicLower = topic.toLowerCase();
     const isArchitectureTopic = architectureSlugs.some(s => topicLower.includes(s)) || /arquitetura/i.test(topicLower);
 
+    const normalizedAvoidPlantNames = [...new Set(
+      avoidPlantNames
+        .map((name) => name.trim())
+        .filter((name) => name.length >= 3)
+    )].slice(0, 12);
+
+    const antiDuplicatePlantInstructions = isPlantFlowerNamesTopic && normalizedAvoidPlantNames.length > 0 ? `
+## ANTI-REPETIÇÃO OBRIGATÓRIA (Nomes e Cuidados Plantas e Flores)
+- NÃO escolha nenhuma planta/flor desta lista: ${normalizedAvoidPlantNames.map((name) => `"${name}"`).join(', ')}
+- Escolha UMA espécie DIFERENTE da lista acima.
+- O título e o mainSubject DEVEM trazer a nova espécie escolhida.
+- Se você escolher qualquer espécie da lista proibida, a resposta será descartada.
+` : '';
+
     const architectureInstructions = isArchitectureTopic ? `
 INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Arquitetura):
 ⚠️ REGRA CRÍTICA DE IMAGENS: Todas as imagens devem ser de FACHADAS EXTERNAS e ESTRUTURAS EXTERNAS.
@@ -714,7 +732,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO/EDIFICAÇÃO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
+${plantFlowerInstructions}${antiDuplicatePlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
