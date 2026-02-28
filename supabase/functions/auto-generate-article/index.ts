@@ -145,7 +145,19 @@ serve(async (req) => {
     }
 
     const article = articleData.article;
-    console.log(`[AutoGenerate] Article generated: ${article.title}`);
+    const isPaintingArticle = /dicas\s*de\s*pintura|pintura|verniz|grafiato|cimento\s*queimado/i.test(
+      `${article.category || ''} ${article.categorySlug || ''} ${randomTopic || ''}`
+    );
+    const minimumWordCount = isPaintingArticle ? 2500 : 2200;
+    const generatedWordCount = (article.content || '').split(/\s+/).filter(Boolean).length;
+
+    if (generatedWordCount < minimumWordCount) {
+      throw new Error(
+        `Artigo rejeitado antes de salvar: ${generatedWordCount} palavras (mínimo ${minimumWordCount}).`
+      );
+    }
+
+    console.log(`[AutoGenerate] Article generated: ${article.title} (${generatedWordCount} palavras)`);
 
     // 7. Save article to database
     const articleRecord = {

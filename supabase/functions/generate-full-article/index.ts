@@ -1094,6 +1094,16 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
       finalContent = finalContent.substring(0, insertionPoint) + defaultFAQ + finalContent.substring(insertionPoint);
     }
 
+    const minimumWordCount = isPaintingTopic ? 2500 : 2200;
+    const finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
+
+    if (finalWordCount < minimumWordCount) {
+      const shortfall = minimumWordCount - finalWordCount;
+      throw new Error(
+        `Conteúdo insuficiente: ${finalWordCount} palavras geradas, mínimo exigido é ${minimumWordCount} (faltam ${shortfall}). Regenerando é obrigatório.`
+      );
+    }
+
     const article = {
       title: validatedTitle,
       slug,
@@ -1111,7 +1121,7 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
     };
 
     console.log(`✅ Article generated: ${article.title}`);
-    console.log(`📊 Word count: ${contentWordCount} | Read time: ${readTime}`);
+    console.log(`📊 Word count: ${finalWordCount} | Min required: ${minimumWordCount} | Read time: ${readTime}`);
 
     return new Response(
       JSON.stringify({ success: true, article }),
