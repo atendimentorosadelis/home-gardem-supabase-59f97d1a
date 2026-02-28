@@ -676,7 +676,14 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
   * CORES E COMBINAÇÕES: como escolher cores, usar o círculo cromático, combinações que funcionam
   * ERROS COMUNS: pintar sem preparar a parede, não esperar secagem entre demãos, economizar na qualidade da tinta
   * VALORES E ESTIMATIVAS EM DÓLARES (USD): preço médio de tintas, massa corrida, verniz, ferramentas — custo por cômodo
-  * TEMPO ESTIMADO: quanto tempo leva para pintar cada cômodo, secar entre demãos
+   * TEMPO ESTIMADO: quanto tempo leva para pintar cada cômodo, secar entre demãos
+
+⚠️ REGRA OBRIGATÓRIA DE MOEDA (DICAS DE PINTURA):
+- TODOS os valores monetários DEVEM usar DÓLARES AMERICANOS (USD) com o símbolo "$".
+- ❌ PROIBIDO usar "R$", "reais", "BRL" ou qualquer referência à moeda brasileira.
+- ✅ Use APENAS "$" seguido do valor em dólares. Exemplos: "$15", "$30", "$120", "$5 to $10".
+- Se precisar dar faixas de preço, use: "$20 to $50", "$100 to $200".
+- NÃO converta de real para dólar — pense diretamente em preços do mercado americano (Home Depot, Lowe's).
 
 - mainSubject DEVE ser em INGLÊS: "wall painting techniques and decorative textures"
 - visualContext DEVE ser: "home interior wall being painted, paint supplies, colorful paint cans, roller and brushes"
