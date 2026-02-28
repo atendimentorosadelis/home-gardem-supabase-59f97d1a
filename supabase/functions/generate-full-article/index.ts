@@ -662,6 +662,9 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
     const topicLower = topic.toLowerCase();
     const isArchitectureTopic = architectureSlugs.some(s => topicLower.includes(s)) || /arquitetura/i.test(topicLower);
 
+    // forcedPlantSpecies removed (dynamic AI selection now), set null for safety
+    const forcedPlantSpecies: { pt: string; en: string } | null = null;
+
     const normalizedAvoidPlantNames = [...new Set(
       avoidPlantNames
         .map((name) => normalizePlantName(name))
