@@ -47,14 +47,45 @@ const categories = [
 const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';
 
 const PLANT_SPECIES_POOL = [
+  // Orquídeas (múltiplas espécies - família enorme)
   { pt: 'Orquídea Phalaenopsis', en: 'Phalaenopsis orchid' },
+  { pt: 'Orquídea Dendrobium', en: 'Dendrobium orchid' },
+  { pt: 'Orquídea Cattleya', en: 'Cattleya orchid' },
+  { pt: 'Orquídea Vanda', en: 'Vanda orchid' },
+  { pt: 'Orquídea Oncidium', en: 'Oncidium orchid' },
+  { pt: 'Orquídea Cymbidium', en: 'Cymbidium orchid' },
+  { pt: 'Orquídea Paphiopedilum', en: 'Paphiopedilum orchid' },
+  { pt: 'Orquídea Miltônia', en: 'Miltonia orchid' },
+  { pt: 'Orquídea Epidendrum', en: 'Epidendrum orchid' },
+  { pt: 'Orquídea Zygopetalum', en: 'Zygopetalum orchid' },
+  // Rosas (múltiplas variedades)
+  { pt: 'Rosa Trepadeira', en: 'Climbing rose plant' },
+  { pt: 'Rosa Miniatura', en: 'Miniature rose plant' },
+  { pt: 'Rosa do Deserto', en: 'Desert rose adenium plant' },
+  { pt: 'Rosa Híbrida de Chá', en: 'Hybrid tea rose plant' },
+  { pt: 'Rosa Floribunda', en: 'Floribunda rose plant' },
+  // Lavandas (múltiplas espécies)
+  { pt: 'Lavanda Inglesa', en: 'English lavender lavandula angustifolia' },
+  { pt: 'Lavanda Francesa', en: 'French lavender lavandula dentata' },
+  { pt: 'Lavanda Espanhola', en: 'Spanish lavender lavandula stoechas' },
+  // Suculentas (múltiplas espécies)
+  { pt: 'Echeveria', en: 'Echeveria succulent plant' },
+  { pt: 'Haworthia', en: 'Haworthia succulent plant' },
+  { pt: 'Sedum', en: 'Sedum stonecrop succulent' },
+  { pt: 'Crassula Jade', en: 'Jade plant crassula ovata' },
+  { pt: 'Aloe Vera', en: 'Aloe vera plant' },
+  // Lírios (múltiplas espécies)
+  { pt: 'Lírio-da-paz', en: 'Peace lily spathiphyllum' },
+  { pt: 'Lírio Asiático', en: 'Asiatic lily plant' },
+  { pt: 'Lírio Stargazer', en: 'Stargazer lily plant' },
+  // Plantas populares variadas
   { pt: 'Jasmim', en: 'Jasmine plant' },
+  { pt: 'Jasmim-manga', en: 'Plumeria frangipani plant' },
   { pt: 'Hortênsia', en: 'Hydrangea plant' },
   { pt: 'Girassol', en: 'Sunflower plant' },
   { pt: 'Azaleia', en: 'Azalea plant' },
   { pt: 'Camélia', en: 'Camellia plant' },
   { pt: 'Begônia', en: 'Begonia plant' },
-  { pt: 'Lírio-da-paz', en: 'Peace lily plant' },
   { pt: 'Antúrio', en: 'Anthurium plant' },
   { pt: 'Violeta-africana', en: 'African violet plant' },
   { pt: 'Peperômia', en: 'Peperomia plant' },
@@ -67,12 +98,44 @@ const PLANT_SPECIES_POOL = [
   { pt: 'Cróton', en: 'Croton plant' },
   { pt: 'Ficus lyrata', en: 'Fiddle leaf fig plant' },
   { pt: 'Pilea', en: 'Pilea peperomioides plant' },
-  { pt: 'Lírio', en: 'Lily flower plant' },
-  { pt: 'Rosa', en: 'Rose plant' },
   { pt: 'Tulipa', en: 'Tulip flower plant' },
   { pt: 'Margarida', en: 'Daisy flower plant' },
   { pt: 'Gerânio', en: 'Geranium plant' },
-  { pt: 'Lavanda', en: 'Lavender plant' },
+  { pt: 'Dália', en: 'Dahlia flower plant' },
+  { pt: 'Cravo', en: 'Carnation dianthus plant' },
+  { pt: 'Hibisco', en: 'Hibiscus plant' },
+  { pt: 'Bougainvillea', en: 'Bougainvillea plant' },
+  { pt: 'Ipê-amarelo', en: 'Yellow trumpet tree tabebuia' },
+  { pt: 'Bromélia', en: 'Bromeliad plant' },
+  { pt: 'Cacto-candelabro', en: 'Candelabra cactus euphorbia' },
+  { pt: 'Palmeira-ráfis', en: 'Lady palm rhapis excelsa' },
+  { pt: 'Dracena', en: 'Dracaena plant' },
+  { pt: 'Clúsia', en: 'Clusia rosea plant' },
+  { pt: 'Filodendro', en: 'Philodendron plant' },
+  { pt: 'Jiboia', en: 'Pothos epipremnum plant' },
+  { pt: 'Comigo-ninguém-pode', en: 'Dieffenbachia plant' },
+  { pt: 'Crisântemo', en: 'Chrysanthemum plant' },
+  { pt: 'Petúnia', en: 'Petunia flower plant' },
+  { pt: 'Mandevilla', en: 'Mandevilla dipladenia plant' },
+  { pt: 'Agapanto', en: 'Agapanthus lily of the nile' },
+  { pt: 'Gardênia', en: 'Gardenia jasminoides plant' },
+  { pt: 'Kalanchoe', en: 'Kalanchoe plant' },
+  { pt: 'Primavera', en: 'Bougainvillea spectabilis plant' },
+  { pt: 'Ixora', en: 'Ixora coccinea plant' },
+  { pt: 'Flor-de-maio', en: 'Christmas cactus schlumbergera' },
+  { pt: 'Pleomele', en: 'Pleomele dracaena reflexa plant' },
+  { pt: 'Lança-de-são-jorge', en: 'Cylindrical snake plant sansevieria cylindrica' },
+  { pt: 'Avenca', en: 'Maidenhair fern adiantum' },
+  { pt: 'Pacová', en: 'Philodendron martianum pacova' },
+  { pt: 'Helicônia', en: 'Heliconia lobster claw plant' },
+  { pt: 'Estrelícia', en: 'Bird of paradise strelitzia' },
+  { pt: 'Moreia', en: 'Dietes bicolor fortnight lily' },
+  { pt: 'Copo-de-leite', en: 'Calla lily zantedeschia' },
+  { pt: 'Bela-emília', en: 'Blue plumbago plumbago auriculata' },
+  { pt: 'Alamanda', en: 'Allamanda cathartica golden trumpet' },
+  { pt: 'Murta', en: 'Murraya paniculata orange jasmine' },
+  { pt: 'Pitangueira', en: 'Surinam cherry eugenia uniflora' },
+  { pt: 'Jade', en: 'Jade plant crassula ovata' },
 ];
 
 function normalizePlantName(value: string): string {
@@ -95,11 +158,22 @@ function namesLikelySame(a: string, b: string): boolean {
   const nb = normalizePlantName(b);
   if (!na || !nb) return false;
   if (na === nb) return true;
-  if (na.includes(nb) || nb.includes(na)) return true;
-
-  const aRoot = na.split(' ')[0];
-  const bRoot = nb.split(' ')[0];
-  return aRoot.length >= 3 && bRoot.length >= 3 && aRoot === bRoot;
+  // Only match if full multi-word names match, NOT just first word
+  // This allows "Orquídea Phalaenopsis" and "Orquídea Dendrobium" to be DIFFERENT
+  const aWords = na.split(' ').filter(w => w.length >= 3);
+  const bWords = nb.split(' ').filter(w => w.length >= 3);
+  // If both have subspecies (2+ words), require full match or full inclusion
+  if (aWords.length >= 2 && bWords.length >= 2) {
+    return na.includes(nb) || nb.includes(na);
+  }
+  // If one is a single generic word (e.g. "lavanda"), match if the other starts with it
+  if (aWords.length === 1 && bWords.length >= 1) {
+    return bWords[0] === aWords[0];
+  }
+  if (bWords.length === 1 && aWords.length >= 1) {
+    return aWords[0] === bWords[0];
+  }
+  return false;
 }
 
 function generateSlug(title: string): string {
