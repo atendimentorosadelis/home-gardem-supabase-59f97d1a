@@ -1215,9 +1215,14 @@ export default function ArticleEditor() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="body">Conteúdo</Label>
-                    <Button type="button" variant="ghost" size="sm" onClick={calculateReadTime}>
-                      Calcular tempo de leitura
-                    </Button>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline" className="text-xs font-mono">
+                        {body.split(/\s+/).filter(Boolean).length} palavras
+                      </Badge>
+                      <Button type="button" variant="ghost" size="sm" onClick={calculateReadTime}>
+                        Calcular tempo de leitura
+                      </Button>
+                    </div>
                   </div>
                   <Textarea id="body" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Escreva o conteúdo do artigo aqui..." rows={20} className="font-mono text-sm" />
                   <p className="text-xs text-muted-foreground">
