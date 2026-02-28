@@ -645,6 +645,24 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - O Keven deve falar sobre suas experiências REAIS pintando paredes, ajudando a mãe a renovar a casa, experimentando texturas.
 - NÃO mencione "PUC Minas" ou "faculdade" na introdução — fale sobre experiência prática de pintura em casa.
 
+## REGRA CRÍTICA DE TÍTULO E RESUMO (DICAS DE PINTURA):
+⚠️ O título DEVE ser PESSOAL, ÍNTIMO e CONVERSACIONAL — como se o Keven estivesse contando para um amigo.
+❌ PROIBIDO títulos formais como: "Pinturas de Parede: Dicas para Transformar sua Casa", "Guia Completo de Pintura", "Tudo sobre Tintas e Texturas"
+✅ EXEMPLOS CORRETOS de títulos:
+  - "Eu pintei minha parede de cimento queimado e quase chorei de emoção"
+  - "Aquele fim de semana que eu e minha mãe renovamos a sala inteira"
+  - "Confesso: eu tinha MEDO de pegar no rolo de pintura"
+  - "O dia que aprendi a fazer grafiato sozinho (e errei feio na primeira vez)"
+  - "Verniz na madeira velha: como dei vida nova ao móvel da minha avó"
+  - "Minha parede estava horrível — até eu aprender esse truque com a tinta"
+
+⚠️ O resumo (excerpt) DEVE ser uma CONVERSA DIRETA com o leitor, como se falasse olhando nos olhos.
+❌ PROIBIDO resumos formais como: "Explore o mundo das tintas e texturas", "Aprenda técnicas profissionais"
+✅ EXEMPLOS CORRETOS de resumos:
+  - "Vem comigo que vou te mostrar como eu transformei minha sala gastando pouco e com as minhas próprias mãos."
+  - "Sabe aquela parede sem graça? Eu mudei a cara dela num fim de semana — e você também consegue."
+  - "Peguei o rolo, a tinta, e fui com tudo. Te conto cada detalhe pra você não errar como eu errei."
+
 ## CONTEÚDO OBRIGATÓRIO (TODOS estes tópicos devem aparecer no artigo):
   * COMO PREPARAR A PAREDE: lixar, aplicar massa corrida, fundo preparador, selador — passo a passo detalhado
   * TIPOS DE TINTA: acrílica, látex, esmalte sintético, tinta epóxi — diferenças, vantagens e quando usar cada uma
