@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -42,6 +43,64 @@ const categories = [
   { name: 'Nórdico', slug: 'nordico' },
   { name: 'Neo Clássico', slug: 'neo-classico' },
 ];
+
+const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';
+
+const PLANT_SPECIES_POOL = [
+  { pt: 'Orquídea Phalaenopsis', en: 'Phalaenopsis orchid' },
+  { pt: 'Jasmim', en: 'Jasmine plant' },
+  { pt: 'Hortênsia', en: 'Hydrangea plant' },
+  { pt: 'Girassol', en: 'Sunflower plant' },
+  { pt: 'Azaleia', en: 'Azalea plant' },
+  { pt: 'Camélia', en: 'Camellia plant' },
+  { pt: 'Begônia', en: 'Begonia plant' },
+  { pt: 'Lírio-da-paz', en: 'Peace lily plant' },
+  { pt: 'Antúrio', en: 'Anthurium plant' },
+  { pt: 'Violeta-africana', en: 'African violet plant' },
+  { pt: 'Peperômia', en: 'Peperomia plant' },
+  { pt: 'Maranta', en: 'Prayer plant maranta' },
+  { pt: 'Calatéia', en: 'Calathea plant' },
+  { pt: 'Samambaia', en: 'Fern plant' },
+  { pt: 'Costela-de-adão', en: 'Monstera deliciosa plant' },
+  { pt: 'Espada-de-são-jorge', en: 'Snake plant sansevieria' },
+  { pt: 'Zamioculca', en: 'ZZ plant zamioculcas' },
+  { pt: 'Cróton', en: 'Croton plant' },
+  { pt: 'Ficus lyrata', en: 'Fiddle leaf fig plant' },
+  { pt: 'Pilea', en: 'Pilea peperomioides plant' },
+  { pt: 'Lírio', en: 'Lily flower plant' },
+  { pt: 'Rosa', en: 'Rose plant' },
+  { pt: 'Tulipa', en: 'Tulip flower plant' },
+  { pt: 'Margarida', en: 'Daisy flower plant' },
+  { pt: 'Gerânio', en: 'Geranium plant' },
+  { pt: 'Lavanda', en: 'Lavender plant' },
+];
+
+function normalizePlantName(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractPlantNameFromTitle(title: string): string {
+  const raw = (title || '').split(':')[0]?.split('—')[0]?.split('-')[0] || title;
+  return normalizePlantName(raw);
+}
+
+function namesLikelySame(a: string, b: string): boolean {
+  const na = normalizePlantName(a);
+  const nb = normalizePlantName(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  if (na.includes(nb) || nb.includes(na)) return true;
+
+  const aRoot = na.split(' ')[0];
+  const bRoot = nb.split(' ')[0];
+  return aRoot.length >= 3 && bRoot.length >= 3 && aRoot === bRoot;
+}
 
 function generateSlug(title: string): string {
   return title
@@ -318,9 +377,46 @@ serve(async (req) => {
 
     const requestBody = await req.json().catch(() => ({}));
     const topic = typeof requestBody.topic === 'string' ? requestBody.topic.trim() : '';
-    const avoidPlantNames = Array.isArray(requestBody.avoidPlantNames)
+    const requestAvoidPlantNames = Array.isArray(requestBody.avoidPlantNames)
       ? requestBody.avoidPlantNames.filter((name): name is string => typeof name === 'string')
       : [];
+
+    const isPlantFlowerNamesTopic = /nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores/i.test(topic.toLowerCase());
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || '';
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || '';
+    const supabase = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+      ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+      : null;
+
+    let avoidPlantNames = [...requestAvoidPlantNames];
+
+    if (isPlantFlowerNamesTopic && supabase) {
+      try {
+        const { data: recentFlowerArticles } = await supabase
+          .from('content_articles')
+          .select('title, main_subject')
+          .eq('category_slug', FLOWER_NAMES_CATEGORY_SLUG)
+          .order('created_at', { ascending: false })
+          .limit(30);
+
+        const recentPlantNames = (recentFlowerArticles || [])
+          .flatMap((row) => [
+            row.title ? extractPlantNameFromTitle(row.title) : '',
+            row.main_subject ? normalizePlantName(row.main_subject) : '',
+          ])
+          .filter((name) => name.length >= 3);
+
+        avoidPlantNames = Array.from(new Set([
+          ...avoidPlantNames.map(normalizePlantName),
+          ...recentPlantNames,
+        ])).filter((name) => name.length >= 3);
+
+        console.log(`[AntiDuplicate] Loaded ${avoidPlantNames.length} blocked plant names from recent flower articles`);
+      } catch (antiDupError) {
+        console.warn('[AntiDuplicate] Failed to load recent flower names:', antiDupError);
+      }
+    }
 
     if (!topic) {
       throw new Error("Topic is required");
@@ -537,8 +633,6 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 
 - content DEVE OBRIGATORIAMENTE incluir "## Perguntas Frequentes" com 8-12 perguntas numeradas em negrito`;
 
-    const isPlantFlowerNamesTopic = /nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores/i.test(topic.toLowerCase());
-
     const plantFlowerInstructions = isPlantFlowerNamesTopic ? `
 INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e Flores):
 - A IA deve ESCOLHER UMA planta ou flor ESPECÍFICA para o artigo (ex: Rosa, Orquídea Phalaenopsis, Lavanda, Suculenta Echeveria, Hortênsia, Jasmim, Girassol, etc.)
@@ -585,9 +679,25 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
 
     const normalizedAvoidPlantNames = [...new Set(
       avoidPlantNames
-        .map((name) => name.trim())
+        .map((name) => normalizePlantName(name))
         .filter((name) => name.length >= 3)
-    )].slice(0, 12);
+    )].slice(0, 20);
+
+    const allowedPlantSpecies = isPlantFlowerNamesTopic
+      ? PLANT_SPECIES_POOL.filter((species) =>
+          !normalizedAvoidPlantNames.some((blocked) =>
+            namesLikelySame(species.pt, blocked) || namesLikelySame(species.en, blocked)
+          )
+        )
+      : [];
+
+    const forcedPlantSpecies = allowedPlantSpecies.length > 0
+      ? allowedPlantSpecies[Math.floor(Math.random() * allowedPlantSpecies.length)]
+      : null;
+
+    if (forcedPlantSpecies) {
+      console.log(`[AntiDuplicate] Forced species selected: ${forcedPlantSpecies.pt} (${forcedPlantSpecies.en})`);
+    }
 
     const antiDuplicatePlantInstructions = isPlantFlowerNamesTopic && normalizedAvoidPlantNames.length > 0 ? `
 ## ANTI-REPETIÇÃO OBRIGATÓRIA (Nomes e Cuidados Plantas e Flores)
@@ -595,6 +705,16 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
 - Escolha UMA espécie DIFERENTE da lista acima.
 - O título e o mainSubject DEVEM trazer a nova espécie escolhida.
 - Se você escolher qualquer espécie da lista proibida, a resposta será descartada.
+` : '';
+
+    const forcedPlantInstructions = forcedPlantSpecies ? `
+## ESPÉCIE OBRIGATÓRIA DESTA EXECUÇÃO
+- Você DEVE usar EXATAMENTE esta espécie no artigo inteiro:
+  - Nome em português: ${forcedPlantSpecies.pt}
+  - Nome em inglês para mainSubject: ${forcedPlantSpecies.en}
+- O título DEVE conter "${forcedPlantSpecies.pt}".
+- O mainSubject DEVE conter "${forcedPlantSpecies.en}".
+- NÃO substitua por Lavanda nem por qualquer outra espécie.
 ` : '';
 
     const architectureInstructions = isArchitectureTopic ? `
@@ -732,7 +852,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO/EDIFICAÇÃO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}${antiDuplicatePlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
+${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -934,9 +1054,12 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${vegetableHerbInstru
     }
 
     // Apply validations
-    const validatedTitle = validateAndSanitizeTitle(articleData.title, topic);
+    let validatedTitle = validateAndSanitizeTitle(articleData.title, topic);
     const validatedExcerpt = validateAndSanitizeExcerpt(articleData.excerpt, validatedTitle, topic);
-    
+
+    if (forcedPlantSpecies && !namesLikelySame(validatedTitle, forcedPlantSpecies.pt)) {
+      validatedTitle = `${forcedPlantSpecies.pt}: ${validatedTitle}`.slice(0, 75);
+    }
     // PRIORITY 1: Infer category from the TOPIC (most reliable - user chose it)
     let categoryMatch: typeof categories[0] | undefined = undefined;
     // topicLower already declared above (line 578)
@@ -1041,11 +1164,18 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${vegetableHerbInstru
     const rawExternalLinks = articleData.externalLinks || [];
     const validExternalLinks = await validateExternalLinks(rawExternalLinks, 3);
 
-    const imageData = validateAndSanitizeImageData({
+    let imageData = validateAndSanitizeImageData({
       mainSubject: articleData.mainSubject,
       visualContext: articleData.visualContext,
       galleryPrompts: articleData.galleryPrompts,
     });
+
+    if (forcedPlantSpecies && !namesLikelySame(imageData.mainSubject, forcedPlantSpecies.en)) {
+      imageData = {
+        ...imageData,
+        mainSubject: forcedPlantSpecies.en,
+      };
+    }
 
     // FAQ validation and injection
     let finalContent = articleData.content;
