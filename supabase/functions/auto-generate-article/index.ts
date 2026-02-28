@@ -41,6 +41,31 @@ const TOPIC_PROMPTS: Record<string, string> = {
   'neo-classico': 'Dicas de arquitetura em estilo neo clássico',
 };
 
+const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';
+
+function normalizeText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractPlantNameFromTitle(title: string): string {
+  const raw = title.split(':')[0] || title;
+  return normalizeText(raw);
+}
+
+function containsAnyTerm(text: string, terms: string[]): boolean {
+  const normalizedText = normalizeText(text);
+  return terms.some((term) => {
+    const normalizedTerm = normalizeText(term);
+    return normalizedTerm.length >= 3 && normalizedText.includes(normalizedTerm);
+  });
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -122,29 +147,102 @@ serve(async (req) => {
 
     console.log(`[AutoGenerate] Starting generation for topic: ${randomTopic}`);
 
-    // 6. Call generate-full-article edge function internally
+    // 6. Call generate-full-article edge function internally with anti-duplication retry
     const generateUrl = `${SUPABASE_URL}/functions/v1/generate-full-article`;
-    const generateResponse = await fetch(generateUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-      body: JSON.stringify({ topic: randomTopic }),
-    });
+    const isFlowerNamesTopic = randomTopicId === 'jardim-nomes-cuidados' || /nomes\s+e\s+cuidados\s+plantas\s+e\s+flores/i.test(randomTopic);
 
-    if (!generateResponse.ok) {
-      const errorText = await generateResponse.text();
-      throw new Error(`generate-full-article failed: ${generateResponse.status} - ${errorText}`);
+    let avoidPlantNames: string[] = [];
+    if (isFlowerNamesTopic) {
+      const { data: recentFlowerArticles } = await supabase
+        .from('content_articles')
+        .select('title, main_subject')
+        .eq('category_slug', FLOWER_NAMES_CATEGORY_SLUG)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      avoidPlantNames = Array.from(new Set(
+        (recentFlowerArticles || [])
+          .flatMap((row) => [
+            row.title ? extractPlantNameFromTitle(row.title) : '',
+            row.main_subject ? normalizeText(row.main_subject) : '',
+          ])
+          .filter((name) => name.length >= 3)
+      ));
+
+      if (avoidPlantNames.length > 0) {
+        console.log(`[AutoGenerate] Anti-duplicate terms loaded for flowers: ${avoidPlantNames.join(', ')}`);
+      }
     }
 
-    const articleData = await generateResponse.json();
+    let article: {
+      title: string;
+      slug: string;
+      excerpt: string;
+      category: string;
+      categorySlug: string;
+      content: string;
+      tags?: string[];
+      keywords?: string;
+      readTime?: string;
+      mainSubject?: string;
+      visualContext?: string;
+      galleryPrompts?: string[];
+    } | null = null;
+    let lastError = '';
 
-    if (!articleData?.success || !articleData?.article) {
-      throw new Error(articleData?.error || 'Article generation returned no data');
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const generateResponse = await fetch(generateUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+        body: JSON.stringify({
+          topic: randomTopic,
+          avoidPlantNames: isFlowerNamesTopic ? avoidPlantNames : [],
+        }),
+      });
+
+      if (!generateResponse.ok) {
+        const errorText = await generateResponse.text();
+        lastError = `generate-full-article failed: ${generateResponse.status} - ${errorText}`;
+        console.error(`[AutoGenerate] Attempt ${attempt} failed: ${lastError}`);
+        continue;
+      }
+
+      const articleData = await generateResponse.json();
+      if (!articleData?.success || !articleData?.article) {
+        lastError = articleData?.error || 'Article generation returned no data';
+        console.error(`[AutoGenerate] Attempt ${attempt} invalid payload: ${lastError}`);
+        continue;
+      }
+
+      const candidate = articleData.article;
+      if (isFlowerNamesTopic && avoidPlantNames.length > 0) {
+        const candidateTitlePlant = extractPlantNameFromTitle(candidate.title || '');
+        const candidateMainSubject = normalizeText(candidate.mainSubject || '');
+        const duplicated = containsAnyTerm(candidateTitlePlant, avoidPlantNames) || containsAnyTerm(candidateMainSubject, avoidPlantNames);
+
+        if (duplicated && attempt < 3) {
+          console.warn(`[AutoGenerate] Duplicate flower detected on attempt ${attempt}: ${candidate.title}`);
+          avoidPlantNames = Array.from(new Set([
+            ...avoidPlantNames,
+            candidateTitlePlant,
+            candidateMainSubject,
+          ].filter((name) => name.length >= 3)));
+          lastError = `Duplicate flower content generated: ${candidate.title}`;
+          continue;
+        }
+      }
+
+      article = candidate;
+      break;
     }
 
-    const article = articleData.article;
+    if (!article) {
+      throw new Error(lastError || 'Failed to generate non-duplicated article after 3 attempts');
+    }
+
     const generatedWordCount = (article.content || '').split(/\s+/).filter(Boolean).length;
     console.log(`[AutoGenerate] Article generated: ${article.title} (${generatedWordCount} palavras)`);
 
