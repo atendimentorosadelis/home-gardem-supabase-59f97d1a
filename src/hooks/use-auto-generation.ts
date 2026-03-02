@@ -8,22 +8,43 @@ export interface AutoGenerationSchedule { id: string; day_of_week: number; time_
 export interface AutoGenerationLog { id: string; article_id: string | null; topic_used: string; status: 'pending' | 'running' | 'success' | 'error' | 'skipped'; error_message: string | null; executed_at: string; duration_ms: number | null; }
 
 export const AVAILABLE_TOPICS = [
+  // Design Interno - Áreas Sociais
   { id: 'sala', label: 'Sala', category: 'Design Interno' },
   { id: 'sala-jantar', label: 'Sala de Jantar', category: 'Design Interno' },
   { id: 'lareira', label: 'Lareira', category: 'Design Interno' },
   { id: 'area-gourmet', label: 'Área Gourmet', category: 'Design Interno' },
+  // Design Interno - Áreas Íntimas
   { id: 'quarto', label: 'Quarto', category: 'Design Interno' },
   { id: 'banheiro', label: 'Banheiro', category: 'Design Interno' },
   { id: 'escritorio', label: 'Escritório', category: 'Design Interno' },
+  // Design Interno - Áreas de Serviço
   { id: 'cozinha', label: 'Cozinha', category: 'Design Interno' },
   { id: 'varanda', label: 'Varanda', category: 'Design Interno' },
+  { id: 'area-servico', label: 'Área de Serviço', category: 'Design Interno' },
+  { id: 'piscina', label: 'Piscina', category: 'Design Interno' },
+  { id: 'dicas-de-pintura', label: 'Dicas de Pintura', category: 'Design Interno' },
+  // Jardim
   { id: 'jardim', label: 'Jardim', category: 'Jardim' },
   { id: 'decoracao', label: 'Dicas de Decoração', category: 'Jardim' },
   { id: 'cuidados', label: 'Cuidados com a Plantação', category: 'Jardim' },
   { id: 'jardim-vertical', label: 'Jardim Vertical', category: 'Jardim' },
+  { id: 'jardim-suculentas', label: 'Suculentas e Cactos', category: 'Jardim' },
+  { id: 'jardim-ervas', label: 'Horta de Ervas', category: 'Jardim' },
+  { id: 'jardim-flores', label: 'Flores Ornamentais', category: 'Jardim' },
+  { id: 'jardim-paisagismo', label: 'Paisagismo', category: 'Jardim' },
+  { id: 'jardim-hidroponia', label: 'Hidroponia', category: 'Jardim' },
+  { id: 'jardim-sustentavel', label: 'Jardim Sustentável', category: 'Jardim' },
+  { id: 'jardim-halloween', label: 'Halloween', category: 'Jardim' },
+  { id: 'jardim-nomes-cuidados', label: 'Nomes e Cuidados Plantas e Flores', category: 'Jardim' },
+  { id: 'jardim-hortas-ervas-cuidados', label: 'Hortas, Ervas e Cuidados', category: 'Jardim' },
+  // Arquitetura
   { id: 'colonial', label: 'Colonial', category: 'Arquitetura' },
   { id: 'industrial', label: 'Industrial', category: 'Arquitetura' },
   { id: 'moderno', label: 'Moderno', category: 'Arquitetura' },
+  { id: 'neolitico', label: 'Neolítico', category: 'Arquitetura' },
+  { id: 'europeu', label: 'Europeu', category: 'Arquitetura' },
+  { id: 'nordico', label: 'Nórdico', category: 'Arquitetura' },
+  { id: 'neo-classico', label: 'Neo Clássico', category: 'Arquitetura' },
 ];
 
 export function useAutoGenerationConfig() {
