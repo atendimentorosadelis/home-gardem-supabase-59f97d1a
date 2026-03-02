@@ -210,6 +210,52 @@ function GenerateManualContentPage() {
     updateHistoryArticleId,
   } = useGenerationHistory();
 
+  // Recovery: if generation finished in backend but UI got desynced, restore article from DB and open preview
+  useEffect(() => {
+    const hasProgress = steps.some(step => step.status !== 'pending');
+    const hasLoadingStep = steps.some(step => step.status === 'loading');
+
+    if (isGenerating || showPreview || showImageApproval || article) return;
+    if (!articleSavedId || !hasProgress || hasLoadingStep) return;
+
+    const restoreGeneratedArticle = async () => {
+      const { data, error } = await supabase
+        .from('content_articles')
+        .select('title, slug, excerpt, category, category_slug, body, tags, keywords, read_time, cover_image, gallery_images, gallery_prompts, main_subject, visual_context')
+        .eq('id', articleSavedId)
+        .maybeSingle();
+
+      if (error || !data?.body) return;
+
+      setArticle({
+        title: data.title,
+        slug: data.slug ?? '',
+        excerpt: data.excerpt ?? '',
+        category: data.category ?? '',
+        categorySlug: data.category_slug ?? '',
+        content: data.body,
+        tags: data.tags ?? [],
+        keywords: data.keywords ?? '',
+        readTime: data.read_time ?? '',
+        externalLinks: [],
+        mainSubject: data.main_subject ?? '',
+        visualContext: data.visual_context ?? '',
+        galleryPrompts: Array.isArray(data.gallery_prompts)
+          ? data.gallery_prompts.filter((item): item is string => typeof item === 'string')
+          : [],
+        coverImage: data.cover_image ?? undefined,
+        galleryImages: Array.isArray(data.gallery_images)
+          ? data.gallery_images.filter((item): item is string => typeof item === 'string')
+          : [],
+      });
+
+      setArticleSaved(true);
+      setShowPreview(true);
+    };
+
+    restoreGeneratedArticle();
+  }, [article, articleSavedId, isGenerating, setArticle, showImageApproval, showPreview, steps]);
+
   const { fireConfetti } = useConfetti();
 
   const hasUnsavedChanges = article !== null && !articleSaved && !isGenerating;
