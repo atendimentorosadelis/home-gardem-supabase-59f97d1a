@@ -814,6 +814,13 @@ export default function ArticleEditor() {
   const extractMainSubjectFromTitle = (titleText: string): string => {
     const lowerTitle = titleText.toLowerCase();
     const subjectMap: Record<string, string> = {
+      'cimento queimado': 'burnt cement wall finish, polished concrete texture, modern industrial wall',
+      'grafiato': 'grafiato textured wall finish, decorative plaster texture, exterior wall coating',
+      'verniz': 'wood varnish application, glossy wood finish, woodworking protection coating',
+      'textura': 'decorative wall texture finish, grafiato texture, artistic wall coating',
+      'tinta': 'interior wall paint colors, paint swatches, home painting project',
+      'pintura': 'wall painting techniques, paint roller, fresh painted wall, vibrant colors',
+      'dicas de pintura': 'wall painting techniques and textures, paint roller on wall, vibrant colors',
       'lareira': 'modern indoor fireplace with warm flames',
       'lareiras': 'elegant fireplaces with dancing flames',
       'área gourmet': 'outdoor gourmet area with built-in BBQ and bar',
@@ -838,8 +845,15 @@ export default function ArticleEditor() {
       'escritório': 'home office with elegant desk setup',
       'lavanderia': 'organized laundry room with modern appliances',
       'halloween': 'halloween decorated home with pumpkins and spooky decor',
+      'horta': 'vegetable garden with fresh organic produce',
+      'ervas': 'herb garden with fresh aromatic herbs',
+      'compostagem': 'composting garden setup',
+      'paisagismo': 'landscape design with beautiful garden',
+      'hidroponia': 'hydroponic garden system with growing plants',
     };
-    for (const [pt, en] of Object.entries(subjectMap)) {
+    // Sort by key length descending to match longer terms first
+    const sortedEntries = Object.entries(subjectMap).sort((a, b) => b[0].length - a[0].length);
+    for (const [pt, en] of sortedEntries) {
       if (lowerTitle.includes(pt)) return en;
     }
     return '';
