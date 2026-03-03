@@ -646,7 +646,6 @@ export default function ArticleEditor() {
   const bannerMobileInputRef = useRef<HTMLInputElement>(null);
 
   const [editingIndex, setEditingIndex] = useState<number>(0);
-  const [galleryIndices, setGalleryIndices] = useState<number[]>([1, 2, 3, 4, 5]);
 
   const { data: article, isLoading } = useQuery({
     queryKey: ['article-edit', id],
@@ -1041,19 +1040,8 @@ export default function ArticleEditor() {
     }
   };
 
-  const swapWithCover = (galleryIndex: number) => {
-    const galleryImage = galleryImages[galleryIndex];
-    const currentCover = coverImage;
-    setCoverImage(galleryImage);
-    const newGallery = [...galleryImages];
-    newGallery[galleryIndex] = currentCover;
-    setGalleryImages(newGallery);
-    const currentEditingIdx = editingIndex;
-    const clickedGalleryIdx = galleryIndices[galleryIndex];
-    setEditingIndex(clickedGalleryIdx);
-    const newGalleryIndices = [...galleryIndices];
-    newGalleryIndices[galleryIndex] = currentEditingIdx;
-    setGalleryIndices(newGalleryIndices);
+  const selectImageForEditing = (galleryIndex: number) => {
+    setEditingIndex(galleryIndex + 1);
   };
 
   const uploadAffiliateBanner = async (file: File, type: 'desktop' | 'mobile') => {
@@ -1272,11 +1260,11 @@ export default function ArticleEditor() {
                   </Label>
                   <div className="max-w-2xl">
                     <ImageCard
-                      image={coverImage}
+                      image={editingIndex === 0 ? coverImage : (galleryImages[editingIndex - 1] || '')}
                       label={editingIndex === 0 ? "Capa" : `Imagem ${editingIndex}`}
                       isGenerating={generatingImageIndex === editingIndex}
                       isUploading={uploadingImageIndex === editingIndex}
-                      isCover
+                      isCover={editingIndex === 0}
                       onGenerate={() => generateSingleImage(editingIndex)}
                       onRemove={() => removeImage(editingIndex)}
                       onUpload={(file) => uploadImageToIndex(file, editingIndex)}
@@ -1290,19 +1278,19 @@ export default function ArticleEditor() {
                   <p className="text-xs text-muted-foreground">Clique em uma imagem para trazê-la para a área de edição</p>
                   <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                     {galleryImages.map((img, idx) => {
-                      const originalIndex = galleryIndices[idx];
+                      const imageIndex = idx + 1;
                       return (
                         <ImageCard
                           key={idx}
                           image={img}
-                          label={originalIndex === 0 ? "Capa" : `Imagem ${originalIndex}`}
-                          isGenerating={generatingImageIndex === originalIndex}
-                          isUploading={uploadingImageIndex === originalIndex}
+                          label={`Imagem ${imageIndex}`}
+                          isGenerating={generatingImageIndex === imageIndex}
+                          isUploading={uploadingImageIndex === imageIndex}
                           isSelectable
-                          onClick={() => swapWithCover(idx)}
-                          onGenerate={() => generateSingleImage(originalIndex)}
-                          onRemove={() => removeImage(originalIndex)}
-                          onUpload={(file) => uploadImageToIndex(file, originalIndex)}
+                          onClick={() => selectImageForEditing(idx)}
+                          onGenerate={() => generateSingleImage(imageIndex)}
+                          onRemove={() => removeImage(imageIndex)}
+                          onUpload={(file) => uploadImageToIndex(file, imageIndex)}
                         />
                       );
                     })}
