@@ -33,7 +33,7 @@ const subjectTranslations: Record<string, string> = {
   'lareira': 'fireplace', 'jardim vertical': 'vertical garden', 'jardim': 'garden',
   'plantas de interior': 'indoor plants', 'plantas': 'plants',
   'suculentas': 'succulent plants', 'cactos': 'cactus plants',
-  'decoração': 'home decor', 'pergolado': 'pergola', 'varanda': 'balcony garden',
+  'decoração': 'home decor', 'pergolado': 'pergola', 'varanda': 'beautiful covered veranda, outdoor porch with comfortable seating, cozy balcony living space',
   'piscina': 'swimming pool', 'churrasqueira': 'barbecue grill area',
   'cozinha': 'kitchen', 'sala de jantar': 'dining room',
   'sala de estar': 'living room', 'sala': 'living room',
