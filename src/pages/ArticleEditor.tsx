@@ -1275,8 +1275,20 @@ export default function ArticleEditor() {
                 {/* Galeria */}
                 <div className="space-y-2">
                   <Label className="text-base font-semibold">Galeria ({galleryCount}/5)</Label>
-                  <p className="text-xs text-muted-foreground">Clique em uma imagem para trazê-la para a área de edição</p>
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                  <p className="text-xs text-muted-foreground">Clique em uma miniatura (incluindo capa) para editar e refazer a imagem selecionada</p>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    <ImageCard
+                      image={coverImage}
+                      label="Capa"
+                      isGenerating={generatingImageIndex === 0}
+                      isUploading={uploadingImageIndex === 0}
+                      isCover
+                      isSelectable
+                      onClick={() => setEditingIndex(0)}
+                      onGenerate={() => generateSingleImage(0)}
+                      onRemove={() => removeImage(0)}
+                      onUpload={(file) => uploadImageToIndex(file, 0)}
+                    />
                     {galleryImages.map((img, idx) => {
                       const imageIndex = idx + 1;
                       return (
