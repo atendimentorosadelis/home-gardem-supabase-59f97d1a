@@ -118,6 +118,49 @@ function translatePromptTerms(prompt: string): string {
   return translated;
 }
 
+function detectPaintingTechniqueFromText(text: string): string | null {
+  const normalized = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const techniqueMap: Array<{ keys: string[]; subject: string }> = [
+    {
+      keys: ['cimento queimado', 'burnt cement', 'concrete effect', 'concrete wall'],
+      subject: 'burnt cement wall finish, polished concrete texture, modern industrial wall',
+    },
+    {
+      keys: ['grafiato', 'textura acrilica', 'textured plaster'],
+      subject: 'grafiato textured wall finish, decorative plaster texture, artisan wall coating',
+    },
+    {
+      keys: ['verniz', 'wood varnish', 'envernizar', 'acabamento de madeira'],
+      subject: 'wood varnish application, glossy wood finish, woodworking protection coating',
+    },
+    {
+      keys: ['textura', 'efeito textura', 'textured wall'],
+      subject: 'decorative wall texture finish, artistic wall coating, tactile plaster details',
+    },
+    {
+      keys: ['tinta', 'paint', 'pintura'],
+      subject: 'interior wall paint colors, roller application, wall preparation and finish',
+    },
+  ];
+
+  for (const technique of techniqueMap) {
+    if (technique.keys.some((k) => normalized.includes(k))) {
+      return technique.subject;
+    }
+  }
+
+  return null;
+}
+
+function isGenericPaintingSubject(text: string): boolean {
+  const normalized = text.toLowerCase();
+  return (
+    normalized.includes('wall painting techniques') ||
+    normalized.includes('paint roller') ||
+    normalized.includes('home design')
+  );
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -140,10 +183,20 @@ serve(async (req) => {
 
     if (!title && !customPrompt) throw new Error("Title or customPrompt is required");
 
+    const { data: articleContext } = articleId
+      ? await supabase
+          .from('content_articles')
+          .select('title, category, category_slug, main_subject, visual_context, excerpt, body')
+          .eq('id', articleId)
+          .maybeSingle()
+      : { data: null as any };
+
+    const effectiveCategory = category || articleContext?.category_slug || articleContext?.category || '';
+
     // Detect architecture by category FIRST (most reliable), then by title/subject
     const architectureCategories = ['colonial', 'industrial', 'moderno', 'neolítico', 'neolitico', 'europeu', 'nórdico', 'nordico', 'neo clássico', 'neo classico', 'neo-classico', 'arquitetura'];
-    const categoryLower = (category || '').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const categoryNormalized = (category || '').toLowerCase().trim();
+    const categoryLower = effectiveCategory.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const categoryNormalized = effectiveCategory.toLowerCase().trim();
     
     // Find the matching architecture style from category
     let matchedArchStyle: string | null = null;
@@ -174,31 +227,50 @@ serve(async (req) => {
     if (isArchitectureSubject && matchedArchStyle) {
       subject = architectureStylePrompts[matchedArchStyle].subject;
     } else {
-      // Try translating mainSubject first, then title
       const translatedMainSubject = mainSubject ? extractSubjectFromTitle(mainSubject) : null;
-      // If translation returned same as input (no match), also try the title
-      const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== mainSubject 
-        ? translatedMainSubject 
+      const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== mainSubject
+        ? translatedMainSubject
         : null;
-      subject = mainSubjectTranslated || extractSubjectFromTitle(title || '');
+      subject = mainSubjectTranslated || extractSubjectFromTitle(title || articleContext?.title || '');
     }
-    
+
+    const combinedContext = [
+      mainSubject,
+      visualContext,
+      customPrompt,
+      title,
+      articleContext?.main_subject,
+      articleContext?.visual_context,
+      articleContext?.excerpt,
+      articleContext?.body,
+    ].filter(Boolean).join(' | ');
+
+    const isPaintingCategory = categoryLower.includes('pintura') || categoryLower.includes('dicas-de-pintura');
+    if (isPaintingCategory) {
+      const detectedTechnique = detectPaintingTechniqueFromText(combinedContext);
+      if (detectedTechnique && (!subject || isGenericPaintingSubject(subject))) {
+        subject = detectedTechnique;
+      }
+    }
+
     const archDetails = matchedArchStyle ? architectureStylePrompts[matchedArchStyle].details : '';
-    
-    console.log(`[ImageGen] Category: "${category}", MatchedStyle: "${matchedArchStyle}", Subject: "${subject.substring(0, 80)}...", isArchitecture: ${isArchitectureSubject}`);
+
+    console.log(`[ImageGen] Category: "${effectiveCategory}", MatchedStyle: "${matchedArchStyle}", Subject: "${subject.substring(0, 80)}...", isArchitecture: ${isArchitectureSubject}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
     
+    const resolvedVisualContext = visualContext || articleContext?.visual_context || '';
+
     let setting: string;
     if (isArchitectureSubject) {
-      if (visualContext && !visualContext.toLowerCase().includes('interior')) {
-        setting = visualContext;
+      if (resolvedVisualContext && !resolvedVisualContext.toLowerCase().includes('interior')) {
+        setting = resolvedVisualContext;
       } else {
         setting = exteriorSetting;
       }
     } else {
-      setting = visualContext || interiorSetting;
+      setting = resolvedVisualContext || interiorSetting;
     }
     const antiTextClause = "no text, no words, no letters, no typography, no watermarks, no logos";
 
@@ -217,6 +289,11 @@ serve(async (req) => {
       let galleryDetail = customPrompt || 'detailed professional photography';
       // Translate Portuguese terms in gallery prompts to English
       galleryDetail = translatePromptTerms(galleryDetail);
+
+      const paintingTechniqueDetail = isPaintingCategory ? detectPaintingTechniqueFromText(`${galleryDetail} | ${combinedContext}`) : null;
+      if (paintingTechniqueDetail && isGenericPaintingSubject(subject)) {
+        subject = paintingTechniqueDetail;
+      }
       if (isArchitectureSubject) {
         // Strip any interior keywords from the gallery detail
         const cleanedDetail = galleryDetail
