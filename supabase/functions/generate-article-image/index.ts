@@ -107,6 +107,17 @@ function extractSubjectFromTitle(title: string): string {
   return title;
 }
 
+// Translate all Portuguese terms found in a prompt string to English equivalents
+function translatePromptTerms(prompt: string): string {
+  let translated = prompt;
+  const sortedEntries = Object.entries(subjectTranslations).sort((a, b) => b[0].length - a[0].length);
+  for (const [pt, en] of sortedEntries) {
+    const regex = new RegExp(pt.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    translated = translated.replace(regex, en);
+  }
+  return translated;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -163,7 +174,13 @@ serve(async (req) => {
     if (isArchitectureSubject && matchedArchStyle) {
       subject = architectureStylePrompts[matchedArchStyle].subject;
     } else {
-      subject = mainSubject || extractSubjectFromTitle(title || '');
+      // Try translating mainSubject first, then title
+      const translatedMainSubject = mainSubject ? extractSubjectFromTitle(mainSubject) : null;
+      // If translation returned same as input (no match), also try the title
+      const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== mainSubject 
+        ? translatedMainSubject 
+        : null;
+      subject = mainSubjectTranslated || extractSubjectFromTitle(title || '');
     }
     
     const archDetails = matchedArchStyle ? architectureStylePrompts[matchedArchStyle].details : '';
@@ -197,7 +214,9 @@ serve(async (req) => {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
     } else {
-      const galleryDetail = customPrompt || 'detailed professional photography';
+      let galleryDetail = customPrompt || 'detailed professional photography';
+      // Translate Portuguese terms in gallery prompts to English
+      galleryDetail = translatePromptTerms(galleryDetail);
       if (isArchitectureSubject) {
         // Strip any interior keywords from the gallery detail
         const cleanedDetail = galleryDetail
