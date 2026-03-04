@@ -11,52 +11,84 @@ export interface EdgeFunctionResponse<T = any> {
 export async function invokeEdgeFunction<T = any>(
   functionName: string,
   body?: any,
-  requiresAuth: boolean = false
+  requiresAuth: boolean = false,
+  options?: { timeoutMs?: number; retries?: number }
 ): Promise<EdgeFunctionResponse<T>> {
-  try {
-    let authToken = SUPABASE_ANON_KEY;
+  const maxRetries = options?.retries ?? 0;
+  const timeoutMs = options?.timeoutMs ?? 180000; // 3 min default
 
-    if (requiresAuth) {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (sessionData?.session?.access_token) {
-        authToken = sessionData.session.access_token;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      let authToken = SUPABASE_ANON_KEY;
+
+      if (requiresAuth) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session?.access_token) {
+          authToken = sessionData.session.access_token;
+        }
       }
-    }
 
-    const url = `${SUPABASE_FUNCTIONS_URL}/${functionName}`;
-    console.log(`[EdgeFunction] Calling: ${url}`);
+      const url = `${SUPABASE_FUNCTIONS_URL}/${functionName}`;
+      console.log(`[EdgeFunction] Calling: ${url} (attempt ${attempt + 1}/${maxRetries + 1})`);
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-        'apikey': SUPABASE_ANON_KEY,
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = `Edge function error: ${response.status}`;
-      try {
-        const errorJson = JSON.parse(errorText);
-        errorMessage = errorJson.error || errorJson.message || errorMessage;
-      } catch {
-        if (errorText) errorMessage = errorText;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+          'apikey': SUPABASE_ANON_KEY,
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `Edge function error: ${response.status}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.message || errorMessage;
+        } catch {
+          if (errorText) errorMessage = errorText;
+        }
+        // Retry on 5xx errors
+        if (response.status >= 500 && attempt < maxRetries) {
+          console.warn(`[EdgeFunction] ${functionName} returned ${response.status}, retrying in 3s...`);
+          await new Promise(r => setTimeout(r, 3000));
+          continue;
+        }
+        throw new Error(errorMessage);
       }
-      throw new Error(errorMessage);
-    }
 
-    const data = await response.json();
-    return { data, error: null };
-  } catch (error) {
-    console.error(`[EdgeFunction] Error invoking ${functionName}:`, error);
-    return {
-      data: null,
-      error: error instanceof Error ? error : new Error('Unknown error')
-    };
+      const data = await response.json();
+      return { data, error: null };
+    } catch (error) {
+      const isAbort = error instanceof DOMException && error.name === 'AbortError';
+      const errorMsg = isAbort
+        ? `Timeout após ${Math.round(timeoutMs / 1000)}s`
+        : (error instanceof Error ? error.message : 'Unknown error');
+
+      // Retry on network errors / timeouts
+      if (attempt < maxRetries) {
+        console.warn(`[EdgeFunction] ${functionName} failed (${errorMsg}), retrying in 3s...`);
+        await new Promise(r => setTimeout(r, 3000));
+        continue;
+      }
+
+      console.error(`[EdgeFunction] Error invoking ${functionName}:`, errorMsg);
+      return {
+        data: null,
+        error: new Error(errorMsg)
+      };
+    }
   }
+
+  return { data: null, error: new Error('Max retries exceeded') };
 }
 
 export const EDGE_FUNCTIONS = {

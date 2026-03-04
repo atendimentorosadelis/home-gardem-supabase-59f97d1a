@@ -190,7 +190,9 @@ export function useFullArticleGeneration() {
 
       const { data: articleData, error: articleError } = await invokeEdgeFunction(
         'generate-full-article',
-        { topic }
+        { topic },
+        false,
+        { timeoutMs: 180000, retries: 1 } // 3 min timeout + 1 retry
       );
 
       if (cancelledRef.current) return null;
