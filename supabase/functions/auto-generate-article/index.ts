@@ -221,15 +221,16 @@ serve(async (req) => {
     // Convert São Paulo midnight to UTC
     const dailyWindowStartUTC = new Date(`${saoPauloDateStr}T00:00:00-03:00`).toISOString();
 
-    const { count: successfulTodayCount } = await supabase
-      .from('auto_generation_logs')
+    // IMPORTANT: enforce cap using real generated articles (logs can be cleared from UI)
+    const { count: autopilotArticlesTodayCount } = await supabase
+      .from('content_articles')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'success')
-      .gte('executed_at', dailyWindowStartUTC);
+      .eq('creation_source', 'autopilot')
+      .gte('created_at', dailyWindowStartUTC);
 
-    if ((successfulTodayCount || 0) >= dailyLimit) {
+    if ((autopilotArticlesTodayCount || 0) >= dailyLimit) {
       return new Response(
-        JSON.stringify({ success: false, message: `Limite diário atingido (${successfulTodayCount}/${dailyLimit})` }),
+        JSON.stringify({ success: false, message: `Limite diário atingido (${autopilotArticlesTodayCount}/${dailyLimit})` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
