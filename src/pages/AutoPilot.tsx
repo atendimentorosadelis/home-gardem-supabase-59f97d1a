@@ -74,6 +74,8 @@ function AutoPilotContent() {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [selectedTime, setSelectedTime] = useState<string>('08:00');
   const [isTestRunning, setIsTestRunning] = useState(false);
+  const [generationResult, setGenerationResult] = useState<{ success?: boolean; title?: string; message?: string } | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const handleTestNow = async () => {
     if (!config?.random_all_topics && (!config?.topics || config.topics.length === 0)) {
