@@ -204,35 +204,37 @@ serve(async (req) => {
     }
 
     // 4. Check daily limit (always enforced, even with force)
-    {
-      // Calculate start of day in São Paulo timezone
-      const now = new Date();
-      const saoPauloFormatter = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'America/Sao_Paulo',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      });
-      const saoPauloDateStr = saoPauloFormatter.format(now); // e.g. "2026-03-07"
-      // Convert São Paulo midnight to UTC
-      const saoPauloMidnightUTC = new Date(`${saoPauloDateStr}T00:00:00-03:00`).toISOString();
+    const configuredDailyLimit = Number(config.daily_limit ?? 3);
+    const dailyLimit = Number.isFinite(configuredDailyLimit) && configuredDailyLimit > 0
+      ? configuredDailyLimit
+      : 3;
 
-      const { count } = await supabase
-        .from('auto_generation_logs')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'success')
-        .gte('executed_at', saoPauloMidnightUTC);
+    // Calculate start of day in São Paulo timezone
+    const now = new Date();
+    const saoPauloFormatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const saoPauloDateStr = saoPauloFormatter.format(now); // e.g. "2026-03-07"
+    // Convert São Paulo midnight to UTC
+    const dailyWindowStartUTC = new Date(`${saoPauloDateStr}T00:00:00-03:00`).toISOString();
 
-      const dailyLimit = config.daily_limit || 3;
-      if ((count || 0) >= dailyLimit) {
-        return new Response(
-          JSON.stringify({ success: false, message: `Limite diário atingido (${count}/${dailyLimit})` }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+    const { count: successfulTodayCount } = await supabase
+      .from('auto_generation_logs')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'success')
+      .gte('executed_at', dailyWindowStartUTC);
+
+    if ((successfulTodayCount || 0) >= dailyLimit) {
+      return new Response(
+        JSON.stringify({ success: false, message: `Limite diário atingido (${successfulTodayCount}/${dailyLimit})` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // 4. Pick a random topic
+    // 5. Pick a random topic
     const allTopicIds = Object.keys(TOPIC_PROMPTS);
     let randomTopicId: string;
     let randomTopic: string;
@@ -252,13 +254,38 @@ serve(async (req) => {
       randomTopic = TOPIC_PROMPTS[randomTopicId] || randomTopicId;
     }
 
-    // 5. Create a log entry
+    // 6. Create a log entry
     const { data: logEntry } = await supabase
       .from('auto_generation_logs')
       .insert({ topic_used: randomTopic, status: 'running' })
       .select('id')
       .single();
     logId = logEntry?.id || null;
+
+    // Concurrency-safe daily cap guard (prevents bursts above limit)
+    const { count: runsTodayCount } = await supabase
+      .from('auto_generation_logs')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['running', 'success'])
+      .gte('executed_at', dailyWindowStartUTC);
+
+    if ((runsTodayCount || 0) > dailyLimit) {
+      if (logId) {
+        await supabase
+          .from('auto_generation_logs')
+          .update({
+            status: 'skipped',
+            error_message: `Limite diário atingido (${Math.max((runsTodayCount || 0) - 1, 0)}/${dailyLimit})`,
+            duration_ms: Date.now() - startTime,
+          })
+          .eq('id', logId);
+      }
+
+      return new Response(
+        JSON.stringify({ success: false, message: `Limite diário atingido (${dailyLimit}/dia)` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log(`[AutoGenerate] Starting generation for topic: ${randomTopic}`);
 
