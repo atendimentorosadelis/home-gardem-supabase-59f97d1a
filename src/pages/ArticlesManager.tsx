@@ -412,8 +412,9 @@ function ArticlesManagerContent() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/50">
-                        <TableHead className="w-[35%]">Título</TableHead>
+                        <TableHead className="w-[30%]">Título</TableHead>
                         <TableHead>Categoria</TableHead>
+                        <TableHead>Origem</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>
                           <Button variant="ghost" size="sm" className="h-8 -ml-3 hover:bg-transparent gap-1" onClick={() => handleSort('views')}>
