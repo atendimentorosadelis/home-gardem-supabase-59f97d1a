@@ -110,7 +110,7 @@ function ArticlesManagerContent() {
 
       let dataQuery = (supabase as any)
         .from('content_articles')
-        .select('id, title, slug, category, category_slug, status, published_at, created_at, excerpt, cover_image')
+        .select('id, title, slug, category, category_slug, status, published_at, created_at, excerpt, cover_image, creation_source')
         .order('created_at', { ascending: false })
         .range(from, to);
 
