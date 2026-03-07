@@ -31,7 +31,7 @@ import { createNotificationForAdmins } from '@/hooks/use-notifications';
 import { useSendNewsletter } from '@/hooks/use-send-newsletter';
 import {
   MoreHorizontal, Search, Loader2, Eye, Pencil, Trash2, Globe, FileText,
-  ExternalLink, ChevronLeft, ChevronRight, ImageIcon, Settings2, MessageSquarePlus, Heart, ArrowUpDown, DatabaseIcon
+  ExternalLink, ChevronLeft, ChevronRight, ImageIcon, Settings2, MessageSquarePlus, Heart, ArrowUpDown, DatabaseIcon, Bot, User
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { invokeEdgeFunction } from '@/lib/edge-functions';

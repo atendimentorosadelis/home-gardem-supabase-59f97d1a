@@ -364,6 +364,7 @@ serve(async (req) => {
       main_subject: article.mainSubject || '',
       visual_context: article.visualContext || '',
       gallery_prompts: article.galleryPrompts || [],
+      creation_source: 'autopilot',
       status: config.publish_immediately ? 'published' : 'draft',
       published_at: config.publish_immediately ? new Date().toISOString() : null,
     };
