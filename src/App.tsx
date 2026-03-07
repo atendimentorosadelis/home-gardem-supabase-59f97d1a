@@ -5,7 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import { CookieConsent } from "@/components/CookieConsent";
+import { ConsentProvider } from "@/contexts/ConsentContext";
+import { ConsentManager } from "@/components/consent/ConsentManager";
+import { AdConsentController } from "@/components/consent/AdConsentController";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ImageApprovalProvider } from "@/contexts/ImageApprovalContext";
 import { NavigationBlockProvider } from "@/contexts/NavigationBlockContext";
@@ -91,6 +93,7 @@ const App = () => (
   <ThemeProvider attribute="class" defaultTheme="dark" storageKey="theme">
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <ConsentProvider>
         <OnlinePresenceProvider>
         <ImageApprovalProvider>
         <NavigationBlockProvider>
@@ -99,6 +102,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <GoogleAnalytics />
+            <AdConsentController />
             <ScrollToTop />
             <PageViewTracker />
             <Suspense fallback={<PageLoader />}>
@@ -139,12 +143,13 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-            <CookieConsent />
+            <ConsentManager />
           </BrowserRouter>
         </TooltipProvider>
         </NavigationBlockProvider>
         </ImageApprovalProvider>
         </OnlinePresenceProvider>
+        </ConsentProvider>
       </AuthProvider>
     </QueryClientProvider>
   </ThemeProvider>
