@@ -203,19 +203,30 @@ serve(async (req) => {
       }
     }
 
-    // 4. Check daily limit (unless force)
-    if (!force) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    // 4. Check daily limit (always enforced, even with force)
+    {
+      // Calculate start of day in São Paulo timezone
+      const now = new Date();
+      const saoPauloFormatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      const saoPauloDateStr = saoPauloFormatter.format(now); // e.g. "2026-03-07"
+      // Convert São Paulo midnight to UTC
+      const saoPauloMidnightUTC = new Date(`${saoPauloDateStr}T00:00:00-03:00`).toISOString();
+
       const { count } = await supabase
         .from('auto_generation_logs')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'success')
-        .gte('executed_at', today.toISOString());
+        .gte('executed_at', saoPauloMidnightUTC);
 
-      if ((count || 0) >= (config.daily_limit || 3)) {
+      const dailyLimit = config.daily_limit || 3;
+      if ((count || 0) >= dailyLimit) {
         return new Response(
-          JSON.stringify({ success: false, message: 'Limite diário atingido' }),
+          JSON.stringify({ success: false, message: `Limite diário atingido (${count}/${dailyLimit})` }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
