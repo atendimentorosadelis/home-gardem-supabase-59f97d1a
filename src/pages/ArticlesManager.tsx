@@ -546,6 +546,9 @@ function ArticlesManagerContent() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0">{article.category || 'Sem categoria'}</Badge>
+                          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${article.creation_source === 'autopilot' ? 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400' : 'border-blue-500/50 text-blue-600 dark:text-blue-400'}`}>
+                            {article.creation_source === 'autopilot' ? <><Bot className="h-2.5 w-2.5 mr-0.5" />Auto</> : <><User className="h-2.5 w-2.5 mr-0.5" />Manual</>}
+                          </Badge>
                           <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0">
                             {article.status === 'published' ? 'Publicado' : 'Rascunho'}
                           </Badge>
