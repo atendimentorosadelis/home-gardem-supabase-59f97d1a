@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { AutoPilotCircleProgress } from '@/components/dashboard/AutoPilotCircleProgress';
+import { AutoPilotGenerationProgress } from '@/components/dashboard/AutoPilotGenerationProgress';
 import { useToast } from '@/hooks/use-toast';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
 
@@ -74,6 +75,8 @@ function AutoPilotContent() {
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [selectedTime, setSelectedTime] = useState<string>('08:00');
   const [isTestRunning, setIsTestRunning] = useState(false);
+  const [generationResult, setGenerationResult] = useState<{ success?: boolean; title?: string; message?: string } | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const handleTestNow = async () => {
     if (!config?.random_all_topics && (!config?.topics || config.topics.length === 0)) {
@@ -86,6 +89,8 @@ function AutoPilotContent() {
     }
 
     setIsTestRunning(true);
+    setGenerationResult(null);
+    setGenerationError(null);
     toast({
       title: '🚀 Iniciando geração manual',
       description: 'Um artigo será gerado com um tema aleatório...',
@@ -99,11 +104,13 @@ function AutoPilotContent() {
       if (error) throw error;
 
       if (data?.success) {
+        setGenerationResult({ success: true, title: data.title, message: data.message });
         toast({
           title: '✅ Artigo gerado com sucesso!',
           description: `"${data.title}" foi ${config.publish_immediately ? 'publicado' : 'salvo como rascunho'}.`,
         });
       } else {
+        setGenerationResult({ success: false, message: data?.message || 'Falha na geração' });
         toast({
           title: 'Geração não realizada',
           description: data?.message || 'Verifique os logs para mais detalhes.',
@@ -112,9 +119,11 @@ function AutoPilotContent() {
       }
     } catch (error) {
       console.error('Test generation error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
+      setGenerationError(errorMsg);
       toast({
         title: 'Erro na geração',
-        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        description: errorMsg,
         variant: 'destructive',
       });
     } finally {
@@ -275,6 +284,13 @@ function AutoPilotContent() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Generation Progress */}
+        <AutoPilotGenerationProgress
+          isRunning={isTestRunning}
+          result={generationResult}
+          error={generationError}
+        />
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Topics Selection */}
