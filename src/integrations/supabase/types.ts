@@ -456,6 +456,7 @@ export type Database = {
           category_slug: string | null
           cover_image: string | null
           created_at: string
+          creation_source: string | null
           excerpt: string | null
           gallery_images: Json | null
           gallery_prompts: string[] | null
@@ -484,6 +485,7 @@ export type Database = {
           category_slug?: string | null
           cover_image?: string | null
           created_at?: string
+          creation_source?: string | null
           excerpt?: string | null
           gallery_images?: Json | null
           gallery_prompts?: string[] | null
@@ -512,6 +514,7 @@ export type Database = {
           category_slug?: string | null
           cover_image?: string | null
           created_at?: string
+          creation_source?: string | null
           excerpt?: string | null
           gallery_images?: Json | null
           gallery_prompts?: string[] | null
