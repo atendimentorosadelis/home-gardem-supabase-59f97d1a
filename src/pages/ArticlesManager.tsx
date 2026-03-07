@@ -31,7 +31,7 @@ import { createNotificationForAdmins } from '@/hooks/use-notifications';
 import { useSendNewsletter } from '@/hooks/use-send-newsletter';
 import {
   MoreHorizontal, Search, Loader2, Eye, Pencil, Trash2, Globe, FileText,
-  ExternalLink, ChevronLeft, ChevronRight, ImageIcon, Settings2, MessageSquarePlus, Heart, ArrowUpDown, DatabaseIcon
+  ExternalLink, ChevronLeft, ChevronRight, ImageIcon, Settings2, MessageSquarePlus, Heart, ArrowUpDown, DatabaseIcon, Bot, User
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
@@ -47,6 +47,7 @@ interface Article {
   created_at: string | null;
   excerpt: string | null;
   cover_image: string | null;
+  creation_source: string | null;
 }
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50];
@@ -109,7 +110,7 @@ function ArticlesManagerContent() {
 
       let dataQuery = (supabase as any)
         .from('content_articles')
-        .select('id, title, slug, category, category_slug, status, published_at, created_at, excerpt, cover_image')
+        .select('id, title, slug, category, category_slug, status, published_at, created_at, excerpt, cover_image, creation_source')
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -411,8 +412,9 @@ function ArticlesManagerContent() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-muted/50">
-                        <TableHead className="w-[35%]">Título</TableHead>
+                        <TableHead className="w-[30%]">Título</TableHead>
                         <TableHead>Categoria</TableHead>
+                        <TableHead>Origem</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>
                           <Button variant="ghost" size="sm" className="h-8 -ml-3 hover:bg-transparent gap-1" onClick={() => handleSort('views')}>
@@ -440,6 +442,11 @@ function ArticlesManagerContent() {
                             </div>
                           </TableCell>
                           <TableCell><Badge variant="outline" className="text-xs">{article.category || 'Sem categoria'}</Badge></TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={`text-xs ${article.creation_source === 'autopilot' ? 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400' : 'border-blue-500/50 text-blue-600 dark:text-blue-400'}`}>
+                              {article.creation_source === 'autopilot' ? <><Bot className="h-3 w-3 mr-1" />Auto</> : <><User className="h-3 w-3 mr-1" />Manual</>}
+                            </Badge>
+                          </TableCell>
                           <TableCell>
                             <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-xs">
                               {article.status === 'published' ? <><Globe className="h-3 w-3 mr-1" /> Publicado</> : <><FileText className="h-3 w-3 mr-1" /> Rascunho</>}
@@ -539,6 +546,9 @@ function ArticlesManagerContent() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0">{article.category || 'Sem categoria'}</Badge>
+                          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${article.creation_source === 'autopilot' ? 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400' : 'border-blue-500/50 text-blue-600 dark:text-blue-400'}`}>
+                            {article.creation_source === 'autopilot' ? <><Bot className="h-2.5 w-2.5 mr-0.5" />Auto</> : <><User className="h-2.5 w-2.5 mr-0.5" />Manual</>}
+                          </Badge>
                           <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0">
                             {article.status === 'published' ? 'Publicado' : 'Rascunho'}
                           </Badge>
