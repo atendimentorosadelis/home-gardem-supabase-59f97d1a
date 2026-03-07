@@ -212,6 +212,34 @@
     "accept": "Accept",
     "decline": "Decline"
   },
+  "consent": {
+    "title": "Privacy & Cookie Settings",
+    "message": "We use cookies and similar technologies to improve your experience, analyze traffic, and display relevant ads. You can customize your preferences or accept/reject all.",
+    "manage": "Manage Preferences",
+    "acceptAll": "Accept All",
+    "rejectAll": "Reject All",
+    "savePreferences": "Save Preferences",
+    "preferencesTitle": "Privacy Preferences",
+    "preferencesDesc": "Choose which types of cookies you want to allow. Your preferences will be saved for 12 months.",
+    "tcfCompliant": "IAB TCF v2.3 Compliant • Consent string generated",
+    "alwaysOn": "Always on",
+    "vendorDisclosure": "Vendor Disclosure",
+    "vendorDesc": "The following vendors are disclosed as part of IAB TCF v2.3 compliance:",
+    "privacyPolicy": "Policy",
+    "footerLink": "Privacy & Cookie Settings",
+    "cat": {
+      "necessary": "Necessary",
+      "analytics": "Analytics",
+      "advertising": "Advertising",
+      "personalization": "Personalization"
+    },
+    "catDesc": {
+      "necessary": "Essential cookies for the basic operation of the site. Cannot be disabled.",
+      "analytics": "Help us understand how visitors interact with the site by collecting information anonymously.",
+      "advertising": "Used to display relevant ads. Includes Google AdSense and IAB advertising partners.",
+      "personalization": "Allow the site to remember your preferences and provide personalized content and features."
+    }
+  },
   "admin": {
     "accessDenied": "Access Denied",
     "noPermission": "You don't have permission to access this area. Only administrators can enter.",
