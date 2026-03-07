@@ -8,7 +8,6 @@ export function GoogleAnalytics() {
   const [gaId, setGaId] = useState<string>(FALLBACK_GA_ID);
 
   useEffect(() => {
-    // Defer GA fetch to after page is interactive
     const id = requestIdleCallback?.(() => fetchGaId()) ?? setTimeout(fetchGaId, 3000);
     async function fetchGaId() {
       try {
@@ -33,6 +32,36 @@ export function GoogleAnalytics() {
 
   useEffect(() => {
     if (!gaId) return;
+
+    // Check consent before loading GA
+    const consentRaw = localStorage.getItem("tcf_consent_v2.3");
+    let analyticsAllowed = false;
+    if (consentRaw) {
+      try {
+        const consent = JSON.parse(consentRaw);
+        analyticsAllowed = consent.analytics === true;
+      } catch {}
+    }
+
+    if (!analyticsAllowed) {
+      // Set GA to denied mode
+      if (!(window as any).gtag) {
+        const inlineScript = document.createElement("script");
+        inlineScript.textContent = `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('consent', 'default', {
+            'analytics_storage': 'denied',
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied'
+          });
+        `;
+        document.head.appendChild(inlineScript);
+      }
+      return;
+    }
+
     if (document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${gaId}"]`)) return;
 
     const script = document.createElement("script");
@@ -44,6 +73,12 @@ export function GoogleAnalytics() {
     inlineScript.textContent = `
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'analytics_storage': 'granted',
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted'
+      });
       gtag('js', new Date());
       gtag('config', '${gaId}', { send_page_view: false });
     `;
