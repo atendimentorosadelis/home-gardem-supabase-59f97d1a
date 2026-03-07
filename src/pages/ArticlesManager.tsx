@@ -47,6 +47,7 @@ interface Article {
   created_at: string | null;
   excerpt: string | null;
   cover_image: string | null;
+  creation_source: string | null;
 }
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50];
