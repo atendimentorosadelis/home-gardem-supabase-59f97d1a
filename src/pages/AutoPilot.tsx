@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { AutoPilotCircleProgress } from '@/components/dashboard/AutoPilotCircleProgress';
+import { AutoPilotGenerationProgress } from '@/components/dashboard/AutoPilotGenerationProgress';
 import { useToast } from '@/hooks/use-toast';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
 
