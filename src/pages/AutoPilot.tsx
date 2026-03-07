@@ -76,10 +76,10 @@ function AutoPilotContent() {
   const [isTestRunning, setIsTestRunning] = useState(false);
 
   const handleTestNow = async () => {
-    if (!config?.topics || config.topics.length === 0) {
+    if (!config?.random_all_topics && (!config?.topics || config.topics.length === 0)) {
       toast({
         title: 'Nenhum tema selecionado',
-        description: 'Selecione pelo menos um tema antes de testar.',
+        description: 'Selecione pelo menos um tema ou ative "Tema Aleatório Total" antes de testar.',
         variant: 'destructive',
       });
       return;

@@ -66,6 +66,66 @@ function containsAnyTerm(text: string, terms: string[]): boolean {
   });
 }
 
+interface AutoGenerationScheduleRow {
+  day_of_week: number;
+  time_slot: string;
+  is_active: boolean | null;
+}
+
+function parseTimeToMinutes(time: string): number {
+  const [hours, minutes] = time.slice(0, 5).split(':').map(Number);
+  return (hours * 60) + minutes;
+}
+
+function getZonedDayAndMinutes(date: Date, timeZone: string): { day: number; minutes: number } {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+
+  const weekday = parts.find((p) => p.type === 'weekday')?.value || 'Sun';
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value || '0');
+  const minute = Number(parts.find((p) => p.type === 'minute')?.value || '0');
+
+  const weekdayMap: Record<string, number> = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+  };
+
+  return {
+    day: weekdayMap[weekday] ?? 0,
+    minutes: (hour * 60) + minute,
+  };
+}
+
+function hasMatchingScheduleNow(
+  schedules: AutoGenerationScheduleRow[],
+  now: Date,
+  timeZone: string,
+  toleranceMinutes = 4,
+): boolean {
+  const zonedNow = getZonedDayAndMinutes(now, timeZone);
+
+  return schedules.some((schedule) => {
+    const scheduleMinutes = parseTimeToMinutes(schedule.time_slot);
+    const minuteDiff = zonedNow.minutes - scheduleMinutes;
+
+    return (
+      schedule.day_of_week === zonedNow.day &&
+      minuteDiff >= 0 &&
+      minuteDiff <= toleranceMinutes
+    );
+  });
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -99,7 +159,51 @@ serve(async (req) => {
       );
     }
 
-    // 3. Check daily limit (unless force)
+    // 3. Check schedule match (unless force)
+    if (!force) {
+      const { data: schedules, error: schedulesError } = await supabase
+        .from('auto_generation_schedules')
+        .select('day_of_week, time_slot, is_active')
+        .eq('is_active', true);
+
+      if (schedulesError) throw new Error(`Schedules error: ${schedulesError.message}`);
+
+      const activeSchedules = (schedules || []) as AutoGenerationScheduleRow[];
+      if (activeSchedules.length === 0) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Nenhum horário ativo configurado no piloto automático' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const now = new Date();
+      const dueInUTC = hasMatchingScheduleNow(activeSchedules, now, 'UTC');
+      const dueInSaoPaulo = hasMatchingScheduleNow(activeSchedules, now, 'America/Sao_Paulo');
+
+      if (!dueInUTC && !dueInSaoPaulo) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Fora da janela de execução agendada' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Prevent duplicate run bursts when cron retries within the same slot window
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const { count: recentRuns } = await supabase
+        .from('auto_generation_logs')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['running', 'success'])
+        .gte('executed_at', tenMinutesAgo);
+
+      if ((recentRuns || 0) > 0) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Execução recente detectada, aguardando próxima janela' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // 4. Check daily limit (unless force)
     if (!force) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
