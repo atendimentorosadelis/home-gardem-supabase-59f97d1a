@@ -221,15 +221,16 @@ serve(async (req) => {
     // Convert São Paulo midnight to UTC
     const dailyWindowStartUTC = new Date(`${saoPauloDateStr}T00:00:00-03:00`).toISOString();
 
-    const { count: successfulTodayCount } = await supabase
-      .from('auto_generation_logs')
+    // IMPORTANT: enforce cap using real generated articles (logs can be cleared from UI)
+    const { count: autopilotArticlesTodayCount } = await supabase
+      .from('content_articles')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'success')
-      .gte('executed_at', dailyWindowStartUTC);
+      .eq('creation_source', 'autopilot')
+      .gte('created_at', dailyWindowStartUTC);
 
-    if ((successfulTodayCount || 0) >= dailyLimit) {
+    if ((autopilotArticlesTodayCount || 0) >= dailyLimit) {
       return new Response(
-        JSON.stringify({ success: false, message: `Limite diário atingido (${successfulTodayCount}/${dailyLimit})` }),
+        JSON.stringify({ success: false, message: `Limite diário atingido (${autopilotArticlesTodayCount}/${dailyLimit})` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -263,26 +264,36 @@ serve(async (req) => {
     logId = logEntry?.id || null;
 
     // Concurrency-safe daily cap guard (prevents bursts above limit)
-    const { count: runsTodayCount } = await supabase
-      .from('auto_generation_logs')
-      .select('*', { count: 'exact', head: true })
-      .in('status', ['running', 'success'])
-      .gte('executed_at', dailyWindowStartUTC);
+    const [{ count: runsTodayCount }, { count: articlesTodayCountAfterLock }] = await Promise.all([
+      supabase
+        .from('auto_generation_logs')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['running', 'success'])
+        .gte('executed_at', dailyWindowStartUTC),
+      supabase
+        .from('content_articles')
+        .select('*', { count: 'exact', head: true })
+        .eq('creation_source', 'autopilot')
+        .gte('created_at', dailyWindowStartUTC),
+    ]);
 
-    if ((runsTodayCount || 0) > dailyLimit) {
+    const inProgressSlots = Math.max((runsTodayCount || 0) - (articlesTodayCountAfterLock || 0), 0);
+    const usedSlots = (articlesTodayCountAfterLock || 0) + inProgressSlots;
+
+    if (usedSlots > dailyLimit) {
       if (logId) {
         await supabase
           .from('auto_generation_logs')
           .update({
             status: 'skipped',
-            error_message: `Limite diário atingido (${Math.max((runsTodayCount || 0) - 1, 0)}/${dailyLimit})`,
+            error_message: `Limite diário atingido (${Math.min(articlesTodayCountAfterLock || 0, dailyLimit)}/${dailyLimit})`,
             duration_ms: Date.now() - startTime,
           })
           .eq('id', logId);
       }
 
       return new Response(
-        JSON.stringify({ success: false, message: `Limite diário atingido (${dailyLimit}/dia)` }),
+        JSON.stringify({ success: false, message: `Limite diário atingido (${Math.min(articlesTodayCountAfterLock || 0, dailyLimit)}/${dailyLimit})` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
