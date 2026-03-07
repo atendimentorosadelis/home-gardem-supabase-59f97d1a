@@ -89,6 +89,8 @@ function AutoPilotContent() {
     }
 
     setIsTestRunning(true);
+    setGenerationResult(null);
+    setGenerationError(null);
     toast({
       title: '🚀 Iniciando geração manual',
       description: 'Um artigo será gerado com um tema aleatório...',
@@ -102,11 +104,13 @@ function AutoPilotContent() {
       if (error) throw error;
 
       if (data?.success) {
+        setGenerationResult({ success: true, title: data.title, message: data.message });
         toast({
           title: '✅ Artigo gerado com sucesso!',
           description: `"${data.title}" foi ${config.publish_immediately ? 'publicado' : 'salvo como rascunho'}.`,
         });
       } else {
+        setGenerationResult({ success: false, message: data?.message || 'Falha na geração' });
         toast({
           title: 'Geração não realizada',
           description: data?.message || 'Verifique os logs para mais detalhes.',
@@ -115,9 +119,11 @@ function AutoPilotContent() {
       }
     } catch (error) {
       console.error('Test generation error:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
+      setGenerationError(errorMsg);
       toast({
         title: 'Erro na geração',
-        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        description: errorMsg,
         variant: 'destructive',
       });
     } finally {
