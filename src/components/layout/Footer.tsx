@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useConsent } from "@/contexts/ConsentContext";
 import { useTheme } from "next-themes";
 import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
 import logoLight from "@/assets/logo-home-garden-light.png";
@@ -12,6 +13,7 @@ export function Footer() {
   const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const { hasActiveLinks } = useSocialLinks();
+  const { openPreferences } = useConsent();
 
   const footerLinks = [
     { name: t("nav.home"), path: "/" },
@@ -134,7 +136,13 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-16 pt-8 border-t border-border">
+        <div className="mt-16 pt-8 border-t border-border flex flex-col items-center gap-2">
+          <button
+            onClick={openPreferences}
+            className="text-sm text-primary hover:underline transition-colors"
+          >
+            🔒 {t("consent.footerLink", "Privacy & Cookie Settings")}
+          </button>
           <p className="text-sm text-muted-foreground text-center">
             © {new Date().getFullYear()} HomeGarden. {t("footer.copyright")}
           </p>

@@ -6,6 +6,34 @@
     "accept": "Aceptar",
     "decline": "Rechazar"
   },
+  "consent": {
+    "title": "Privacidad y Cookies",
+    "message": "Usamos cookies y tecnologías similares para mejorar tu experiencia, analizar tráfico y mostrar anuncios relevantes. Puedes personalizar tus preferencias o aceptar/rechazar todo.",
+    "manage": "Gestionar Preferencias",
+    "acceptAll": "Aceptar Todos",
+    "rejectAll": "Rechazar Todos",
+    "savePreferences": "Guardar Preferencias",
+    "preferencesTitle": "Preferencias de Privacidad",
+    "preferencesDesc": "Elige qué tipos de cookies deseas permitir. Tus preferencias se guardarán durante 12 meses.",
+    "tcfCompliant": "Compatible con IAB TCF v2.3 • Cadena de consentimiento generada",
+    "alwaysOn": "Siempre activo",
+    "vendorDisclosure": "Divulgación de Proveedores",
+    "vendorDesc": "Los siguientes proveedores se divulgan como parte del cumplimiento IAB TCF v2.3:",
+    "privacyPolicy": "Política",
+    "footerLink": "Privacidad y Cookies",
+    "cat": {
+      "necessary": "Necesarias",
+      "analytics": "Análisis",
+      "advertising": "Publicidad",
+      "personalization": "Personalización"
+    },
+    "catDesc": {
+      "necessary": "Cookies esenciales para el funcionamiento básico del sitio. No se pueden desactivar.",
+      "analytics": "Nos ayudan a comprender cómo los visitantes interactúan con el sitio, recopilando información de forma anónima.",
+      "advertising": "Se utilizan para mostrar anuncios relevantes. Incluyen Google AdSense y socios publicitarios IAB.",
+      "personalization": "Permiten que el sitio recuerde tus preferencias y proporcione contenido y funciones personalizadas."
+    }
+  },
   "admin": {
     "accessDenied": "Acceso Denegado",
     "noPermission": "No tienes permiso para acceder a esta área.",
