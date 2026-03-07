@@ -443,6 +443,11 @@ function ArticlesManagerContent() {
                           </TableCell>
                           <TableCell><Badge variant="outline" className="text-xs">{article.category || 'Sem categoria'}</Badge></TableCell>
                           <TableCell>
+                            <Badge variant="outline" className={`text-xs ${article.creation_source === 'autopilot' ? 'border-emerald-500/50 text-emerald-600 dark:text-emerald-400' : 'border-blue-500/50 text-blue-600 dark:text-blue-400'}`}>
+                              {article.creation_source === 'autopilot' ? <><Bot className="h-3 w-3 mr-1" />Auto</> : <><User className="h-3 w-3 mr-1" />Manual</>}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
                             <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-xs">
                               {article.status === 'published' ? <><Globe className="h-3 w-3 mr-1" /> Publicado</> : <><FileText className="h-3 w-3 mr-1" /> Rascunho</>}
                             </Badge>
