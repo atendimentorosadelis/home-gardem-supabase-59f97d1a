@@ -285,6 +285,13 @@ function AutoPilotContent() {
           </CardContent>
         </Card>
 
+        {/* Generation Progress */}
+        <AutoPilotGenerationProgress
+          isRunning={isTestRunning}
+          result={generationResult}
+          error={generationError}
+        />
+
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Topics Selection */}
           <Card>
