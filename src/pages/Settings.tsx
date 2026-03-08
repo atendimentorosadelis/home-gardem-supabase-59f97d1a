@@ -85,6 +85,8 @@ interface SEOSettings {
   robots_txt: string;
   google_analytics_id: string;
   google_search_console: string;
+  facebook_pixel_id: string;
+  facebook_pixel_enabled: boolean;
   adsense_enabled: boolean;
   adsense_publisher_id: string;
   ads_txt_content: string;
@@ -141,6 +143,7 @@ function SettingsContent() {
     twitter_site: '@HomeGarden', twitter_image: '', favicon_url: '/favicon.png',
     robots_txt: 'User-agent: *\nAllow: /\nSitemap: https://homegardenmanual.lovable.app/sitemap.xml',
     google_analytics_id: '', google_search_console: '',
+    facebook_pixel_id: '', facebook_pixel_enabled: false,
     adsense_enabled: false, adsense_publisher_id: '',
     ads_txt_content: 'google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0',
   });
@@ -161,6 +164,7 @@ function SettingsContent() {
     twitter_site: '@HomeGarden', twitter_image: '', favicon_url: '/favicon.png',
     robots_txt: 'User-agent: *\nAllow: /\nSitemap: https://homegardenmanual.com/sitemap.xml',
     google_analytics_id: '', google_search_console: '',
+    facebook_pixel_id: '', facebook_pixel_enabled: false,
     adsense_enabled: false, adsense_publisher_id: '',
     ads_txt_content: 'google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0',
   };
