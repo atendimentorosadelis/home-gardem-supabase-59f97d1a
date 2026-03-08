@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
+import { fbqTrack } from "@/components/FacebookPixel";
 import { Layout } from "@/components/layout/Layout";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -118,6 +119,11 @@ const Contact = () => {
       if (error) {
         throw error;
       }
+
+      // Facebook Pixel: Contact event
+      fbqTrack("Contact", {
+        content_name: data.subject || "Contact Form",
+      });
 
       toast.success(t("contact.success"), {
         description: t("contact.successDesc"),

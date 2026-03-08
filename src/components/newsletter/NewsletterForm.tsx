@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { fbqTrack } from '@/components/FacebookPixel';
 import { ArrowRight, Loader2, CheckCircle, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -62,6 +63,12 @@ export function NewsletterForm({ source = 'footer', className = '' }: Newsletter
       setIsSubscribed(true);
       setEmail('');
       setName('');
+
+      // Facebook Pixel: Lead event
+      fbqTrack('Lead', {
+        content_name: 'Newsletter Subscription',
+        content_category: 'newsletter',
+      });
 
       toast({
         title: t('newsletter.success', '🎉 Inscrição realizada!'),

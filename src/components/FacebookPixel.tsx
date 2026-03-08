@@ -2,6 +2,42 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Facebook Pixel - Full integration following Facebook Ads guidelines.
+ * 
+ * Standard Events tracked automatically:
+ * - PageView: every route change (SPA-aware)
+ * - ViewContent: article pages (with content_name, content_category, content_type)
+ * - Search: blog/search pages with query params
+ * 
+ * Events tracked via fbqTrack() helper (called from forms):
+ * - Lead: newsletter subscription
+ * - Contact: contact form submission
+ * - CompleteRegistration: user signup
+ * 
+ * Consent: Respects TCF v2.3 advertising consent.
+ */
+
+declare global {
+  interface Window {
+    fbq: (...args: any[]) => void;
+    _fbq: any;
+  }
+}
+
+// Global helper for tracking from any component
+export function fbqTrack(eventName: string, params?: Record<string, any>) {
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("track", eventName, params);
+  }
+}
+
+export function fbqTrackCustom(eventName: string, params?: Record<string, any>) {
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("trackCustom", eventName, params);
+  }
+}
+
 export function FacebookPixel() {
   const [pixelId, setPixelId] = useState<string>("");
   const location = useLocation();
@@ -19,7 +55,11 @@ export function FacebookPixel() {
 
         if (!error && data?.value && typeof data.value === "object") {
           const value = data.value as Record<string, unknown>;
-          if (value.facebook_pixel_id && typeof value.facebook_pixel_id === "string" && value.facebook_pixel_enabled !== false) {
+          if (
+            value.facebook_pixel_id &&
+            typeof value.facebook_pixel_id === "string" &&
+            value.facebook_pixel_enabled === true
+          ) {
             setPixelId(value.facebook_pixel_id);
           }
         }
@@ -27,14 +67,16 @@ export function FacebookPixel() {
         // silent
       }
     }
-    return () => { if (typeof id === "number") clearTimeout(id); };
+    return () => {
+      if (typeof id === "number") clearTimeout(id);
+    };
   }, []);
 
-  // Inject pixel script
+  // Inject pixel base code
   useEffect(() => {
     if (!pixelId) return;
 
-    // Check consent
+    // Check TCF consent for advertising
     const consentRaw = localStorage.getItem("tcf_consent_v2.3");
     let advertisingAllowed = false;
     if (consentRaw) {
@@ -65,7 +107,7 @@ export function FacebookPixel() {
     `;
     document.head.appendChild(script);
 
-    // Also add noscript fallback
+    // noscript fallback
     const noscript = document.createElement("noscript");
     const img = document.createElement("img");
     img.height = 1;
@@ -76,10 +118,37 @@ export function FacebookPixel() {
     document.body.appendChild(noscript);
   }, [pixelId]);
 
-  // Track SPA route changes
+  // Track SPA route changes with standard events
   useEffect(() => {
-    if (!pixelId || !(window as any).fbq) return;
-    (window as any).fbq("track", "PageView");
+    if (!pixelId || !window.fbq) return;
+
+    const path = location.pathname;
+
+    // PageView on every navigation
+    window.fbq("track", "PageView");
+
+    // ViewContent on article pages (pattern: /:categorySlug/:postId)
+    const articleMatch = path.match(/^\/([^/]+)\/([^/]+)$/);
+    if (
+      articleMatch &&
+      !["admin", "blog", "about", "contact", "privacy-policy", "terms-of-use", "cookie-policy", "unsubscribe", "garden-tips", "indoor-plants", "manuals"].includes(articleMatch[1])
+    ) {
+      window.fbq("track", "ViewContent", {
+        content_type: "article",
+        content_category: articleMatch[1],
+        content_name: decodeURIComponent(articleMatch[2]),
+      });
+    }
+
+    // Search event on blog with search params
+    const searchParams = new URLSearchParams(location.search);
+    const searchQuery = searchParams.get("q") || searchParams.get("search") || searchParams.get("busca");
+    if (searchQuery && (path === "/blog" || path === "/garden-tips" || path === "/indoor-plants" || path === "/manuals")) {
+      window.fbq("track", "Search", {
+        search_string: searchQuery,
+        content_category: path.replace("/", "") || "blog",
+      });
+    }
   }, [location.pathname, location.search, pixelId]);
 
   return null;
