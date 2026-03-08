@@ -37,6 +37,7 @@ export interface ConsentContextType {
   savePreferences: (preferences: Omit<ConsentState, "necessary">) => void;
   openPreferences: () => void;
   closePreferences: () => void;
+  resetConsent: () => void;
   tcfString: string | null;
 }
 
@@ -252,6 +253,13 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   const openPreferences = useCallback(() => setShowPreferences(true), []);
   const closePreferences = useCallback(() => setShowPreferences(false), []);
 
+  const resetConsent = useCallback(() => {
+    localStorage.removeItem(CONSENT_STORAGE_KEY);
+    localStorage.removeItem(CONSENT_TIMESTAMP_KEY);
+    setConsent(null);
+    setShowBanner(true);
+  }, []);
+
   return (
     <ConsentContext.Provider
       value={{
@@ -264,6 +272,7 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
         savePreferences,
         openPreferences,
         closePreferences,
+        resetConsent,
         tcfString,
       }}
     >
