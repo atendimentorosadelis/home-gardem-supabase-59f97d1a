@@ -193,6 +193,8 @@ function SettingsContent() {
             robots_txt: (value.robots_txt as string) || prev.robots_txt,
             google_analytics_id: (value.google_analytics_id as string) || prev.google_analytics_id,
             google_search_console: (value.google_search_console as string) || prev.google_search_console,
+            facebook_pixel_id: (value.facebook_pixel_id as string) || prev.facebook_pixel_id,
+            facebook_pixel_enabled: typeof value.facebook_pixel_enabled === 'boolean' ? value.facebook_pixel_enabled : prev.facebook_pixel_enabled,
             adsense_enabled: typeof value.adsense_enabled === 'boolean' ? value.adsense_enabled : prev.adsense_enabled,
             adsense_publisher_id: (value.adsense_publisher_id as string) || prev.adsense_publisher_id,
             ads_txt_content: (value.ads_txt_content as string) || prev.ads_txt_content,
@@ -836,6 +838,40 @@ function SettingsContent() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2"><Label htmlFor="google_analytics_id">Google Analytics ID</Label><Input id="google_analytics_id" value={seoSettings.google_analytics_id} onChange={(e) => setSeoSettings({ ...seoSettings, google_analytics_id: e.target.value })} placeholder="G-XXXXXXXXXX" /></div>
                   <div className="space-y-2"><Label htmlFor="google_search_console">Google Search Console</Label><Input id="google_search_console" value={seoSettings.google_search_console} onChange={(e) => setSeoSettings({ ...seoSettings, google_search_console: e.target.value })} placeholder="Código de verificação" /></div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Facebook Pixel */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Facebook className="h-5 w-5 text-blue-600" />Facebook Pixel</CardTitle>
+                <CardDescription>Configure o rastreamento de conversões e remarketing do Facebook/Meta</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                  <div className="space-y-0.5"><Label className="text-base font-medium">Habilitar Facebook Pixel</Label><p className="text-sm text-muted-foreground">Ativa o script do Facebook Pixel no site</p></div>
+                  <Switch checked={seoSettings.facebook_pixel_enabled} onCheckedChange={(checked) => setSeoSettings({ ...seoSettings, facebook_pixel_enabled: checked })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="facebook_pixel_id">Pixel ID</Label>
+                  <Input id="facebook_pixel_id" value={seoSettings.facebook_pixel_id} onChange={(e) => setSeoSettings({ ...seoSettings, facebook_pixel_id: e.target.value })} placeholder="123456789012345" className={!seoSettings.facebook_pixel_enabled ? 'opacity-50' : ''} disabled={!seoSettings.facebook_pixel_enabled} />
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><ExternalLink className="h-3 w-3" /><span>Encontre seu Pixel ID em: Meta Events Manager → Fontes de dados</span></div>
+                  {seoSettings.facebook_pixel_id && (
+                    <div className="flex items-center gap-2 text-xs">
+                      {seoSettings.facebook_pixel_id.match(/^\d{10,16}$/) ? (<><CheckCircle2 className="h-3 w-3 text-green-600" /><span className="text-green-600">Formato válido</span></>) : (<><AlertTriangle className="h-3 w-3 text-amber-600" /><span className="text-amber-600">O Pixel ID deve conter apenas números (10-16 dígitos)</span></>)}
+                    </div>
+                  )}
+                </div>
+                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                  <h4 className="text-sm font-medium">Instruções de Configuração:</h4>
+                  <ol className="text-xs text-muted-foreground list-decimal list-inside space-y-1">
+                    <li>Acesse o Meta Events Manager (business.facebook.com/events_manager)</li>
+                    <li>Selecione ou crie um Pixel</li>
+                    <li>Copie o Pixel ID numérico e cole acima</li>
+                    <li>Ative o switch e salve as configurações</li>
+                  </ol>
+                  <p className="text-xs text-green-600 mt-2">✅ O Pixel rastreará automaticamente PageView em todas as páginas. O consentimento de publicidade (TCF) é respeitado.</p>
                 </div>
               </CardContent>
             </Card>

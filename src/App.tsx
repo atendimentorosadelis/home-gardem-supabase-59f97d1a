@@ -16,6 +16,7 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { FacebookPixel } from "@/components/FacebookPixel";
 import { PageViewTracker } from "@/components/PageViewTracker";
 
 // Helper to retry dynamic imports on chunk load failure (stale cache after deploy)
@@ -102,6 +103,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <GoogleAnalytics />
+            <FacebookPixel />
             <AdConsentController />
             <ScrollToTop />
             <PageViewTracker />
