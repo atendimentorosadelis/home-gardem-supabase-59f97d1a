@@ -42,6 +42,15 @@ const categories = [
   { name: 'Europeu', slug: 'europeu' },
   { name: 'Nórdico', slug: 'nordico' },
   { name: 'Neo Clássico', slug: 'neo-classico' },
+  // Carpintaria & Construção em Madeira
+  { name: 'Carpintaria - História', slug: 'carpintaria-historia' },
+  { name: 'Carpintaria - Wood Framing', slug: 'carpintaria-wood-framing' },
+  { name: 'Carpintaria - Tipos de Madeira', slug: 'carpintaria-tipos-madeira' },
+  { name: 'Carpintaria - Isolamento Térmico', slug: 'carpintaria-isolamento' },
+  { name: 'Carpintaria - Aquecimento & Piso Aquecido', slug: 'carpintaria-aquecimento' },
+  { name: 'Carpintaria - Manutenção & Conservação', slug: 'carpintaria-manutencao' },
+  { name: 'Carpintaria - Eficiência Energética', slug: 'carpintaria-eficiencia' },
+  { name: 'Carpintaria - Técnicas Tradicionais vs Modernas', slug: 'carpintaria-tecnicas' },
 ];
 
 const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';
