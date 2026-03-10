@@ -1,4 +1,4 @@
-import { Search, X, LayoutGrid, Home, Leaf, Building2 } from "lucide-react";
+import { Search, X, LayoutGrid, Home, Leaf, Building2, Hammer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
