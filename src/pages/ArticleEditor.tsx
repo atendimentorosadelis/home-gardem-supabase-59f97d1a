@@ -269,12 +269,14 @@ const CopyForFacebookCard = ({
 
   const copyImageToClipboard = async (imageUrl: string, field: string) => {
     try {
+      // Use wsrv.nl proxy to get a high-quality version with CORS support
+      const hqUrl = `https://wsrv.nl/?url=${encodeURIComponent(imageUrl)}&w=1200&fit=inside&output=jpg&q=95`;
       const img = new window.Image();
       img.crossOrigin = 'anonymous';
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve();
         img.onerror = () => reject(new Error('Image load failed'));
-        img.src = imageUrl;
+        img.src = hqUrl;
       });
       const w = img.naturalWidth;
       const h = img.naturalHeight;
@@ -283,7 +285,6 @@ const CopyForFacebookCard = ({
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d')!;
-      // Fill white background first (avoids any transparent/brown artifacts)
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
@@ -294,7 +295,7 @@ const CopyForFacebookCard = ({
         new ClipboardItem({ 'image/png': pngBlob })
       ]);
       setCopiedField(field);
-      toast.success('Imagem copiada! Cole no seu post.');
+      toast.success('Imagem copiada em alta qualidade! Cole no seu post.');
       setTimeout(() => setCopiedField(null), 2000);
     } catch (err) {
       console.error('Copy image error:', err);
