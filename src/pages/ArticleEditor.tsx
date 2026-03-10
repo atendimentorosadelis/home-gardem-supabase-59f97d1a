@@ -269,17 +269,30 @@ const CopyForFacebookCard = ({
 
   const copyImageToClipboard = async (imageUrl: string, field: string) => {
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Image load failed'));
+        img.src = imageUrl;
+      });
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      const pngBlob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((b) => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
+      );
       await navigator.clipboard.write([
-        new ClipboardItem({ [blob.type]: blob })
+        new ClipboardItem({ 'image/png': pngBlob })
       ]);
       setCopiedField(field);
-      toast.success('Imagem copiada!');
+      toast.success('Imagem copiada! Cole no seu post.');
       setTimeout(() => setCopiedField(null), 2000);
-    } catch {
-      // Fallback: copy URL
-      await copyToClipboard(imageUrl, field);
+    } catch (err) {
+      console.error('Copy image error:', err);
+      toast.error('Não foi possível copiar a imagem.');
     }
   };
 
