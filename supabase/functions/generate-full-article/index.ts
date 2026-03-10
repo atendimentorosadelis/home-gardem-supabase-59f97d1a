@@ -384,6 +384,49 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
   return { mainSubject, visualContext, galleryPrompts };
 }
 
+function buildCarpentryHistoricalExpansion(topic: string): string {
+  const timelineMilestones = [
+    {
+      period: '1607-1775 | Colonial Foundations',
+      detail: 'Early settlers in Jamestown and New England adapted English timber traditions to local forests, using hand-hewn beams, mortise-and-tenon joints, and heavy-frame barns; this period established carpentry as both a survival skill and a respected trade in the colonies.'
+    },
+    {
+      period: '1776-1820 | Early Republic Craftsmanship',
+      detail: 'After independence, regional carpentry guilds and apprenticeships expanded, and builders standardized framing dimensions for homes, taverns, and civic buildings; carpenters balanced speed with durability while responding to rapid town growth and new infrastructure demands.'
+    },
+    {
+      period: '1820-1860 | Balloon Framing Revolution',
+      detail: 'Industrial sawmills and affordable machine-cut nails made balloon framing viable, replacing many heavy-timber systems; long studs running from sill to roof accelerated construction, reduced labor costs, and transformed housing production across expanding Midwestern cities.'
+    },
+    {
+      period: '1860-1910 | Railroads, Catalog Homes, and Code Beginnings',
+      detail: 'Rail networks moved lumber nationwide and enabled mail-order house kits, while cities introduced early fire and structural ordinances; carpenters began following emerging code culture, combining practical field techniques with gradually formalized engineering requirements.'
+    },
+    {
+      period: '1910-1945 | Platform Framing and Suburban Preparation',
+      detail: 'Platform framing became dominant because each floor created a safer working deck, reduced fire spread in wall cavities, and simplified sequencing; builders adopted repeatable methods that later supported large-scale suburban development after World War II.'
+    },
+    {
+      period: '1945-1980 | Suburban Boom and Mechanical Integration',
+      detail: 'Postwar demand pushed mass housing projects where carpentry coordinated with electrical, plumbing, and HVAC systems; standardized 2x4 and 2x6 assemblies, plywood sheathing, and insulation practices became routine in American residential construction workflows.'
+    },
+    {
+      period: '1980-2005 | Energy Codes and Performance Building',
+      detail: 'Rising energy costs and stricter regulations drove better air sealing, vapor control, and insulation detailing; carpenters increasingly collaborated with inspectors and designers to meet thermal targets, moisture management standards, and occupant comfort requirements.'
+    },
+    {
+      period: '2005-Today | High-Performance and Hybrid Wood Construction',
+      detail: 'Modern carpentry combines advanced fasteners, engineered wood products, digital layout tools, and resilient detailing against moisture and wind; builders now integrate performance testing, sustainability goals, and code compliance from design through final inspection.'
+    },
+  ];
+
+  const timelineSection = timelineMilestones
+    .map((item, index) => `### ${index + 1}. ${item.period}\n${item.detail}`)
+    .join('\n\n');
+
+  return `\n\n## Historical Timeline of American Carpentry (Deep Dive)\n\nWhen I researched ${topic} in depth, I realized that American carpentry did not evolve in a straight line. It grew through climate challenges, migration waves, industrial innovation, and code enforcement cycles that forced builders to improve structure, safety, and thermal performance. This timeline helps contextualize why modern wood-frame housing in the United States is so systemized and efficient today.\n\n${timelineSection}\n\n## Why This Historical Context Still Matters on Real Job Sites\n\nUnderstanding this history changes how we interpret current best practices. Balloon framing explains old-house fire blocking retrofits; platform framing explains why today\'s crews sequence floors and walls differently; and post-1980 code pressure explains why insulation, air sealing, and moisture control are treated as structural priorities rather than optional upgrades. In practical terms, history informs every decision from stud spacing and sheathing attachment to vapor retarder placement and thermal bridge mitigation.\n\nAs I compare U.S. methods with the masonry-heavy tradition we know in Brazil, I see that American carpentry evolved around modular logistics and repeatable labor workflows. That is why dimensional lumber standards, fastening schedules, and inspection checkpoints are so explicit. The goal is not only speed, but predictable performance under weather loads, seasonal temperature swings, and long-term maintenance cycles.\n\n## Technical Legacy That Connects Past and Present\n\nThe historical shift from craft-only framing to code-driven framing created a culture where carpenters must understand load paths, moisture movement, and energy metrics. Today, concepts like R-value continuity, airtightness, flashing hierarchy, and mechanical coordination are direct descendants of lessons learned over centuries of field mistakes and innovation.\n\nFor anyone studying American carpentry seriously, this perspective is essential: every modern wall assembly carries historical DNA. The framing patterns, insulation standards, fastening rules, and detailing checklists we use now were built layer by layer through decades of experimentation, failures, and refinements. Knowing that lineage helps us design better, build safer, and maintain wood structures with far more confidence.`;
+}
+
 function getCurrentDateFormatted(): string {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
