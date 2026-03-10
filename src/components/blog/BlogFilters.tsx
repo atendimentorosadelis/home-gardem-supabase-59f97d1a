@@ -99,7 +99,7 @@ export function BlogFilters({
                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                     <LayoutGrid className="h-4 w-4 text-primary" />
                   </div>
-                  <span className="font-medium">{t("blog.allThemes", "Todos os Temas")}</span>
+                  <span className="font-medium">{t("blog.allThemes", "All Themes")}</span>
                 </div>
               </SelectItem>
               {ALL_SUB_NICHES.map((niche) => {
@@ -110,7 +110,7 @@ export function BlogFilters({
                       <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
                         <NicheIcon className="h-4 w-4 text-muted-foreground" />
                       </div>
-                      <span>{niche.name}</span>
+                      <span>{t(`subNiches.${niche.translationKey}`, niche.name)}</span>
                     </div>
                   </SelectItem>
                 );
