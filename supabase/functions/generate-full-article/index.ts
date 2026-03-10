@@ -1449,77 +1449,85 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
     const minimumWordCount = isPaintingTopic ? 2500 : 2200;
     let finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
 
-    // AUTO-COMPLETION: if content is too short, ask GPT to expand it instead of discarding
+    const injectAdditionalContent = (additionalContent: string) => {
+      const faqMatch = finalContent.match(/##\s*(FAQ|Perguntas\s+Frequentes)/i);
+      if (faqMatch && faqMatch.index !== undefined) {
+        finalContent = finalContent.substring(0, faqMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(faqMatch.index);
+        return;
+      }
+
+      const sigMatch = finalContent.match(/\n---\s*\n\*\*Escrito com carinho/i);
+      if (sigMatch && sigMatch.index !== undefined) {
+        finalContent = finalContent.substring(0, sigMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(sigMatch.index);
+        return;
+      }
+
+      finalContent = finalContent + '\n\n' + additionalContent;
+    };
+
+    // AUTO-COMPLETION: if content is too short, expand while respecting runtime budget
     if (finalWordCount < minimumWordCount) {
       const shortfall = minimumWordCount - finalWordCount;
-      console.log(`⚠️ Content too short: ${finalWordCount} words (min ${minimumWordCount}). Auto-expanding by ~${shortfall} words...`);
+      const elapsedMs = Date.now() - requestStartedAt;
+      const runtimeBudgetExceeded = elapsedMs > 45000;
 
-      try {
-        const expandResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${OPENAI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "gpt-4o",
-            messages: [
-              {
-                role: "system",
-                content: `Você é Keven Costa Vieira. Você recebeu um artigo que está CURTO demais (${finalWordCount} palavras, precisa de no mínimo ${minimumWordCount}).
+      console.log(`⚠️ Content too short: ${finalWordCount} words (min ${minimumWordCount}). Shortfall: ${shortfall} words. Elapsed: ${elapsedMs}ms`);
 
-Sua tarefa: EXPANDIR o artigo existente adicionando mais ${shortfall + 300} palavras de conteúdo NOVO e RELEVANTE.
+      if (isCarpentryTopic) {
+        const carpentryExpansion = buildCarpentryHistoricalExpansion(topic);
+        injectAdditionalContent(carpentryExpansion);
+        finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
+        console.log(`✅ Applied deterministic carpentry expansion. New word count: ${finalWordCount}`);
+      } else if (runtimeBudgetExceeded) {
+        console.warn('⚠️ Skipping OpenAI auto-expansion to avoid edge runtime timeout.');
+      } else {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 25000);
 
-REGRAS:
-- Mantenha o TOM PESSOAL e CONFESSIONAL do Keven (1ª pessoa, vulnerável, amoroso)
-- NÃO repita informações já presentes no artigo
-- Adicione novas seções com ## (H2) que complementam o tema
-- Adicione mais dicas práticas, histórias pessoais, comparações do dia a dia
-- Mantenha valores em DÓLARES (USD/$)
-- NÃO adicione nova FAQ (já existe no artigo)
-- NÃO adicione nova assinatura (já existe no artigo)
-- Retorne APENAS o conteúdo ADICIONAL (sem repetir o que já existe)
-- Use formatação markdown: ## para títulos, - para listas, **negrito**`
-              },
-              {
-                role: "user",
-                content: `TEMA: "${topic}"\n\nARTIGO ATUAL (${finalWordCount} palavras):\n\n${finalContent.substring(0, 8000)}\n\n---\nAdicione mais ${shortfall + 300} palavras de conteúdo NOVO e RELEVANTE para complementar este artigo. Retorne APENAS o conteúdo adicional.`
-              }
-            ],
-            temperature: 0.85,
-            max_tokens: 8000,
-          })
-        });
+          const expandResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${OPENAI_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [
+                {
+                  role: "system",
+                  content: `Você é Keven Costa Vieira. O artigo atual está curto (${finalWordCount} palavras) e precisa chegar no mínimo em ${minimumWordCount} palavras.\n\nRetorne APENAS conteúdo adicional em markdown para ser inserido antes do FAQ.\nRegras: não repetir trechos existentes, manter primeira pessoa, manter USD, sem nova FAQ e sem nova assinatura.`
+                },
+                {
+                  role: "user",
+                  content: `TEMA: "${topic}"\n\nRESUMO DO ARTIGO ATUAL:\n${finalContent.substring(0, 5000)}\n\nAdicione aproximadamente ${Math.min(shortfall + 250, 900)} palavras de conteúdo novo e útil.`
+                }
+              ],
+              temperature: 0.8,
+              max_tokens: 5000,
+            })
+          });
 
-        if (expandResponse.ok) {
-          const expandData = await expandResponse.json();
-          const additionalContent = expandData.choices?.[0]?.message?.content?.trim();
+          clearTimeout(timeoutId);
 
-          if (additionalContent && additionalContent.length > 200) {
-            // Insert additional content BEFORE the FAQ section
-            const faqMatch = finalContent.match(/##\s*(FAQ|Perguntas\s+Frequentes)/i);
-            if (faqMatch && faqMatch.index !== undefined) {
-              finalContent = finalContent.substring(0, faqMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(faqMatch.index);
+          if (expandResponse.ok) {
+            const expandData = await expandResponse.json();
+            const additionalContent = expandData.choices?.[0]?.message?.content?.trim();
+
+            if (additionalContent && additionalContent.length > 200) {
+              injectAdditionalContent(additionalContent);
+              finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
+              console.log(`✅ Auto-expansion complete! New word count: ${finalWordCount}`);
             } else {
-              // Insert before signature
-              const sigMatch = finalContent.match(/\n---\s*\n\*\*Escrito com carinho/i);
-              if (sigMatch && sigMatch.index !== undefined) {
-                finalContent = finalContent.substring(0, sigMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(sigMatch.index);
-              } else {
-                finalContent = finalContent + '\n\n' + additionalContent;
-              }
+              console.warn('⚠️ Expansion returned insufficient content, proceeding with original');
             }
-
-            finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
-            console.log(`✅ Auto-expansion complete! New word count: ${finalWordCount}`);
           } else {
-            console.warn('⚠️ Expansion returned insufficient content, proceeding with original');
+            console.error('⚠️ Expansion API call failed, proceeding with original content');
           }
-        } else {
-          console.error('⚠️ Expansion API call failed, proceeding with original content');
+        } catch (expandError) {
+          console.error('⚠️ Auto-expansion error (non-fatal):', expandError);
         }
-      } catch (expandError) {
-        console.error('⚠️ Auto-expansion error (non-fatal):', expandError);
       }
     }
 
