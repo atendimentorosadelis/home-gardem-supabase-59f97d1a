@@ -45,18 +45,22 @@ Você escreve como gente de verdade — com imperfeições, emoções e personal
 
     const bannedPhrases = `
 ❌ PROIBIDO usar estas palavras/padrões nos títulos e resumos:
+- "Criando o/a ... dos Seus Sonhos" - BANIDO PERMANENTEMENTE (padrão mais repetido)
 - "Descubra", "Transforme", "Guia Completo", "Guia Definitivo", "Dicas Essenciais"
 - "Dicas Imperdíveis", "Tudo Sobre", "O Segredo", "Confira", "Veja"
 - "Neste artigo", "Aprenda a", "Conheça", "Explore"
+- "Como Criar", "Como Montar" no início do título
 - Títulos genéricos tipo "X Dicas para Y" ou "Como Fazer X: Guia Completo"
 - Qualquer coisa que pareça gerada por IA ou clickbait
+- Títulos que poderiam servir para QUALQUER tema (devem ser ESPECÍFICOS)
 
 ✅ USE linguagem que soa HUMANA e REAL:
 - Confissões pessoais: "Eu errei feio com...", "Minha mãe tinha razão sobre..."
 - Emoções genuínas: "Chorei quando vi...", "Aquela sensação gostosa de..."
 - Histórias: "O dia que...", "Quando finalmente entendi..."
 - Perguntas reais: "Será que só eu...?", "Por que ninguém fala de...?"
-- Opiniões fortes: "Cansei de ver...", "Isso mudou tudo pra mim"`;
+- Opiniões fortes: "Cansei de ver...", "Isso mudou tudo pra mim"
+- Detalhes específicos: mencione algo CONCRETO do tema, não genérico`;
 
     let systemPrompt: string;
     let userMessage: string;
