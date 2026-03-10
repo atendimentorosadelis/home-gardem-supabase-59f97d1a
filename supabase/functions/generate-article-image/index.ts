@@ -270,11 +270,45 @@ serve(async (req) => {
     }
     
     const isArchitectureSubject = !!matchedArchStyle;
+
+    // Detect carpentry by category or title
+    let matchedCarpentryStyle: string | null = null;
+    const isCarpentryCategory = categoryLower.includes('carpintaria') || categoryNormalized.includes('carpintaria');
+    if (isCarpentryCategory) {
+      for (const key of Object.keys(carpentryStylePrompts)) {
+        const keyNorm = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (categoryLower.includes(keyNorm) || categoryNormalized.includes(key) || categoryNormalized === key) {
+          matchedCarpentryStyle = key;
+          break;
+        }
+      }
+    }
+    // Check title for carpentry keywords
+    if (!matchedCarpentryStyle) {
+      const lowerTitle = (title || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const carpentryTitleKeywords = ['wood frame', 'wood framing', 'timber frame', 'timber framing', 'carpentry', 'carpintaria', 'lumber', 'radiant floor', 'radiant heat', 'piso aquecido', 'insulation', 'isolamento'];
+      if (carpentryTitleKeywords.some(k => lowerTitle.includes(k))) {
+        // Try to match a specific style from title
+        for (const key of Object.keys(carpentryStylePrompts)) {
+          const keyNorm = key.replace('carpintaria-', '').replace(/-/g, ' ');
+          if (lowerTitle.includes(keyNorm)) {
+            matchedCarpentryStyle = key;
+            break;
+          }
+        }
+        // Default to wood-framing if carpentry detected but no specific match
+        if (!matchedCarpentryStyle) matchedCarpentryStyle = 'carpintaria-wood-framing';
+      }
+    }
+
+    const isCarpentrySubject = !!matchedCarpentryStyle;
     
-    // For architecture: use the STYLE-SPECIFIC subject instead of generic extraction
+    // For architecture or carpentry: use STYLE-SPECIFIC subject
     let subject: string;
     if (isArchitectureSubject && matchedArchStyle) {
       subject = architectureStylePrompts[matchedArchStyle].subject;
+    } else if (isCarpentrySubject && matchedCarpentryStyle) {
+      subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
     } else {
       const translatedMainSubject = mainSubject ? extractSubjectFromTitle(mainSubject) : null;
       const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== mainSubject
@@ -303,11 +337,13 @@ serve(async (req) => {
     }
 
     const archDetails = matchedArchStyle ? architectureStylePrompts[matchedArchStyle].details : '';
+    const carpentryDetails = matchedCarpentryStyle ? carpentryStylePrompts[matchedCarpentryStyle].details : '';
 
-    console.log(`[ImageGen] Category: "${effectiveCategory}", MatchedStyle: "${matchedArchStyle}", Subject: "${subject.substring(0, 80)}...", isArchitecture: ${isArchitectureSubject}`);
+    console.log(`[ImageGen] Category: "${effectiveCategory}", ArchStyle: "${matchedArchStyle}", CarpentryStyle: "${matchedCarpentryStyle}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
+    const carpentrySetting = 'American residential construction site, suburban neighborhood, natural daylight, professional construction photography';
     
     const resolvedVisualContext = visualContext || articleContext?.visual_context || '';
 
@@ -318,6 +354,8 @@ serve(async (req) => {
       } else {
         setting = exteriorSetting;
       }
+    } else if (isCarpentrySubject) {
+      setting = resolvedVisualContext || carpentrySetting;
     } else {
       setting = resolvedVisualContext || interiorSetting;
     }
@@ -326,11 +364,15 @@ serve(async (req) => {
     let prompt: string;
     const photoStyle = isArchitectureSubject 
       ? 'Professional exterior architectural photography, building facade, outdoor perspective' 
-      : 'Professional interior photography';
+      : isCarpentrySubject
+        ? 'Professional construction photography, American residential building, realistic detailed'
+        : 'Professional interior photography';
     
     if (type === 'cover') {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
+      } else if (isCarpentrySubject) {
+        prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
