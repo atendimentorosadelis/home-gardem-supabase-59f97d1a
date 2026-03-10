@@ -3,9 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink, Clock, Tag, Link2, Lightbulb, AlertTriangle, Sparkles, Quote as QuoteIcon, Check, ArrowRight, BookOpen, HelpCircle } from 'lucide-react';
 import type { GeneratedArticle } from '@/hooks/use-full-article-generation';
 import { FAQPreviewAccordion } from './FAQPreviewAccordion';
+import { TitleExcerptSuggestionButton } from './TitleExcerptSuggestions';
 
 interface ArticlePreviewFullProps {
   article: GeneratedArticle;
+  onUpdateTitle?: (title: string) => void;
+  onUpdateExcerpt?: (excerpt: string) => void;
 }
 
 export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
