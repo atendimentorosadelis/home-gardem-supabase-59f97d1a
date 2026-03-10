@@ -117,4 +117,5 @@ export const EDGE_FUNCTIONS = {
   GENERATE_EMOTIONAL_CONCLUSION: 'generate-emotional-conclusion',
   ORCHESTRATE_ARTICLE_GENERATION: 'orchestrate-article-generation',
   GENERATE_TITLE_SUGGESTIONS: 'generate-title-suggestions',
+  PING_SITEMAP: 'ping-sitemap',
 } as const;
