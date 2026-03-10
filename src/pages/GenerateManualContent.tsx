@@ -307,6 +307,10 @@ function GenerateManualContentPage() {
     setArquiteturaSelected(prev => prev.includes(id) ? [] : [id]);
   };
 
+  const toggleCarpintaria = (id: string) => {
+    setCarpintariaSelected(prev => prev.includes(id) ? [] : [id]);
+  };
+
   const buildDesignTopic = () => {
     const allDesignSubniches = [...DESIGN_AREAS_SOCIAIS, ...DESIGN_AREAS_INTIMAS, ...DESIGN_AREAS_SERVICO];
     const labels = designSelected.map(id => allDesignSubniches.find(s => s.id === id)?.label).filter(Boolean);
