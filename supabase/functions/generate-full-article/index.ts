@@ -415,8 +415,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'O aumento dos custos de energia e regulamentações mais rigorosas impulsionaram melhor vedação de ar, controle de vapor e detalhamento de isolamento; os carpinteiros colaboraram cada vez mais com inspetores e projetistas para atender metas térmicas, padrões de gerenciamento de umidade e requisitos de conforto dos ocupantes.'
     },
     {
-      period: '2005-Today | High-Performance and Hybrid Wood Construction',
-      detail: 'Modern carpentry combines advanced fasteners, engineered wood products, digital layout tools, and resilient detailing against moisture and wind; builders now integrate performance testing, sustainability goals, and code compliance from design through final inspection.'
+      period: '2005-Hoje | Alta Performance e Construção Híbrida em Madeira',
+      detail: 'A carpintaria moderna combina fixadores avançados, produtos de madeira engenheirada, ferramentas digitais de layout e detalhamento resiliente contra umidade e vento; construtores agora integram testes de desempenho, metas de sustentabilidade e conformidade com códigos desde o projeto até a inspeção final.'
     },
   ];
 
