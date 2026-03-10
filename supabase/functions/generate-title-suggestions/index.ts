@@ -44,23 +44,35 @@ Seu tom é ${selectedTone}.
 Você escreve como gente de verdade — com imperfeições, emoções e personalidade.`;
 
     const bannedPhrases = `
-❌ PROIBIDO usar estas palavras/padrões nos títulos e resumos:
-- "Criando o/a ... dos Seus Sonhos" - BANIDO PERMANENTEMENTE (padrão mais repetido)
-- "Descubra", "Transforme", "Guia Completo", "Guia Definitivo", "Dicas Essenciais"
-- "Dicas Imperdíveis", "Tudo Sobre", "O Segredo", "Confira", "Veja"
-- "Neste artigo", "Aprenda a", "Conheça", "Explore"
-- "Como Criar", "Como Montar" no início do título
-- Títulos genéricos tipo "X Dicas para Y" ou "Como Fazer X: Guia Completo"
-- Qualquer coisa que pareça gerada por IA ou clickbait
-- Títulos que poderiam servir para QUALQUER tema (devem ser ESPECÍFICOS)
+❌ PADRÕES PERMANENTEMENTE BANIDOS (NUNCA use estas estruturas):
+- "Criando o/a ... dos Seus Sonhos" — BANIDO PERMANENTEMENTE
+- "Será Que Seu/Sua ... Está Te Sabotando?" — BANIDO
+- "Transformando Seu/Sua ..." — BANIDO
+- "Guia Completo/Definitivo" — BANIDO
+- "Dicas Essenciais/Imperdíveis/Incríveis" — BANIDO
+- "Descubra Como", "Tudo Sobre", "O Segredo", "Confira", "Veja" — BANIDO
+- "Como Criar/Montar ..." — BANIDO
+- "A Verdade Que Ninguém Conta" — BANIDO
+- "Cansei de Ver ... Sem Personalidade" — BANIDO
+- "O Dia Que Entendi ..." — BANIDO
+- "Eu Quase Desisti de ..." — BANIDO
+- "Meu Maior Erro Com ..." — BANIDO
+- "Vem Ver o Que Fiz" / "Preciso Te Mostrar" — BANIDO
+- "Aquele Cantinho de ... Que Faz ..." — BANIDO
+- "[Tema] Minimalista vs. Clássico" — BANIDO
+- Títulos genéricos que poderiam servir para QUALQUER tema — BANIDO
+- Títulos que só trocam o nome do cômodo mas mantêm a mesma frase — BANIDO
+- "Neste artigo", "Aprenda a", "Conheça", "Explore" — BANIDO
+- Qualquer coisa que pareça gerada por IA ou clickbait — BANIDO
+
+⚠️ NÃO COPIE exemplos! Crie títulos 100% ORIGINAIS.
+Cada título deve mencionar um DETALHE CONCRETO e ESPECÍFICO (objeto, cor, material, sensação).
 
 ✅ USE linguagem que soa HUMANA e REAL:
-- Confissões pessoais: "Eu errei feio com...", "Minha mãe tinha razão sobre..."
-- Emoções genuínas: "Chorei quando vi...", "Aquela sensação gostosa de..."
-- Histórias: "O dia que...", "Quando finalmente entendi..."
-- Perguntas reais: "Será que só eu...?", "Por que ninguém fala de...?"
-- Opiniões fortes: "Cansei de ver...", "Isso mudou tudo pra mim"
-- Detalhes específicos: mencione algo CONCRETO do tema, não genérico`;
+- Comece com um OBJETO específico do tema, não com o nome genérico
+- Use emoções reais (frustração, alívio, nostalgia, orgulho, surpresa)
+- Conte o início de uma micro-história que gera curiosidade
+- Faça declarações ousadas que gerem debate`;
 
     let systemPrompt: string;
     let userMessage: string;

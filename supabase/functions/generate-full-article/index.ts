@@ -700,40 +700,70 @@ REGRAS CRÍTICAS:
 ⚠️ MÍNIMO ABSOLUTO: 2.200 palavras
 ✅ IDEAL: 2.500 - 3.000 palavras
 
-# REGRAS OBRIGATÓRIAS PARA O TÍTULO (CRÍTICO)
+# REGRAS OBRIGATÓRIAS PARA O TÍTULO (CRÍTICO — LEIA COM ATENÇÃO MÁXIMA)
 
-🎲 NÚMERO SORTEADO PARA ESTILO DO TÍTULO: ${Math.floor(Math.random() * 8) + 1}
+⚠️ REGRA #1: NÃO COPIE OS EXEMPLOS ABAIXO! Eles são apenas INSPIRAÇÃO de estrutura.
+Você DEVE inventar um título ORIGINAL e CRIATIVO que NÃO siga nenhum template.
 
-Use o ESTILO correspondente ao número sorteado:
-1. 🫂 CONFISSÃO — "Eu Quase Desisti de Ter um ${topic} Até Que..." / "Meu Maior Erro Com ${topic}"
-2. 🤔 PERGUNTA PROVOCATIVA — "Será Que Seu ${topic} Está Te Sabotando?" / "Por Que Ninguém Fala Disso Sobre ${topic}?"
-3. 💡 EPIFANIA — "O Dia Que Entendi o Verdadeiro Segredo do ${topic}" / "Quando Finalmente Acertei no ${topic}"
-4. 🎯 OPINIÃO FORTE — "Cansei de Ver ${topic} Sem Personalidade" / "A Verdade Que Ninguém Conta Sobre ${topic}"
-5. 🌿 SENSORIAL — "Aquele Cantinho de ${topic} Que Faz a Alma Respirar" / "A Luz Perfeita no ${topic}: Uma Sensação de Paz"
-6. 📖 NARRATIVA — "A História Por Trás do Meu ${topic} Favorito" / "Como um ${topic} Mudou Minha Forma de Viver"
-7. 🔥 COMPARAÇÃO — "${topic} Minimalista vs. Clássico: Qual Combina Com Você?" / "Antes e Depois: Meu ${topic} Transformado"
-8. 💬 CONVERSA — "Vem Ver o Que Fiz no Meu ${topic}" / "Preciso Te Mostrar Esse ${topic}"
+⚠️ REGRA #2: O título NÃO pode ser uma frase genérica com "${topic}" encaixado no meio.
+O título deve mencionar um DETALHE CONCRETO e ESPECÍFICO do artigo (uma cor, um material, um cômodo, uma sensação, um erro, um objeto).
 
-❌ TÍTULOS PROIBIDOS (BANIDOS - NUNCA USE):
-- "Criando o/a [qualquer coisa] dos Seus Sonhos" - BANIDO PERMANENTEMENTE
-- "Transformando Seu/Sua [qualquer coisa]" - BANIDO
-- "Guia Completo/Definitivo" - BANIDO
-- "Dicas Essenciais/Imperdíveis/Incríveis" - BANIDO
-- "Descubra Como" - BANIDO
-- "Tudo Sobre" - BANIDO
-- Qualquer título genérico que poderia servir para QUALQUER tema - BANIDO
-- Títulos que começam com "Como Criar" ou "Como Montar" - BANIDO
+🎲 NÚMERO SORTEADO PARA INSPIRAÇÃO DE TOM: ${Math.floor(Math.random() * 12) + 1}
+
+Tons possíveis (NÃO copie os exemplos, apenas use o TOM):
+1. Tom CONFESSIONAL — revele um erro ou segredo pessoal
+2. Tom de CURIOSIDADE — levante uma questão inesperada que surpreenda
+3. Tom de EPIFANIA — compartilhe um momento de descoberta pessoal
+4. Tom REBELDE — desafie uma "regra" ou crença comum sobre o tema
+5. Tom SENSORIAL — evoque um cheiro, uma textura, uma cor, uma luz
+6. Tom NARRATIVO — conte o início de uma história real
+7. Tom COMPARATIVO — confronte duas abordagens ou ideias opostas
+8. Tom de CONVERSA ÍNTIMA — como um áudio de WhatsApp pra um amigo
+9. Tom de SURPRESA — revele algo inesperado que você aprendeu
+10. Tom NOSTÁLGICO — conecte o tema a uma memória de infância/família
+11. Tom de URGÊNCIA — algo que precisa mudar AGORA
+12. Tom POÉTICO — use uma metáfora bonita e original
+
+❌ PADRÕES DE TÍTULO PERMANENTEMENTE BANIDOS:
+- "Criando o/a ... dos Seus Sonhos" — BANIDO
+- "Será Que Seu/Sua ... Está Te Sabotando?" — BANIDO (padrão já repetido demais)
+- "Transformando Seu/Sua ..." — BANIDO
+- "Guia Completo/Definitivo" — BANIDO
+- "Dicas Essenciais/Imperdíveis/Incríveis" — BANIDO
+- "Descubra Como" — BANIDO
+- "Tudo Sobre" — BANIDO
+- "Como Criar/Montar ..." — BANIDO
+- "A Verdade Que Ninguém Conta" — BANIDO
+- "O Segredo de/do/da ..." — BANIDO
+- "Cansei de Ver ... Sem Personalidade" — BANIDO
+- "O Dia Que Entendi ..." — BANIDO (já usado)
+- "Aquele Cantinho de ... Que Faz ..." — BANIDO (já usado)
+- "[Tema] Minimalista vs. Clássico" — BANIDO
+- "Eu Quase Desisti de ..." — BANIDO (já usado)
+- "Meu Maior Erro Com ..." — BANIDO (já usado)
+- "Vem Ver o Que Fiz" — BANIDO (já usado)
+- "Preciso Te Mostrar" — BANIDO (já usado)
+- QUALQUER FRASE que já apareceu em títulos anteriores — BANIDO
+- Títulos que só trocam o nome do cômodo mas mantêm a mesma estrutura — BANIDO
 
 ✅ O TÍTULO DEVE:
-- Ser ÚNICO e impossível de confundir com outro artigo
-- Ter personalidade e emoção REAL
-- Mencionar algo ESPECÍFICO (um detalhe, uma emoção, um momento)
+- Ser 100% ORIGINAL — nunca antes usado neste blog
+- Mencionar um DETALHE CONCRETO (ex: "a parede cinza", "o varal retrátil", "a prateleira de canto", "aquela pia de granito")
+- Soar como algo que uma pessoa REAL postaria no Instagram ou falaria num café
 - Ter entre 45 e 70 caracteres
-- Soar como algo que uma PESSOA REAL diria, não uma IA
+- Ser impossível de confundir com outro artigo do blog
+- Provocar curiosidade ou emoção GENUÍNA
 
-${recentTitles.length > 0 ? `⚠️ TÍTULOS RECENTES (NÃO REPITA PADRÕES SIMILARES):
-${recentTitles.slice(0, 15).map(t => `- "${t}"`).join('\n')}
-O novo título DEVE ser COMPLETAMENTE DIFERENTE dos listados acima em estrutura e palavras.` : ''}
+💡 TÉCNICAS PARA CRIAR TÍTULOS ORIGINAIS:
+- Comece com um OBJETO específico do tema (não com o nome genérico do cômodo)
+- Use uma EMOÇÃO real (frustração, alívio, nostalgia, orgulho)
+- Conte o INÍCIO de uma micro-história (o leitor precisa clicar pra saber o resto)
+- Faça uma DECLARAÇÃO ousada que gere debate
+
+${recentTitles.length > 0 ? `⚠️ TÍTULOS JÁ PUBLICADOS — ANALISE CADA UM E NÃO REPITA A ESTRUTURA:
+${recentTitles.slice(0, 20).map(t => `- "${t}"`).join('\n')}
+Se o novo título tiver QUALQUER semelhança estrutural com os acima, será REJEITADO.
+Identifique os PADRÕES usados acima e faça algo COMPLETAMENTE DIFERENTE.` : ''}
 
 # REGRAS OBRIGATÓRIAS PARA O EXCERPT/RESUMO
 
