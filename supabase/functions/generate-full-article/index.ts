@@ -387,36 +387,36 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
 function buildCarpentryHistoricalExpansion(topic: string): string {
   const timelineMilestones = [
     {
-      period: '1607-1775 | Colonial Foundations',
-      detail: 'Early settlers in Jamestown and New England adapted English timber traditions to local forests, using hand-hewn beams, mortise-and-tenon joints, and heavy-frame barns; this period established carpentry as both a survival skill and a respected trade in the colonies.'
+      period: '1607-1775 | Fundações Coloniais',
+      detail: 'Os primeiros colonos em Jamestown e na Nova Inglaterra adaptaram as tradições inglesas de carpintaria às florestas locais, usando vigas lavradas à mão, juntas de encaixe (mortise-and-tenon) e celeiros de estrutura pesada; esse período estabeleceu a carpintaria como habilidade de sobrevivência e ofício respeitado nas colônias.'
     },
     {
-      period: '1776-1820 | Early Republic Craftsmanship',
-      detail: 'After independence, regional carpentry guilds and apprenticeships expanded, and builders standardized framing dimensions for homes, taverns, and civic buildings; carpenters balanced speed with durability while responding to rapid town growth and new infrastructure demands.'
+      period: '1776-1820 | Artesanato da República Inicial',
+      detail: 'Após a independência, guildas regionais de carpintaria e programas de aprendizagem se expandiram, e construtores padronizaram as dimensões de estruturação para casas, tavernas e edifícios cívicos; os carpinteiros equilibravam velocidade com durabilidade enquanto respondiam ao rápido crescimento urbano e às novas demandas de infraestrutura.'
     },
     {
-      period: '1820-1860 | Balloon Framing Revolution',
-      detail: 'Industrial sawmills and affordable machine-cut nails made balloon framing viable, replacing many heavy-timber systems; long studs running from sill to roof accelerated construction, reduced labor costs, and transformed housing production across expanding Midwestern cities.'
+      period: '1820-1860 | A Revolução do Balloon Framing',
+      detail: 'Serrarias industriais e pregos fabricados por máquina tornaram o balloon framing viável, substituindo muitos sistemas de madeira pesada; montantes longos indo da soleira ao telhado aceleraram a construção, reduziram custos de mão de obra e transformaram a produção habitacional nas cidades em expansão do Meio-Oeste.'
     },
     {
-      period: '1860-1910 | Railroads, Catalog Homes, and Code Beginnings',
-      detail: 'Rail networks moved lumber nationwide and enabled mail-order house kits, while cities introduced early fire and structural ordinances; carpenters began following emerging code culture, combining practical field techniques with gradually formalized engineering requirements.'
+      period: '1860-1910 | Ferrovias, Casas por Catálogo e Início dos Códigos',
+      detail: 'As redes ferroviárias transportaram madeira para todo o país e permitiram kits de casas por correio, enquanto as cidades introduziram as primeiras regulamentações contra incêndio e estruturais; os carpinteiros começaram a seguir uma cultura de código emergente, combinando técnicas práticas de campo com requisitos de engenharia gradualmente formalizados.'
     },
     {
-      period: '1910-1945 | Platform Framing and Suburban Preparation',
-      detail: 'Platform framing became dominant because each floor created a safer working deck, reduced fire spread in wall cavities, and simplified sequencing; builders adopted repeatable methods that later supported large-scale suburban development after World War II.'
+      period: '1910-1945 | Platform Framing e Preparação Suburbana',
+      detail: 'O platform framing se tornou dominante porque cada andar criava um deck de trabalho mais seguro, reduzia a propagação de incêndios nas cavidades das paredes e simplificava o sequenciamento; construtores adotaram métodos repetíveis que posteriormente apoiaram o desenvolvimento suburbano em larga escala após a Segunda Guerra Mundial.'
     },
     {
-      period: '1945-1980 | Suburban Boom and Mechanical Integration',
-      detail: 'Postwar demand pushed mass housing projects where carpentry coordinated with electrical, plumbing, and HVAC systems; standardized 2x4 and 2x6 assemblies, plywood sheathing, and insulation practices became routine in American residential construction workflows.'
+      period: '1945-1980 | Boom Suburbano e Integração Mecânica',
+      detail: 'A demanda pós-guerra impulsionou projetos habitacionais em massa onde a carpintaria se coordenava com sistemas elétricos, hidráulicos e de climatização (HVAC); montagens padronizadas de 2x4 e 2x6, revestimento de compensado e práticas de isolamento se tornaram rotina nos fluxos de trabalho da construção residencial americana.'
     },
     {
-      period: '1980-2005 | Energy Codes and Performance Building',
-      detail: 'Rising energy costs and stricter regulations drove better air sealing, vapor control, and insulation detailing; carpenters increasingly collaborated with inspectors and designers to meet thermal targets, moisture management standards, and occupant comfort requirements.'
+      period: '1980-2005 | Códigos Energéticos e Construção de Performance',
+      detail: 'O aumento dos custos de energia e regulamentações mais rigorosas impulsionaram melhor vedação de ar, controle de vapor e detalhamento de isolamento; os carpinteiros colaboraram cada vez mais com inspetores e projetistas para atender metas térmicas, padrões de gerenciamento de umidade e requisitos de conforto dos ocupantes.'
     },
     {
-      period: '2005-Today | High-Performance and Hybrid Wood Construction',
-      detail: 'Modern carpentry combines advanced fasteners, engineered wood products, digital layout tools, and resilient detailing against moisture and wind; builders now integrate performance testing, sustainability goals, and code compliance from design through final inspection.'
+      period: '2005-Hoje | Alta Performance e Construção Híbrida em Madeira',
+      detail: 'A carpintaria moderna combina fixadores avançados, produtos de madeira engenheirada, ferramentas digitais de layout e detalhamento resiliente contra umidade e vento; construtores agora integram testes de desempenho, metas de sustentabilidade e conformidade com códigos desde o projeto até a inspeção final.'
     },
   ];
 
@@ -424,7 +424,7 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
     .map((item, index) => `### ${index + 1}. ${item.period}\n${item.detail}`)
     .join('\n\n');
 
-  return `\n\n## Historical Timeline of American Carpentry (Deep Dive)\n\nWhen I researched ${topic} in depth, I realized that American carpentry did not evolve in a straight line. It grew through climate challenges, migration waves, industrial innovation, and code enforcement cycles that forced builders to improve structure, safety, and thermal performance. This timeline helps contextualize why modern wood-frame housing in the United States is so systemized and efficient today.\n\n${timelineSection}\n\n## Why This Historical Context Still Matters on Real Job Sites\n\nUnderstanding this history changes how we interpret current best practices. Balloon framing explains old-house fire blocking retrofits; platform framing explains why today\'s crews sequence floors and walls differently; and post-1980 code pressure explains why insulation, air sealing, and moisture control are treated as structural priorities rather than optional upgrades. In practical terms, history informs every decision from stud spacing and sheathing attachment to vapor retarder placement and thermal bridge mitigation.\n\nAs I compare U.S. methods with the masonry-heavy tradition we know in Brazil, I see that American carpentry evolved around modular logistics and repeatable labor workflows. That is why dimensional lumber standards, fastening schedules, and inspection checkpoints are so explicit. The goal is not only speed, but predictable performance under weather loads, seasonal temperature swings, and long-term maintenance cycles.\n\n## Technical Legacy That Connects Past and Present\n\nThe historical shift from craft-only framing to code-driven framing created a culture where carpenters must understand load paths, moisture movement, and energy metrics. Today, concepts like R-value continuity, airtightness, flashing hierarchy, and mechanical coordination are direct descendants of lessons learned over centuries of field mistakes and innovation.\n\nFor anyone studying American carpentry seriously, this perspective is essential: every modern wall assembly carries historical DNA. The framing patterns, insulation standards, fastening rules, and detailing checklists we use now were built layer by layer through decades of experimentation, failures, and refinements. Knowing that lineage helps us design better, build safer, and maintain wood structures with far more confidence.`;
+  return `\n\n## Linha do Tempo Histórica da Carpintaria Americana (Mergulho Profundo)\n\nQuando eu pesquisei ${topic} a fundo, percebi que a carpintaria americana não evoluiu em linha reta. Ela cresceu através de desafios climáticos, ondas migratórias, inovação industrial e ciclos de regulamentação que forçaram os construtores a melhorar estrutura, segurança e desempenho térmico. Essa linha do tempo ajuda a contextualizar por que a construção residencial em wood frame nos Estados Unidos é tão sistematizada e eficiente hoje.\n\n${timelineSection}\n\n## Por Que Esse Contexto Histórico Ainda Importa nos Canteiros de Obra\n\nEntender essa história muda como interpretamos as melhores práticas atuais. O balloon framing explica os retrofits de bloqueio contra incêndio em casas antigas; o platform framing explica por que as equipes de hoje sequenciam pisos e paredes de forma diferente; e a pressão regulatória pós-1980 explica por que isolamento, vedação de ar e controle de umidade são tratados como prioridades estruturais e não como melhorias opcionais.\n\nQuando eu comparo os métodos americanos com a tradição de alvenaria que conhecemos no Brasil, vejo que a carpintaria americana evoluiu em torno de logística modular e fluxos de trabalho repetíveis. É por isso que os padrões de madeira dimensional, cronogramas de fixação e pontos de inspeção são tão explícitos. O objetivo não é apenas velocidade, mas desempenho previsível sob cargas climáticas, variações sazonais de temperatura e ciclos de manutenção de longo prazo.\n\n## Legado Técnico Que Conecta Passado e Presente\n\nA mudança histórica da carpintaria artesanal para a carpintaria regulamentada por código criou uma cultura onde os carpinteiros precisam entender caminhos de carga, movimento de umidade e métricas energéticas. Hoje, conceitos como continuidade de valor-R, hermeticidade, hierarquia de impermeabilização e coordenação mecânica são descendentes diretos de lições aprendidas ao longo de séculos de erros e inovações no campo.\n\nPara qualquer pessoa que estude carpintaria americana seriamente, essa perspectiva é essencial: cada montagem de parede moderna carrega DNA histórico. Os padrões de estruturação, normas de isolamento, regras de fixação e checklists de detalhamento que usamos agora foram construídos camada por camada através de décadas de experimentação, falhas e refinamentos. Conhecer essa linhagem nos ajuda a projetar melhor, construir com mais segurança e manter estruturas de madeira com muito mais confiança.`;
 }
 
 function getCurrentDateFormatted(): string {
@@ -952,66 +952,66 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Use as mesmas regras de "filtro anti-IA" dos outros temas
 
 ### IDIOMA:
-- O artigo DEVE ser escrito em INGLÊS AMERICANO NATURAL (American English)
-- Mesmo sendo o Keven (brasileiro), o blog é em inglês para o público americano
-- O Keven pode mencionar sua perspectiva brasileira como ponto de comparação interessante
-- Termos técnicos em inglês: wood framing, timber framing, radiant floor heating, R-value, etc.
+- O artigo DEVE ser escrito INTEIRAMENTE em PORTUGUÊS BRASILEIRO (pt-BR), assim como TODOS os outros temas do blog
+- O sistema de tradução automática do site cuida de traduzir para inglês, espanhol, etc.
+- Termos técnicos americanos podem ser mantidos entre parênteses para referência: "estrutura em madeira (wood framing)", "isolamento térmico (thermal insulation)", "piso radiante (radiant floor heating)", "valor-R (R-value)"
+- O Keven escreve em português como brasileiro que é, compartilhando sua fascinação pela construção americana
 
 ### HISTÓRIAS PESSOAIS OBRIGATÓRIAS:
-- HISTÓRIA 1: Um momento específico em que o Keven descobriu algo surpreendente sobre construção americana (ex: "I was in my architecture class when the professor showed us how American homes are built entirely from wood — my jaw literally dropped")
-- HISTÓRIA 2: Uma comparação pessoal entre o que ele conhece do Brasil e o que aprendeu sobre os EUA (ex: "Growing up in Brazil, I always thought concrete and brick were the only way to build a house. Then I learned about wood framing and everything changed")
+- HISTÓRIA 1: Um momento específico em que o Keven descobriu algo surpreendente sobre construção americana (ex: "Eu estava na aula de arquitetura quando o professor mostrou como as casas americanas são construídas inteiramente com madeira — meu queixo caiu literalmente")
+- HISTÓRIA 2: Uma comparação pessoal entre o que ele conhece do Brasil e o que aprendeu sobre os EUA (ex: "Crescendo no Brasil, eu sempre achei que concreto e tijolo eram a única forma de construir uma casa. Então eu aprendi sobre wood framing e tudo mudou")
 
 ⚠️ REGRAS CRÍTICAS:
 - MÍNIMO ABSOLUTO: 3.000 palavras (gere pelo menos 3.000 palavras para garantir que o artigo não fique curto)
 - O conteúdo deve ser profundo, técnico e educativo sobre carpintaria aplicada à construção de casas nos EUA
-- Otimizado para SEO com keywords relevantes em inglês
+- Otimizado para SEO com keywords relevantes em PORTUGUÊS (com termos técnicos americanos entre parênteses)
 - Valores em Dólares (USD/$) — preços do mercado americano (Home Depot, Lowe's, lumber yards)
 - Escreva EXTENSAMENTE sobre cada seção — não resuma, desenvolva cada ponto com detalhes técnicos, exemplos práticos e histórias pessoais
 
 ## TEMAS QUE O ARTIGO DEVE EXPLORAR (conforme subtema selecionado):
-- History of carpentry in the United States
-- How wood-frame houses became the American construction standard
-- Evolution of carpentry techniques over the decades
-- Traditional carpentry techniques used in American homes
-- Structural systems: wood framing vs timber framing
-- Types of wood used in American residential construction (Douglas fir, Southern pine, Cedar, Redwood, etc.)
-- Modern carpentry and wood construction techniques
-- Thermal insulation systems in wood houses (fiberglass batts, spray foam, rigid foam, cellulose)
-- Heating systems in American homes (forced air, radiant floor heating, baseboard heaters)
-- Radiant heated floors in wood-frame houses — installation, pros/cons, costs
-- Energy efficiency in wood constructions (R-value, air sealing, vapor barriers)
-- Acoustic insulation in wood-frame homes
-- Maintenance and care of structural wood
-- Treatment against moisture, fungi, and pests (pressure-treated lumber, borate treatments)
-- Practical tips for wood structure conservation
-- Differences between traditional and modern carpentry techniques
+- História da carpintaria nos Estados Unidos
+- Como as casas de estrutura em madeira (wood frame) se tornaram o padrão construtivo americano
+- Evolução das técnicas de carpintaria ao longo das décadas
+- Técnicas tradicionais de carpintaria usadas nas casas americanas
+- Sistemas estruturais: wood framing vs timber framing
+- Tipos de madeira usados na construção residencial americana (Douglas fir, Southern pine, Cedar, Redwood, etc.)
+- Técnicas modernas de carpintaria e construção em madeira
+- Sistemas de isolamento térmico em casas de madeira (fiberglass batts, spray foam, rigid foam, celulose)
+- Sistemas de aquecimento em casas americanas (forced air, piso radiante, baseboard heaters)
+- Pisos aquecidos radiantes (radiant heated floors) em casas de wood frame — instalação, prós/contras, custos
+- Eficiência energética em construções de madeira (R-value, vedação de ar, barreiras de vapor)
+- Isolamento acústico em casas de wood frame
+- Manutenção e cuidados com madeira estrutural
+- Tratamento contra umidade, fungos e pragas (madeira tratada sob pressão, tratamentos com borato)
+- Dicas práticas para conservação de estruturas de madeira
+- Diferenças entre técnicas tradicionais e modernas de carpintaria
 
 ## CONTEÚDO OBRIGATÓRIO:
-- Seção obrigatória com o título **"## Historical Timeline of American Carpentry"** cobrindo do período colonial até hoje com pelo menos 8 marcos históricos e contexto técnico
+- Seção obrigatória com o título **"## Linha do Tempo Histórica da Carpintaria Americana"** cobrindo do período colonial até hoje com pelo menos 8 marcos históricos e contexto técnico
 - Tabela comparativa com 7+ linhas comparando técnicas, materiais ou sistemas
 - 5-8 links externos para sites de autoridade americanos (This Old House, Fine Homebuilding, Bob Vila, Family Handyman, etc.)
-- FAQ com 8-12 perguntas em inglês
+- FAQ com 8-12 perguntas em PORTUGUÊS (seção "## Perguntas Frequentes")
 - Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
 
 ## REGRAS DE TÍTULO E RESUMO (CARPINTARIA):
-⚠️ O título DEVE ser PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
-❌ PROIBIDO títulos formais como: "Complete Guide to Wood Framing", "Everything About American Carpentry"
+⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
+❌ PROIBIDO títulos formais como: "Guia Completo de Wood Framing", "Tudo Sobre Carpintaria Americana"
 ✅ EXEMPLOS CORRETOS de títulos:
-  - "I Studied American Wood Framing and It Changed How I See Construction Forever"
-  - "Why American Homes Are Built with Wood — A Brazilian Architecture Student's Perspective"
-  - "The Day I Learned About Radiant Floor Heating and My Mind Was Blown"
-  - "From Concrete to Wood: What I Discovered About American Home Building"
-  - "I Couldn't Believe How Americans Insulate Their Wood-Frame Homes"
+  - "Eu Estudei o Wood Framing Americano e Isso Mudou Minha Visão da Construção Pra Sempre"
+  - "Por Que as Casas Americanas São Feitas de Madeira — A Perspectiva de um Estudante Brasileiro"
+  - "O Dia Que Eu Aprendi Sobre Piso Radiante e Minha Cabeça Explodiu"
+  - "Do Concreto à Madeira: O Que Eu Descobri Sobre a Construção Americana"
+  - "Eu Não Acreditei Quando Vi Como os Americanos Isolam Suas Casas de Madeira"
 
-⚠️ O resumo (excerpt) DEVE ser pessoal e conversacional:
-✅ EXEMPLOS: "As a Brazilian architecture student, I was shocked to learn that most American homes are built with wood. Let me share what I discovered."
+⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal e conversacional:
+✅ EXEMPLOS: "Como estudante de arquitetura brasileiro, eu fiquei chocado ao descobrir que a maioria das casas americanas são construídas com madeira. Deixa eu te contar o que eu descobri."
 
 ## ASSINATURA FINAL (OBRIGATÓRIO):
 ---
-**Written with passion by:**
+**Escrito com paixão por:**
 **Keven Costa Vieira**
-**Architecture Student – PUC Minas Gerais, Brazil**
-📅 Published on: [date]
+**Estudante de Arquitetura – PUC Minas Gerais**
+📅 Publicado em: [date]
 ---
 
 - mainSubject DEVE ser em INGLÊS com pelo menos 8 palavras descrevendo o foco do artigo (ex: "American wood frame house construction with exposed lumber framing and structural connections")
