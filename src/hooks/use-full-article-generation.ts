@@ -264,12 +264,20 @@ export function useFullArticleGeneration() {
             .single();
 
           if (profile) {
-            // Check if article with this slug already exists
-            const { data: existingDraft } = await supabase
+            // Check if article with this slug already exists AS DRAFT ONLY
+            // NEVER overwrite published articles - create a new one with modified slug instead
+            const { data: existingArticle } = await supabase
               .from('content_articles')
-              .select('id')
+              .select('id, status')
               .eq('slug', generatedArticle.slug)
               .maybeSingle();
+
+            // If slug already exists and is published, append timestamp to make unique slug
+            let finalSlug = generatedArticle.slug;
+            if (existingArticle && existingArticle.status === 'published') {
+              finalSlug = `${generatedArticle.slug}-${Date.now()}`;
+              console.log(`[ArticleGen] Slug "${generatedArticle.slug}" already published. Using new slug: "${finalSlug}"`);
+            }
 
             const articleRecord = {
               author_id: profile.id,
@@ -278,7 +286,7 @@ export function useFullArticleGeneration() {
               excerpt: generatedArticle.excerpt,
               category: generatedArticle.category,
               category_slug: generatedArticle.categorySlug,
-              slug: generatedArticle.slug,
+              slug: finalSlug,
               cover_image: null,
               gallery_images: [],
               gallery_prompts: generatedArticle.galleryPrompts || [],
@@ -293,11 +301,12 @@ export function useFullArticleGeneration() {
 
             let savedArticle;
 
-            if (existingDraft) {
+            // Only reuse existing article if it's a draft (not published)
+            if (existingArticle && existingArticle.status === 'draft') {
               const result = await supabase
                 .from('content_articles')
                 .update(articleRecord)
-                .eq('id', existingDraft.id)
+                .eq('id', existingArticle.id)
                 .select()
                 .single();
               savedArticle = result.data;
