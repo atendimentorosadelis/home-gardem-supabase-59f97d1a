@@ -1,4 +1,4 @@
-import { Check, Loader2, X, Clock, Ban, Sparkles, Zap } from 'lucide-react';
+import { Check, Loader2, X, Clock, Ban, Sparkles, Zap, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ interface GenerationProgressHeroProps {
   startTime?: number;
   isGenerating?: boolean;
   onCancel?: () => void;
+  onReset?: () => void;
   topic?: string;
 }
 
