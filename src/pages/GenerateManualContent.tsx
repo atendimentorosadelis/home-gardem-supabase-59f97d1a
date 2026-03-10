@@ -571,6 +571,7 @@ function GenerateManualContentPage() {
               startTime={startTime ?? undefined}
               isGenerating={isGenerating}
               onCancel={cancelGeneration}
+              onReset={resetGeneration}
               topic={currentTopic}
             />
           </div>
