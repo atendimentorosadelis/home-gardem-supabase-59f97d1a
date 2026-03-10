@@ -411,8 +411,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'A demanda pós-guerra impulsionou projetos habitacionais em massa onde a carpintaria se coordenava com sistemas elétricos, hidráulicos e de climatização (HVAC); montagens padronizadas de 2x4 e 2x6, revestimento de compensado e práticas de isolamento se tornaram rotina nos fluxos de trabalho da construção residencial americana.'
     },
     {
-      period: '1980-2005 | Energy Codes and Performance Building',
-      detail: 'Rising energy costs and stricter regulations drove better air sealing, vapor control, and insulation detailing; carpenters increasingly collaborated with inspectors and designers to meet thermal targets, moisture management standards, and occupant comfort requirements.'
+      period: '1980-2005 | Códigos Energéticos e Construção de Performance',
+      detail: 'O aumento dos custos de energia e regulamentações mais rigorosas impulsionaram melhor vedação de ar, controle de vapor e detalhamento de isolamento; os carpinteiros colaboraram cada vez mais com inspetores e projetistas para atender metas térmicas, padrões de gerenciamento de umidade e requisitos de conforto dos ocupantes.'
     },
     {
       period: '2005-Today | High-Performance and Hybrid Wood Construction',
