@@ -239,20 +239,17 @@ async function validateExternalLinks(
       validLinks.map(l => { try { return new URL(l.url).hostname.replace('www.', ''); } catch { return l.url; } })
     );
     
-    const fallbacks = getRandomFallbackLinks(10); // Get more than needed, will filter
+    const fallbacks = getRandomFallbackLinks(10);
     for (const fallback of fallbacks) {
       if (validLinks.length >= minRequired) break;
       
       try {
-        const domain = new URL(fallback.url).hostname.replace('www.', '');
+        const domain = getDomainFromUrl(fallback.url);
         if (!existingDomains.has(domain)) {
-          // Validate fallback too
-          const isValid = await validateUrl(fallback.url);
-          if (isValid) {
-            validLinks.push(fallback);
-            existingDomains.add(domain);
-            console.log(`Added fallback link: ${fallback.text}`);
-          }
+          // Fallback links from our pool are pre-validated — skip HEAD request
+          validLinks.push(fallback);
+          existingDomains.add(domain);
+          console.log(`Added fallback link: ${fallback.text}`);
         }
       } catch {
         continue;
