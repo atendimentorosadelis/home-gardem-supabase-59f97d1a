@@ -298,6 +298,23 @@ function validateGalleryPrompts(
 }
 
 function generateFallbackPrompts(mainSubject: string, visualContext: string): string[] {
+  const carpentryKeywords = ['wood frame', 'wood framing', 'timber', 'carpentry', 'lumber', 'insulation', 'radiant floor', 'heating', 'construction'];
+  const isCarpentry = carpentryKeywords.some(k => mainSubject.toLowerCase().includes(k));
+
+  if (isCarpentry) {
+    const carpentryAngles = [
+      { angle: 'wide-angle establishing shot of entire structure', composition: 'showing full wood frame skeleton, cinematic 16:9 framing' },
+      { angle: 'medium shot from side angle', composition: 'showing wall stud framing details, plywood sheathing, and structural connections' },
+      { angle: 'close-up macro shot', composition: 'focusing on wood joinery, nails, metal brackets, and lumber grain texture' },
+      { angle: 'interior perspective shot', composition: 'showing wall cavity with insulation, electrical rough-in, and framing members' },
+      { angle: 'low angle dramatic shot from ground level', composition: 'looking up at roof trusses and floor joists system' },
+      { angle: 'exterior finished view', composition: 'showing completed American wood-sided home with landscaping and driveway' }
+    ];
+    return carpentryAngles.map(({ angle, composition }) => 
+      `${mainSubject} in ${visualContext}, ${angle}, ${composition}, American residential construction, natural daylight, ultra realistic, professional construction photography, sharp focus, no text, no words, no watermarks, no logos`
+    );
+  }
+
   const cameraAngles = [
     { angle: 'wide-angle front view establishing shot', composition: 'hero composition showing entire space, 16:9 cinematic framing' },
     { angle: 'medium shot from left side', composition: 'showing furniture arrangement and wall details' },
