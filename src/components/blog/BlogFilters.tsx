@@ -51,7 +51,7 @@ export function BlogFilters({
     'carpintaria': "Carpintaria",
   };
 
-  const parentKeys = ['all', 'design-interno', 'jardim', 'arquitetura'];
+  const parentKeys = ['all', 'design-interno', 'jardim', 'arquitetura', 'carpintaria'];
 
   return (
     <div className="space-y-8">
