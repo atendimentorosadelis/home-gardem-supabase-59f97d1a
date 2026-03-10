@@ -276,13 +276,19 @@ const CopyForFacebookCard = ({
         img.onerror = () => reject(new Error('Image load failed'));
         img.src = imageUrl;
       });
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      if (!w || !h) throw new Error('Invalid image dimensions');
       const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
+      canvas.width = w;
+      canvas.height = h;
       const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0);
+      // Fill white background first (avoids any transparent/brown artifacts)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
       const pngBlob = await new Promise<Blob>((resolve, reject) =>
-        canvas.toBlob((b) => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
+        canvas.toBlob((b) => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png', 1.0)
       );
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': pngBlob })
