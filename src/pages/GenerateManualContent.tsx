@@ -331,6 +331,13 @@ function GenerateManualContentPage() {
     return `Dicas de arquitetura em estilo ${labels.join(', ').toLowerCase()}`;
   };
 
+  const buildCarpintariaTopic = () => {
+    const selected = CARPINTARIA_SUBNICHES.find(s => s.id === carpintariaSelected[0]);
+    return selected
+      ? `Carpintaria americana: ${selected.label.toLowerCase()}`
+      : 'Carpintaria americana: construção em madeira nos Estados Unidos';
+  };
+
   const handleGenerationComplete = async (result: GeneratedArticle | null, topic: string) => {
     if (result) {
       if (requireApproval) {
