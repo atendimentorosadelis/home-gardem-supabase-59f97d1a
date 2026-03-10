@@ -445,11 +445,11 @@ const SocialMediaPostCards = ({
   };
 
   const TranslateButtons = ({ 
-    originalText, currentLang, setter, langSetter, loadingSetter, isLoading, prefix 
+    originalText, currentLang, setter, langSetter, loadingSetter, isLoading
   }: { 
     originalText: string; currentLang: string; setter: (t: string) => void; 
     langSetter: (l: string) => void; loadingSetter: (v: boolean) => void; 
-    isLoading: boolean; prefix: string;
+    isLoading: boolean;
   }) => (
     <div className="flex items-center gap-1.5">
       <span className="text-xs text-muted-foreground flex items-center gap-1">
