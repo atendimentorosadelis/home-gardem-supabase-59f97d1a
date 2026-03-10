@@ -412,9 +412,10 @@ serve(async (req) => {
         // Include BOTH the style subject AND the style details for consistency
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        // Ensure gallery images stay relevant to carpentry/construction
+        // Gallery images: use the article-specific customPrompt (galleryPrompt) as primary driver
+        // The customPrompt already contains detailed, article-specific image descriptions
         const carpentryGallery = translatePromptTerms(galleryDetail);
-        prompt = `${subject}, ${carpentryDetails}, ${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+        prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
