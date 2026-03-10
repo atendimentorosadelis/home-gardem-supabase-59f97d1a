@@ -383,6 +383,16 @@ function GenerateManualContentPage() {
     await handleGenerationComplete(result, topic);
   };
 
+  const handleGenerateCarpintaria = async () => {
+    setShowPreview(false);
+    setShowImageApproval(false);
+    setArticleSaved(false);
+    const topic = buildCarpintariaTopic();
+    setCurrentTopic(topic);
+    const result = await generateArticle(topic);
+    await handleGenerationComplete(result, topic);
+  };
+
   const handleGenerateCommemorativeDate = async () => {
     const date = COMMEMORATIVE_DATES.find(d => d.id === commemorativeSelected);
     if (!date) return;
