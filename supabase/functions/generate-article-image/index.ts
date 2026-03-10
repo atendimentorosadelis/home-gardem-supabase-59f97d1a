@@ -111,6 +111,42 @@ const architectureStylePrompts: Record<string, { subject: string; details: strin
   },
 };
 
+// Map carpentry topic slugs to specific image prompts
+const carpentryStylePrompts: Record<string, { subject: string; details: string }> = {
+  'carpintaria-historia': {
+    subject: 'historical American wood frame house construction, vintage carpentry, early American building techniques',
+    details: 'old wooden barn raising, hand-hewn timber beams, historical homestead construction, rustic pioneer craftsmanship, sepia-toned woodworking',
+  },
+  'carpintaria-wood-framing': {
+    subject: 'American wood frame house under construction, 2x4 lumber stud wall framing, residential building site',
+    details: 'workers assembling wood stud walls, plywood sheathing, floor joists, roof trusses, suburban American neighborhood construction site',
+  },
+  'carpintaria-tipos-madeira': {
+    subject: 'variety of dimensional lumber stacked at lumberyard, Douglas fir, Southern pine, Cedar planks',
+    details: 'cross-section of different wood species, grain patterns, pressure-treated green lumber, kiln-dried boards, Home Depot lumber aisle',
+  },
+  'carpintaria-isolamento': {
+    subject: 'fiberglass batt insulation installed between wood studs in American home wall cavity',
+    details: 'pink fiberglass insulation, spray foam application, rigid foam board, vapor barrier installation, R-value thermal protection',
+  },
+  'carpintaria-aquecimento': {
+    subject: 'radiant heated floor PEX tubing installation on wood subfloor in American home',
+    details: 'hydronic radiant floor heating system, PEX tubes in concrete slab, forced air HVAC ductwork, thermostat control panel, cozy warm living space',
+  },
+  'carpintaria-manutencao': {
+    subject: 'wood deck staining and sealing maintenance, timber preservation treatment on American home',
+    details: 'exterior wood siding repair, pressure washing deck, applying wood sealant, replacing rotted boards, pest damage inspection',
+  },
+  'carpintaria-eficiencia': {
+    subject: 'energy-efficient American wood frame house with insulation, air sealing, and weatherization',
+    details: 'blower door test, thermal imaging camera showing heat loss, double-pane windows, house wrap installation, energy star certified home',
+  },
+  'carpintaria-tecnicas': {
+    subject: 'comparison of traditional hand-cut timber joinery and modern nail gun wood framing techniques',
+    details: 'mortise and tenon joint alongside modern pneumatic nail gun, hand tools and power tools, old barn frame next to modern stud wall',
+  },
+};
+
 function extractSubjectFromTitle(title: string): string {
   const lowerTitle = title.toLowerCase();
   const sortedEntries = Object.entries(subjectTranslations).sort((a, b) => b[0].length - a[0].length);
