@@ -60,6 +60,19 @@ const subjectTranslations: Record<string, string> = {
   'grafiato': 'grafiato textured wall finish, decorative plaster texture, exterior wall coating',
   'verniz': 'wood varnish application, glossy wood finish, woodworking protection coating',
   'tinta': 'interior wall paint colors, paint swatches, home painting project',
+  // Carpintaria Americana
+  'wood framing': 'American wood frame house under construction, lumber skeletal structure, residential framing',
+  'timber framing': 'traditional timber frame construction, post-and-beam joinery, heavy timber structure',
+  'carpintaria': 'American wood frame residential construction, lumber framing, house building site',
+  'carpentry': 'American residential carpentry, wood frame house construction',
+  'radiant floor': 'radiant heated floor installation in wood frame house, PEX tubing, hydronic heating system',
+  'piso aquecido': 'radiant heated floor installation in wood frame house, PEX tubing, hydronic heating system',
+  'insulation': 'fiberglass batt insulation installed between wood studs, thermal barrier, vapor barrier',
+  'isolamento': 'fiberglass batt insulation installed between wood studs, thermal barrier in wood frame wall',
+  'lumber': 'stacked dimensional lumber at construction site, 2x4 and 2x6 boards, pressure-treated wood',
+  'madeira estrutural': 'structural lumber framing, dimensional wood beams, American residential construction',
+  'wood maintenance': 'wood deck staining and sealing, timber preservation treatment, exterior wood care',
+  'wood preservation': 'pressure-treated lumber, borate wood treatment, anti-fungal wood protection',
 };
 
 // Map architecture category slugs to detailed style-specific prompts
