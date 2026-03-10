@@ -60,6 +60,19 @@ const subjectTranslations: Record<string, string> = {
   'grafiato': 'grafiato textured wall finish, decorative plaster texture, exterior wall coating',
   'verniz': 'wood varnish application, glossy wood finish, woodworking protection coating',
   'tinta': 'interior wall paint colors, paint swatches, home painting project',
+  // Carpintaria Americana
+  'wood framing': 'American wood frame house under construction, lumber skeletal structure, residential framing',
+  'timber framing': 'traditional timber frame construction, post-and-beam joinery, heavy timber structure',
+  'carpintaria': 'American wood frame residential construction, lumber framing, house building site',
+  'carpentry': 'American residential carpentry, wood frame house construction',
+  'radiant floor': 'radiant heated floor installation in wood frame house, PEX tubing, hydronic heating system',
+  'piso aquecido': 'radiant heated floor installation in wood frame house, PEX tubing, hydronic heating system',
+  'insulation': 'fiberglass batt insulation installed between wood studs, thermal barrier, vapor barrier',
+  'isolamento': 'fiberglass batt insulation installed between wood studs, thermal barrier in wood frame wall',
+  'lumber': 'stacked dimensional lumber at construction site, 2x4 and 2x6 boards, pressure-treated wood',
+  'madeira estrutural': 'structural lumber framing, dimensional wood beams, American residential construction',
+  'wood maintenance': 'wood deck staining and sealing, timber preservation treatment, exterior wood care',
+  'wood preservation': 'pressure-treated lumber, borate wood treatment, anti-fungal wood protection',
 };
 
 // Map architecture category slugs to detailed style-specific prompts
@@ -95,6 +108,42 @@ const architectureStylePrompts: Record<string, { subject: string; details: strin
   'arquitetura': {
     subject: 'stunning architecture exterior facade, building front view, structural design, outdoor perspective',
     details: 'impressive architectural structure, professional exterior photography, clear sky, landscaped surroundings',
+  },
+};
+
+// Map carpentry topic slugs to specific image prompts
+const carpentryStylePrompts: Record<string, { subject: string; details: string }> = {
+  'carpintaria-historia': {
+    subject: 'historical American wood frame house construction, vintage carpentry, early American building techniques',
+    details: 'old wooden barn raising, hand-hewn timber beams, historical homestead construction, rustic pioneer craftsmanship, sepia-toned woodworking',
+  },
+  'carpintaria-wood-framing': {
+    subject: 'American wood frame house under construction, 2x4 lumber stud wall framing, residential building site',
+    details: 'workers assembling wood stud walls, plywood sheathing, floor joists, roof trusses, suburban American neighborhood construction site',
+  },
+  'carpintaria-tipos-madeira': {
+    subject: 'variety of dimensional lumber stacked at lumberyard, Douglas fir, Southern pine, Cedar planks',
+    details: 'cross-section of different wood species, grain patterns, pressure-treated green lumber, kiln-dried boards, Home Depot lumber aisle',
+  },
+  'carpintaria-isolamento': {
+    subject: 'fiberglass batt insulation installed between wood studs in American home wall cavity',
+    details: 'pink fiberglass insulation, spray foam application, rigid foam board, vapor barrier installation, R-value thermal protection',
+  },
+  'carpintaria-aquecimento': {
+    subject: 'radiant heated floor PEX tubing installation on wood subfloor in American home',
+    details: 'hydronic radiant floor heating system, PEX tubes in concrete slab, forced air HVAC ductwork, thermostat control panel, cozy warm living space',
+  },
+  'carpintaria-manutencao': {
+    subject: 'wood deck staining and sealing maintenance, timber preservation treatment on American home',
+    details: 'exterior wood siding repair, pressure washing deck, applying wood sealant, replacing rotted boards, pest damage inspection',
+  },
+  'carpintaria-eficiencia': {
+    subject: 'energy-efficient American wood frame house with insulation, air sealing, and weatherization',
+    details: 'blower door test, thermal imaging camera showing heat loss, double-pane windows, house wrap installation, energy star certified home',
+  },
+  'carpintaria-tecnicas': {
+    subject: 'comparison of traditional hand-cut timber joinery and modern nail gun wood framing techniques',
+    details: 'mortise and tenon joint alongside modern pneumatic nail gun, hand tools and power tools, old barn frame next to modern stud wall',
   },
 };
 
@@ -221,11 +270,45 @@ serve(async (req) => {
     }
     
     const isArchitectureSubject = !!matchedArchStyle;
+
+    // Detect carpentry by category or title
+    let matchedCarpentryStyle: string | null = null;
+    const isCarpentryCategory = categoryLower.includes('carpintaria') || categoryNormalized.includes('carpintaria');
+    if (isCarpentryCategory) {
+      for (const key of Object.keys(carpentryStylePrompts)) {
+        const keyNorm = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (categoryLower.includes(keyNorm) || categoryNormalized.includes(key) || categoryNormalized === key) {
+          matchedCarpentryStyle = key;
+          break;
+        }
+      }
+    }
+    // Check title for carpentry keywords
+    if (!matchedCarpentryStyle) {
+      const lowerTitle = (title || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const carpentryTitleKeywords = ['wood frame', 'wood framing', 'timber frame', 'timber framing', 'carpentry', 'carpintaria', 'lumber', 'radiant floor', 'radiant heat', 'piso aquecido', 'insulation', 'isolamento'];
+      if (carpentryTitleKeywords.some(k => lowerTitle.includes(k))) {
+        // Try to match a specific style from title
+        for (const key of Object.keys(carpentryStylePrompts)) {
+          const keyNorm = key.replace('carpintaria-', '').replace(/-/g, ' ');
+          if (lowerTitle.includes(keyNorm)) {
+            matchedCarpentryStyle = key;
+            break;
+          }
+        }
+        // Default to wood-framing if carpentry detected but no specific match
+        if (!matchedCarpentryStyle) matchedCarpentryStyle = 'carpintaria-wood-framing';
+      }
+    }
+
+    const isCarpentrySubject = !!matchedCarpentryStyle;
     
-    // For architecture: use the STYLE-SPECIFIC subject instead of generic extraction
+    // For architecture or carpentry: use STYLE-SPECIFIC subject
     let subject: string;
     if (isArchitectureSubject && matchedArchStyle) {
       subject = architectureStylePrompts[matchedArchStyle].subject;
+    } else if (isCarpentrySubject && matchedCarpentryStyle) {
+      subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
     } else {
       const translatedMainSubject = mainSubject ? extractSubjectFromTitle(mainSubject) : null;
       const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== mainSubject
@@ -254,11 +337,13 @@ serve(async (req) => {
     }
 
     const archDetails = matchedArchStyle ? architectureStylePrompts[matchedArchStyle].details : '';
+    const carpentryDetails = matchedCarpentryStyle ? carpentryStylePrompts[matchedCarpentryStyle].details : '';
 
-    console.log(`[ImageGen] Category: "${effectiveCategory}", MatchedStyle: "${matchedArchStyle}", Subject: "${subject.substring(0, 80)}...", isArchitecture: ${isArchitectureSubject}`);
+    console.log(`[ImageGen] Category: "${effectiveCategory}", ArchStyle: "${matchedArchStyle}", CarpentryStyle: "${matchedCarpentryStyle}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
+    const carpentrySetting = 'American residential construction site, suburban neighborhood, natural daylight, professional construction photography';
     
     const resolvedVisualContext = visualContext || articleContext?.visual_context || '';
 
@@ -269,6 +354,8 @@ serve(async (req) => {
       } else {
         setting = exteriorSetting;
       }
+    } else if (isCarpentrySubject) {
+      setting = resolvedVisualContext || carpentrySetting;
     } else {
       setting = resolvedVisualContext || interiorSetting;
     }
@@ -277,11 +364,15 @@ serve(async (req) => {
     let prompt: string;
     const photoStyle = isArchitectureSubject 
       ? 'Professional exterior architectural photography, building facade, outdoor perspective' 
-      : 'Professional interior photography';
+      : isCarpentrySubject
+        ? 'Professional construction photography, American residential building, realistic detailed'
+        : 'Professional interior photography';
     
     if (type === 'cover') {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
+      } else if (isCarpentrySubject) {
+        prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
@@ -306,6 +397,10 @@ serve(async (req) => {
           .replace(/\bkitchen\b/gi, 'entrance');
         // Include BOTH the style subject AND the style details for consistency
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+      } else if (isCarpentrySubject) {
+        // Ensure gallery images stay relevant to carpentry/construction
+        const carpentryGallery = translatePromptTerms(galleryDetail);
+        prompt = `${subject}, ${carpentryDetails}, ${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
