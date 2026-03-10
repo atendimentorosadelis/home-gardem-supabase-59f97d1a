@@ -153,7 +153,7 @@ function GenerateManualContentPage() {
   const [designSelected, setDesignSelected] = useState<string[]>([]);
   const [jardimSelected, setJardimSelected] = useState<string[]>([]);
   const [arquiteturaSelected, setArquiteturaSelected] = useState<string[]>([]);
-  const [commemorativeSelected, setCommemorativeSelected] = useState<string | null>(null);
+  const [carpintariaSelected, setCarpintariaSelected] = useState<string[]>([]);
   const [articleSaved, setArticleSaved] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
 
