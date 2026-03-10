@@ -113,6 +113,12 @@ export function GenerationProgressHero({ steps, startTime, isGenerating, onCance
               Cancelar
             </Button>
           )}
+          {!isGenerating && hasStarted && onReset && (
+            <Button variant="outline" size="sm" onClick={onReset} className="gap-1.5">
+              <RotateCcw className="h-4 w-4" />
+              {hasError ? 'Tentar novamente' : 'Nova geração'}
+            </Button>
+          )}
         </div>
       </div>
 
