@@ -500,6 +500,7 @@ serve(async (req) => {
     }
 
     console.log(`Generating full article for topic: ${topic}`);
+    const requestStartedAt = Date.now();
 
     const currentDate = getCurrentDateFormatted();
     
