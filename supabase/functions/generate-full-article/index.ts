@@ -670,6 +670,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
     const architectureSlugs = ['colonial', 'industrial', 'moderno', 'neolitico', 'europeu', 'nordico', 'neo-classico'];
     const topicLower = topic.toLowerCase();
     const isArchitectureTopic = architectureSlugs.some(s => topicLower.includes(s)) || /arquitetura/i.test(topicLower);
+    const isCarpentryTopic = /carpintaria/i.test(topicLower) || /wood\s*fram/i.test(topicLower) || /timber\s*fram/i.test(topicLower) || /constru[çc][ãa]o.*madeira/i.test(topicLower);
 
     // forcedPlantSpecies removed (dynamic AI selection now), set null for safety
     const forcedPlantSpecies: { pt: string; en: string } | null = null;
