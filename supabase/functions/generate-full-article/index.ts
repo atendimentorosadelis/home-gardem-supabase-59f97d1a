@@ -994,24 +994,24 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
 
 ## REGRAS DE TÍTULO E RESUMO (CARPINTARIA):
-⚠️ O título DEVE ser PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
-❌ PROIBIDO títulos formais como: "Complete Guide to Wood Framing", "Everything About American Carpentry"
+⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
+❌ PROIBIDO títulos formais como: "Guia Completo de Wood Framing", "Tudo Sobre Carpintaria Americana"
 ✅ EXEMPLOS CORRETOS de títulos:
-  - "I Studied American Wood Framing and It Changed How I See Construction Forever"
-  - "Why American Homes Are Built with Wood — A Brazilian Architecture Student's Perspective"
-  - "The Day I Learned About Radiant Floor Heating and My Mind Was Blown"
-  - "From Concrete to Wood: What I Discovered About American Home Building"
-  - "I Couldn't Believe How Americans Insulate Their Wood-Frame Homes"
+  - "Eu Estudei o Wood Framing Americano e Isso Mudou Minha Visão da Construção Pra Sempre"
+  - "Por Que as Casas Americanas São Feitas de Madeira — A Perspectiva de um Estudante Brasileiro"
+  - "O Dia Que Eu Aprendi Sobre Piso Radiante e Minha Cabeça Explodiu"
+  - "Do Concreto à Madeira: O Que Eu Descobri Sobre a Construção Americana"
+  - "Eu Não Acreditei Quando Vi Como os Americanos Isolam Suas Casas de Madeira"
 
-⚠️ O resumo (excerpt) DEVE ser pessoal e conversacional:
-✅ EXEMPLOS: "As a Brazilian architecture student, I was shocked to learn that most American homes are built with wood. Let me share what I discovered."
+⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal e conversacional:
+✅ EXEMPLOS: "Como estudante de arquitetura brasileiro, eu fiquei chocado ao descobrir que a maioria das casas americanas são construídas com madeira. Deixa eu te contar o que eu descobri."
 
 ## ASSINATURA FINAL (OBRIGATÓRIO):
 ---
-**Written with passion by:**
+**Escrito com paixão por:**
 **Keven Costa Vieira**
-**Architecture Student – PUC Minas Gerais, Brazil**
-📅 Published on: [date]
+**Estudante de Arquitetura – PUC Minas Gerais**
+📅 Publicado em: [date]
 ---
 
 - mainSubject DEVE ser em INGLÊS com pelo menos 8 palavras descrevendo o foco do artigo (ex: "American wood frame house construction with exposed lumber framing and structural connections")
