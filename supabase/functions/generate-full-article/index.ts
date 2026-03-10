@@ -986,6 +986,7 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Differences between traditional and modern carpentry techniques
 
 ## CONTEÚDO OBRIGATÓRIO:
+- Seção obrigatória com o título **"## Historical Timeline of American Carpentry"** cobrindo do período colonial até hoje com pelo menos 8 marcos históricos e contexto técnico
 - Tabela comparativa com 7+ linhas comparando técnicas, materiais ou sistemas
 - 5-8 links externos para sites de autoridade americanos (This Old House, Fine Homebuilding, Bob Vila, Family Handyman, etc.)
 - FAQ com 8-12 perguntas em inglês
