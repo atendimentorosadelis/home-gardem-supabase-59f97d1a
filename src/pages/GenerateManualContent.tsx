@@ -477,7 +477,7 @@ function GenerateManualContentPage() {
     setDesignSelected([]);
     setJardimSelected([]);
     setArquiteturaSelected([]);
-    setCommemorativeSelected(null);
+    setCarpintariaSelected([]);
     setShowPreview(false);
     setShowImageApproval(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
