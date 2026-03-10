@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Download, Share2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Download, Share2, Languages } from 'lucide-react';
 import { ImageQueueStatus } from '@/components/dashboard/ImageQueueStatus';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
