@@ -1123,6 +1123,24 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstruct
     // 1. Multi-word specific themes (must come before generic single-word matches)
     if (/hortas.*ervas.*cuidados|hortas.*cuidados|cuidados.*hortalic|hortas.*ervas|jardim.*hortas/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'hortas-ervas-cuidados');
+    } else if (/carpintaria.*hist[oó]ria|hist[oó]ria.*carpintaria/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-historia');
+    } else if (/carpintaria.*wood\s*fram|wood\s*fram|timber\s*fram/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-wood-framing');
+    } else if (/carpintaria.*tipos.*madeira|tipos.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-tipos-madeira');
+    } else if (/carpintaria.*isolamento|isolamento.*t[eé]rmico.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-isolamento');
+    } else if (/carpintaria.*aquecimento|piso\s*aquecido|radiant.*floor|aquecimento.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-aquecimento');
+    } else if (/carpintaria.*manuten[çc][ãa]o|conserva[çc][ãa]o.*madeira|tratamento.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-manutencao');
+    } else if (/carpintaria.*efici[eê]ncia|efici[eê]ncia.*energ|ac[uú]stica.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-eficiencia');
+    } else if (/carpintaria.*t[eé]cnicas|t[eé]cnicas.*tradicionais.*modernas/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-tecnicas');
+    } else if (/carpintaria/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-tecnicas');
     } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores|nomes.*cuidados/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
     } else if (/sala\s*de\s*jantar/i.test(topicLower)) {
