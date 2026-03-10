@@ -39,6 +39,15 @@ const TOPIC_PROMPTS: Record<string, string> = {
   'europeu': 'Dicas de arquitetura em estilo europeu',
   'nordico': 'Dicas de arquitetura em estilo nórdico',
   'neo-classico': 'Dicas de arquitetura em estilo neo clássico',
+  // Carpintaria & Construção em Madeira
+  'carpintaria-historia': 'Carpintaria americana: história da carpintaria e construção em madeira nos Estados Unidos',
+  'carpintaria-wood-framing': 'Carpintaria americana: técnicas de wood framing e timber framing',
+  'carpintaria-tipos-madeira': 'Carpintaria americana: tipos de madeira usados na construção residencial americana',
+  'carpintaria-isolamento': 'Carpintaria americana: sistemas de isolamento térmico em casas de madeira',
+  'carpintaria-aquecimento': 'Carpintaria americana: sistemas de aquecimento e piso aquecido (radiant heated floors) em casas de madeira',
+  'carpintaria-manutencao': 'Carpintaria americana: manutenção, conservação e tratamento de madeira estrutural',
+  'carpintaria-eficiencia': 'Carpintaria americana: eficiência energética e acústica em construções de madeira',
+  'carpintaria-tecnicas': 'Carpintaria americana: técnicas tradicionais vs modernas de carpintaria residencial',
 };
 
 const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';

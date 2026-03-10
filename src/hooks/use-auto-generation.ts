@@ -45,6 +45,15 @@ export const AVAILABLE_TOPICS = [
   { id: 'europeu', label: 'Europeu', category: 'Arquitetura' },
   { id: 'nordico', label: 'Nórdico', category: 'Arquitetura' },
   { id: 'neo-classico', label: 'Neo Clássico', category: 'Arquitetura' },
+  // Carpintaria & Construção em Madeira
+  { id: 'carpintaria-historia', label: 'História da Carpintaria', category: 'Carpintaria' },
+  { id: 'carpintaria-wood-framing', label: 'Wood Framing & Timber Framing', category: 'Carpintaria' },
+  { id: 'carpintaria-tipos-madeira', label: 'Tipos de Madeira', category: 'Carpintaria' },
+  { id: 'carpintaria-isolamento', label: 'Isolamento Térmico', category: 'Carpintaria' },
+  { id: 'carpintaria-aquecimento', label: 'Aquecimento & Piso Aquecido', category: 'Carpintaria' },
+  { id: 'carpintaria-manutencao', label: 'Manutenção & Conservação', category: 'Carpintaria' },
+  { id: 'carpintaria-eficiencia', label: 'Eficiência Energética & Acústica', category: 'Carpintaria' },
+  { id: 'carpintaria-tecnicas', label: 'Técnicas Tradicionais vs Modernas', category: 'Carpintaria' },
 ];
 
 export function useAutoGenerationConfig() {
