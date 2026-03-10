@@ -403,8 +403,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'As redes ferroviárias transportaram madeira para todo o país e permitiram kits de casas por correio, enquanto as cidades introduziram as primeiras regulamentações contra incêndio e estruturais; os carpinteiros começaram a seguir uma cultura de código emergente, combinando técnicas práticas de campo com requisitos de engenharia gradualmente formalizados.'
     },
     {
-      period: '1910-1945 | Platform Framing and Suburban Preparation',
-      detail: 'Platform framing became dominant because each floor created a safer working deck, reduced fire spread in wall cavities, and simplified sequencing; builders adopted repeatable methods that later supported large-scale suburban development after World War II.'
+      period: '1910-1945 | Platform Framing e Preparação Suburbana',
+      detail: 'O platform framing se tornou dominante porque cada andar criava um deck de trabalho mais seguro, reduzia a propagação de incêndios nas cavidades das paredes e simplificava o sequenciamento; construtores adotaram métodos repetíveis que posteriormente apoiaram o desenvolvimento suburbano em larga escala após a Segunda Guerra Mundial.'
     },
     {
       period: '1945-1980 | Suburban Boom and Mechanical Integration',
