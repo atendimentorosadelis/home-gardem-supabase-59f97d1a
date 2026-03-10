@@ -11,7 +11,7 @@ interface ArticlePreviewFullProps {
   onUpdateExcerpt?: (excerpt: string) => void;
 }
 
-export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
+export function ArticlePreviewFull({ article, onUpdateTitle, onUpdateExcerpt }: ArticlePreviewFullProps) {
   // Parse inline bold **text** to JSX
   const parseInlineBold = (text: string): React.ReactNode => {
     const boldRegex = /\*\*([^*]+)\*\*/g;
