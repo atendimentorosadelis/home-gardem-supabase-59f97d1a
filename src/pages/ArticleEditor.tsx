@@ -697,7 +697,7 @@ const SocialMediaPostCards = ({
             langSetter={setIgTransLang}
             loadingSetter={setTranslatingIg}
             isLoading={translatingIg}
-            prefix="ig"
+            
           />
           {/* Preview text */}
           <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
