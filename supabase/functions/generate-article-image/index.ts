@@ -397,6 +397,10 @@ serve(async (req) => {
           .replace(/\bkitchen\b/gi, 'entrance');
         // Include BOTH the style subject AND the style details for consistency
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+      } else if (isCarpentrySubject) {
+        // Ensure gallery images stay relevant to carpentry/construction
+        const carpentryGallery = translatePromptTerms(galleryDetail);
+        prompt = `${subject}, ${carpentryDetails}, ${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
