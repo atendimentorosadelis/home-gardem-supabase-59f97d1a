@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink, Clock, Tag, Link2, Lightbulb, AlertTriangle, Sparkles, Quote as QuoteIcon, Check, ArrowRight, BookOpen, HelpCircle } from 'lucide-react';
 import type { GeneratedArticle } from '@/hooks/use-full-article-generation';
 import { FAQPreviewAccordion } from './FAQPreviewAccordion';
+import { TitleExcerptSuggestionButton } from './TitleExcerptSuggestions';
 
 interface ArticlePreviewFullProps {
   article: GeneratedArticle;
+  onUpdateTitle?: (title: string) => void;
+  onUpdateExcerpt?: (excerpt: string) => void;
 }
 
-export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
+export function ArticlePreviewFull({ article, onUpdateTitle, onUpdateExcerpt }: ArticlePreviewFullProps) {
   // Parse inline bold **text** to JSX
   const parseInlineBold = (text: string): React.ReactNode => {
     const boldRegex = /\*\*([^*]+)\*\*/g;
@@ -524,7 +527,19 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Título</label>
+              <div className="flex items-center gap-1">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Título</label>
+                {onUpdateTitle && (
+                  <TitleExcerptSuggestionButton
+                    type="title"
+                    currentTitle={article.title}
+                    currentExcerpt={article.excerpt}
+                    body={article.content}
+                    category={article.category}
+                    onSelectTitle={onUpdateTitle}
+                  />
+                )}
+              </div>
               <p className="mt-1 font-medium">{article.title}</p>
             </div>
             <div>
@@ -549,7 +564,19 @@ export function ArticlePreviewFull({ article }: ArticlePreviewFullProps) {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resumo</label>
+            <div className="flex items-center gap-1">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resumo</label>
+              {onUpdateExcerpt && (
+                <TitleExcerptSuggestionButton
+                  type="excerpt"
+                  currentTitle={article.title}
+                  currentExcerpt={article.excerpt}
+                  body={article.content}
+                  category={article.category}
+                  onSelectExcerpt={onUpdateExcerpt}
+                />
+              )}
+            </div>
             <p className="mt-1 text-sm text-muted-foreground">{article.excerpt}</p>
           </div>
 
