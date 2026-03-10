@@ -921,10 +921,11 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - HISTÓRIA 2: Uma comparação pessoal entre o que ele conhece do Brasil e o que aprendeu sobre os EUA (ex: "Growing up in Brazil, I always thought concrete and brick were the only way to build a house. Then I learned about wood framing and everything changed")
 
 ⚠️ REGRAS CRÍTICAS:
-- MÍNIMO ABSOLUTO: 2.200 palavras (ideal 2.500+)
+- MÍNIMO ABSOLUTO: 3.000 palavras (gere pelo menos 3.000 palavras para garantir que o artigo não fique curto)
 - O conteúdo deve ser profundo, técnico e educativo sobre carpintaria aplicada à construção de casas nos EUA
 - Otimizado para SEO com keywords relevantes em inglês
 - Valores em Dólares (USD/$) — preços do mercado americano (Home Depot, Lowe's, lumber yards)
+- Escreva EXTENSAMENTE sobre cada seção — não resuma, desenvolva cada ponto com detalhes técnicos, exemplos práticos e histórias pessoais
 
 ## TEMAS QUE O ARTIGO DEVE EXPLORAR (conforme subtema selecionado):
 - History of carpentry in the United States
@@ -971,15 +972,15 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 📅 Published on: [date]
 ---
 
-- mainSubject DEVE ser em INGLÊS descrevendo o foco do artigo (ex: "American wood frame house construction", "radiant floor heating in wood-frame home")
-- visualContext DEVE ser em INGLÊS (ex: "American residential wood frame house under construction, exposed framing, clear sky")
-- galleryPrompts DEVEM mostrar 6 ângulos DIFERENTES de construção em madeira americana:
-  1. Wide-angle view of wood-frame house structure under construction
-  2. Close-up of wood framing joints, nails, and structural connections
-  3. Interior view showing wall framing, insulation, and electrical rough-in
-  4. Detail of floor joists or roof trusses system
-  5. Exterior view of finished wood-sided American home
-  6. Construction tools and lumber materials on job site
+- mainSubject DEVE ser em INGLÊS com pelo menos 8 palavras descrevendo o foco do artigo (ex: "American wood frame house construction with exposed lumber framing and structural connections")
+- visualContext DEVE ser em INGLÊS com pelo menos 15 palavras (ex: "American residential wood frame house under construction in suburban neighborhood, exposed framing members, clear sky, natural daylight")
+- CADA galleryPrompt DEVE ter NO MÍNIMO 20 palavras em INGLÊS e DEVE começar com o mainSubject. Exemplos:
+  1. "American wood frame house construction wide-angle view showing entire skeletal structure of beams and joists under construction, suburban lot, clear sky, natural daylight"
+  2. "American wood frame house construction close-up of wood framing joints showing nails, metal brackets, and structural connections between wall studs"
+  3. "American wood frame house construction interior view showing wall cavity with fiberglass insulation installed between wood studs and electrical rough-in"
+  4. "American wood frame house construction detail of floor joists and roof trusses system from low angle showing structural engineering"
+  5. "American wood frame house construction exterior view of finished wood-sided home with landscaping, driveway, and front porch"
+  6. "American wood frame house construction site showing stacked dimensional lumber, power tools, and building materials organized on job site"
 - CADA gallery prompt DEVE incluir "wood frame", "carpentry" ou "American construction"
 - category DEVE ser uma das categorias de Carpintaria (ex: "Carpintaria - Wood Framing", "Carpintaria - Isolamento Térmico")
 ` : '';
