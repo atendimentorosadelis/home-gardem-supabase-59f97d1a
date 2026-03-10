@@ -56,6 +56,7 @@ import { GenerationHistory } from '@/components/dashboard/GenerationHistory';
 import { ArticlePreviewFull } from '@/components/dashboard/ArticlePreviewFull';
 import { ImageApprovalPreview } from '@/components/dashboard/ImageApprovalPreview';
 import { CommemorativeDateAlert } from '@/components/dashboard/CommemorativeDateAlert';
+import { TitleExcerptSuggestionButton } from '@/components/dashboard/TitleExcerptSuggestions';
 import { useFullArticleGeneration, GeneratedArticle } from '@/hooks/use-full-article-generation';
 import { useGenerationHistory } from '@/hooks/use-generation-history';
 import { useConfetti } from '@/hooks/use-confetti';
