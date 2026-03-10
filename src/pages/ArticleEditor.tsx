@@ -635,11 +635,24 @@ const SocialMediaPostCards = ({
           <CardDescription>Pronto para copiar e postar</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Translate buttons */}
+          <TranslateButtons
+            originalText={fbPostText}
+            currentLang={fbTransLang}
+            setter={setFbTranslatedText}
+            langSetter={setFbTransLang}
+            loadingSetter={setTranslatingFb}
+            isLoading={translatingFb}
+            prefix="fb"
+          />
           {/* Preview text */}
           <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
-            {fbPostText}
+            {fbTranslatedText || fbPostText}
           </div>
-          <CopyBtn field="fb-text" onClick={() => copyText(fbPostText, 'fb-text')} label="Copiar Texto" />
+          <div className="flex gap-2">
+            <CopyBtn field="fb-text" onClick={() => copyText(fbTranslatedText || fbPostText, 'fb-text')} label="Copiar Texto" />
+            {fbTransLang && <Badge variant="secondary" className="text-xs">{fbTransLang === 'en' ? '🇺🇸 EN' : '🇪🇸 ES'}</Badge>}
+          </div>
 
           {/* Image with copy */}
           <div className="space-y-2">
