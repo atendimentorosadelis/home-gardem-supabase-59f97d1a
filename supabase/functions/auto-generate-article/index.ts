@@ -39,6 +39,7 @@ const TOPIC_PROMPTS: Record<string, string> = {
   'europeu': 'Dicas de arquitetura em estilo europeu',
   'nordico': 'Dicas de arquitetura em estilo nórdico',
   'neo-classico': 'Dicas de arquitetura em estilo neo clássico',
+  'dicas-de-pintura': 'Dicas práticas de pintura para ambientes internos e externos',
   // Carpintaria & Construção em Madeira
   'carpintaria-historia': 'Carpintaria americana: história da carpintaria e construção em madeira nos Estados Unidos',
   'carpintaria-wood-framing': 'Carpintaria americana: técnicas de wood framing e timber framing',
