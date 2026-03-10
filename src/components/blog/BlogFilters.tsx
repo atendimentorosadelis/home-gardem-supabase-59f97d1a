@@ -45,10 +45,10 @@ export function BlogFilters({
 
   const parentLabels: Record<string, string> = {
     'all': t("blog.allCategories", "Todos"),
-    'design-interno': "Design Interno",
-    'jardim': "Jardim",
-    'arquitetura': "Arquitetura",
-    'carpintaria': "Carpintaria",
+    'design-interno': t("blog.parentCategories.interiorDesign", "Design Interno"),
+    'jardim': t("blog.parentCategories.garden", "Jardim"),
+    'arquitetura': t("blog.parentCategories.architecture", "Arquitetura"),
+    'carpintaria': t("blog.parentCategories.carpentry", "Carpintaria"),
   };
 
   const parentKeys = ['all', 'design-interno', 'jardim', 'arquitetura', 'carpintaria'];
