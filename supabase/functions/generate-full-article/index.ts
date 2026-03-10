@@ -395,8 +395,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'Após a independência, guildas regionais de carpintaria e programas de aprendizagem se expandiram, e construtores padronizaram as dimensões de estruturação para casas, tavernas e edifícios cívicos; os carpinteiros equilibravam velocidade com durabilidade enquanto respondiam ao rápido crescimento urbano e às novas demandas de infraestrutura.'
     },
     {
-      period: '1820-1860 | Balloon Framing Revolution',
-      detail: 'Industrial sawmills and affordable machine-cut nails made balloon framing viable, replacing many heavy-timber systems; long studs running from sill to roof accelerated construction, reduced labor costs, and transformed housing production across expanding Midwestern cities.'
+      period: '1820-1860 | A Revolução do Balloon Framing',
+      detail: 'Serrarias industriais e pregos fabricados por máquina tornaram o balloon framing viável, substituindo muitos sistemas de madeira pesada; montantes longos indo da soleira ao telhado aceleraram a construção, reduziram custos de mão de obra e transformaram a produção habitacional nas cidades em expansão do Meio-Oeste.'
     },
     {
       period: '1860-1910 | Railroads, Catalog Homes, and Code Beginnings',
