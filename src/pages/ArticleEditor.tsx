@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Download, Share2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, X, Plus, Eye, Globe, FileText, Upload, ImageIcon, Trash2, RefreshCw, ExternalLink, Link2, MousePointer, TrendingUp, Palette, Home, Flower2, Building2, Leaf, Hammer, Recycle, Sofa, Sparkles, Lightbulb, PartyPopper, Heart, LucideIcon, Pencil, Copy, Check, Facebook, Image, Download, Share2, Languages } from 'lucide-react';
 import { ImageQueueStatus } from '@/components/dashboard/ImageQueueStatus';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -403,6 +403,93 @@ const SocialMediaPostCards = ({
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [copyingImage, setCopyingImage] = useState<string | null>(null);
+  const [fbTranslatedText, setFbTranslatedText] = useState<string>('');
+  const [igTranslatedText, setIgTranslatedText] = useState<string>('');
+  const [fbTransLang, setFbTransLang] = useState<string>('');
+  const [igTransLang, setIgTransLang] = useState<string>('');
+  const [translatingFb, setTranslatingFb] = useState(false);
+  const [translatingIg, setTranslatingIg] = useState(false);
+
+  const translatePostText = async (
+    originalText: string, 
+    targetLang: string, 
+    setter: (text: string) => void, 
+    langSetter: (lang: string) => void,
+    loadingSetter: (v: boolean) => void
+  ) => {
+    if (targetLang === 'pt-BR') {
+      setter('');
+      langSetter('');
+      return;
+    }
+    loadingSetter(true);
+    try {
+      const { data, error: fnError } = await invokeEdgeFunction('translate-content', {
+        title: originalText,
+        excerpt: '',
+        content: '',
+        targetLanguage: targetLang,
+      });
+      if (fnError) throw new Error(fnError.message);
+      if (data?.title) {
+        setter(data.title);
+        langSetter(targetLang);
+        toast.success(`Traduzido para ${targetLang === 'en' ? 'Inglês' : 'Espanhol'}!`);
+      }
+    } catch (err) {
+      console.error('Translation error:', err);
+      toast.error('Erro ao traduzir');
+    } finally {
+      loadingSetter(false);
+    }
+  };
+
+  const TranslateButtons = ({ 
+    originalText, currentLang, setter, langSetter, loadingSetter, isLoading
+  }: { 
+    originalText: string; currentLang: string; setter: (t: string) => void; 
+    langSetter: (l: string) => void; loadingSetter: (v: boolean) => void; 
+    isLoading: boolean;
+  }) => (
+    <div className="flex items-center gap-1.5">
+      <span className="text-xs text-muted-foreground flex items-center gap-1">
+        <Languages className="h-3.5 w-3.5" />
+        Traduzir:
+      </span>
+      {[
+        { code: 'en', label: '🇺🇸 EN', name: 'Inglês' },
+        { code: 'es', label: '🇪🇸 ES', name: 'Espanhol' },
+      ].map(lang => (
+        <Button
+          key={lang.code}
+          size="sm"
+          variant={currentLang === lang.code ? "default" : "outline"}
+          className="h-7 text-xs px-2 gap-1"
+          disabled={isLoading}
+          onClick={() => {
+            if (currentLang === lang.code) {
+              setter('');
+              langSetter('');
+            } else {
+              translatePostText(originalText, lang.code, setter, langSetter, loadingSetter);
+            }
+          }}
+        >
+          {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : lang.label}
+        </Button>
+      ))}
+      {currentLang && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-7 text-xs px-2"
+          onClick={() => { setter(''); langSetter(''); }}
+        >
+          🇧🇷 Original
+        </Button>
+      )}
+    </div>
+  );
 
   const siteUrl = 'https://homegardenmanual.com';
   const articleUrl = category && slug ? `${siteUrl}/${category}/${slug}` : '';
@@ -548,11 +635,24 @@ const SocialMediaPostCards = ({
           <CardDescription>Pronto para copiar e postar</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Translate buttons */}
+          <TranslateButtons
+            originalText={fbPostText}
+            currentLang={fbTransLang}
+            setter={setFbTranslatedText}
+            langSetter={setFbTransLang}
+            loadingSetter={setTranslatingFb}
+            isLoading={translatingFb}
+            
+          />
           {/* Preview text */}
           <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
-            {fbPostText}
+            {fbTranslatedText || fbPostText}
           </div>
-          <CopyBtn field="fb-text" onClick={() => copyText(fbPostText, 'fb-text')} label="Copiar Texto" />
+          <div className="flex gap-2">
+            <CopyBtn field="fb-text" onClick={() => copyText(fbTranslatedText || fbPostText, 'fb-text')} label="Copiar Texto" />
+            {fbTransLang && <Badge variant="secondary" className="text-xs">{fbTransLang === 'en' ? '🇺🇸 EN' : '🇪🇸 ES'}</Badge>}
+          </div>
 
           {/* Image with copy */}
           <div className="space-y-2">
@@ -589,11 +689,24 @@ const SocialMediaPostCards = ({
           <CardDescription>Formato retrato para feed e Reels</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Translate buttons */}
+          <TranslateButtons
+            originalText={igPostText}
+            currentLang={igTransLang}
+            setter={setIgTranslatedText}
+            langSetter={setIgTransLang}
+            loadingSetter={setTranslatingIg}
+            isLoading={translatingIg}
+            
+          />
           {/* Preview text */}
           <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
-            {igPostText}
+            {igTranslatedText || igPostText}
           </div>
-          <CopyBtn field="ig-text" onClick={() => copyText(igPostText, 'ig-text')} label="Copiar Legenda" />
+          <div className="flex gap-2">
+            <CopyBtn field="ig-text" onClick={() => copyText(igTranslatedText || igPostText, 'ig-text')} label="Copiar Legenda" />
+            {igTransLang && <Badge variant="secondary" className="text-xs">{igTransLang === 'en' ? '🇺🇸 EN' : '🇪🇸 ES'}</Badge>}
+          </div>
 
           {/* Image with copy */}
           <div className="space-y-2">
