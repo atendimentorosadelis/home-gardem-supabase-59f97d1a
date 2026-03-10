@@ -194,12 +194,22 @@ export function useFullArticleGeneration() {
 
       console.log(`[Generation] Calling generate-full-article for topic: "${topic}" (timeout: ${timeoutMs}ms)`);
       
-      const { data: articleData, error: articleError } = await invokeEdgeFunction(
-        'generate-full-article',
-        { topic },
-        false,
-        { timeoutMs, retries: 1 }
-      );
+      let articleData: any;
+      let articleError: Error | null = null;
+      
+      try {
+        const result = await invokeEdgeFunction(
+          'generate-full-article',
+          { topic },
+          false,
+          { timeoutMs, retries: 1 }
+        );
+        articleData = result.data;
+        articleError = result.error;
+      } catch (edgeFnError) {
+        console.error('[Generation] Edge function call crashed:', edgeFnError);
+        articleError = edgeFnError instanceof Error ? edgeFnError : new Error(String(edgeFnError));
+      }
 
       if (cancelledRef.current) return null;
 
