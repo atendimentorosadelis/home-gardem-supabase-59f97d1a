@@ -842,6 +842,60 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - Inclua medidas reais (metros quadrados, litros de tinta, gramas de massa), tempos de secagem em horas, e dicas de economia.
 ` : '';
 
+    const carpentryInstructions = isCarpentryTopic ? `
+INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Carpintaria Americana & Construção em Madeira):
+
+Você é um especialista em carpintaria, construção residencial em madeira nos Estados Unidos e história da arquitetura americana.
+O artigo deve ser escrito em INGLÊS AMERICANO NATURAL e ser altamente informativo e técnico.
+
+⚠️ REGRAS CRÍTICAS:
+- O artigo DEVE ser escrito em INGLÊS (American English) — NÃO em português.
+- MÍNIMO ABSOLUTO: 2.200 palavras (ideal 2.500+)
+- O conteúdo deve ser profundo, técnico e educativo sobre carpintaria aplicada à construção de casas nos EUA.
+- Otimizado para SEO com keywords relevantes em inglês.
+
+## TEMAS QUE O ARTIGO DEVE EXPLORAR (conforme subtema selecionado):
+- History of carpentry in the United States
+- How wood-frame houses became the American construction standard
+- Evolution of carpentry techniques over the decades
+- Traditional carpentry techniques used in American homes
+- Structural systems: wood framing vs timber framing
+- Types of wood used in American residential construction (Douglas fir, Southern pine, Cedar, Redwood, etc.)
+- Modern carpentry and wood construction techniques
+- Thermal insulation systems in wood houses (fiberglass batts, spray foam, rigid foam, cellulose)
+- Heating systems in American homes (forced air, radiant floor heating, baseboard heaters)
+- Radiant heated floors in wood-frame houses — installation, pros/cons, costs
+- Energy efficiency in wood constructions (R-value, air sealing, vapor barriers)
+- Acoustic insulation in wood-frame homes
+- Maintenance and care of structural wood
+- Treatment against moisture, fungi, and pests (pressure-treated lumber, borate treatments)
+- Practical tips for wood structure conservation
+- Differences between traditional and modern carpentry techniques
+
+## CONTEÚDO OBRIGATÓRIO:
+- Tabela comparativa com 7+ linhas comparando técnicas, materiais ou sistemas
+- Valores e estimativas em Dólares (USD/$) — preços do mercado americano (Home Depot, Lowe's, lumber yards)
+- 5-8 links externos para sites de autoridade americanos (This Old House, Fine Homebuilding, Bob Vila, Family Handyman, etc.)
+- FAQ com 8-12 perguntas em inglês
+
+## REGRAS DE PERSONA:
+- A persona do Keven NÃO se aplica para artigos de carpintaria. Escreva como um especialista técnico em construção.
+- Use tom profissional, informativo e autoritativo — como um artigo de Fine Homebuilding ou This Old House.
+- Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
+
+- mainSubject DEVE ser em INGLÊS descrevendo o foco do artigo (ex: "American wood frame house construction", "radiant floor heating in wood-frame home")
+- visualContext DEVE ser em INGLÊS (ex: "American residential wood frame house under construction, exposed framing, clear sky")
+- galleryPrompts DEVEM mostrar 6 ângulos DIFERENTES de construção em madeira americana:
+  1. Wide-angle view of wood-frame house structure under construction
+  2. Close-up of wood framing joints, nails, and structural connections
+  3. Interior view showing wall framing, insulation, and electrical rough-in
+  4. Detail of floor joists or roof trusses system
+  5. Exterior view of finished wood-sided American home
+  6. Construction tools and lumber materials on job site
+- CADA gallery prompt DEVE incluir "wood frame", "carpentry" ou "American construction"
+- category DEVE ser uma das categorias de Carpintaria (ex: "Carpintaria - Wood Framing", "Carpintaria - Isolamento Térmico")
+` : '';
+
     const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
 
 - Blog homegardenmanual.com focado em casa e jardim
@@ -853,7 +907,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO/EDIFICAÇÃO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
+${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}${carpentryInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
