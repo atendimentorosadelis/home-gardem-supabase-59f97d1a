@@ -136,6 +136,17 @@ const ARQUITETURA_SUBNICHES: SubnicheItem[] = [
   { id: 'neo-classico', label: 'Neo Clássico', icon: Columns3 },
 ];
 
+const CARPINTARIA_SUBNICHES: SubnicheItem[] = [
+  { id: 'carpintaria-historia', label: 'História da Carpintaria', icon: Castle },
+  { id: 'carpintaria-wood-framing', label: 'Wood Framing & Timber Framing', icon: Building2 },
+  { id: 'carpintaria-tipos-madeira', label: 'Tipos de Madeira', icon: TreeDeciduous },
+  { id: 'carpintaria-isolamento', label: 'Isolamento Térmico', icon: Snowflake },
+  { id: 'carpintaria-aquecimento', label: 'Aquecimento & Piso Aquecido', icon: Flame },
+  { id: 'carpintaria-manutencao', label: 'Manutenção & Conservação', icon: Hammer },
+  { id: 'carpintaria-eficiencia', label: 'Eficiência Energética & Acústica', icon: Waves },
+  { id: 'carpintaria-tecnicas', label: 'Técnicas Tradicionais vs Modernas', icon: Axe },
+];
+
 function GenerateManualContentPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [showImageApproval, setShowImageApproval] = useState(false);

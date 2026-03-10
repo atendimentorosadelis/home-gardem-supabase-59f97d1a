@@ -4,7 +4,7 @@ import {
   Recycle, Ghost, Castle, Factory, Sparkles, Landmark, Building2,
   HomeIcon, Trees, TreeDeciduous, Boxes, PaintBucket, PackageOpen,
   Zap, Moon, TreePine, Egg, HeartHandshake, PartyPopper, Sofa,
-  TrendingUp, Lightbulb, Hammer, Axe, Thermometer, TreePalm,
+  TrendingUp, Lightbulb, Hammer, Axe, Thermometer,
 } from "lucide-react";
 
 // Parent category → child category slugs mapping
