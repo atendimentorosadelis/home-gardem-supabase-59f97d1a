@@ -24,6 +24,11 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
     'colonial', 'industrial', 'moderno', 'neolitico',
     'europeu', 'nordico', 'neo-classico',
   ],
+  'carpintaria': [
+    'carpintaria-historia', 'carpintaria-wood-framing', 'carpintaria-tipos-madeira',
+    'carpintaria-isolamento', 'carpintaria-aquecimento', 'carpintaria-manutencao',
+    'carpintaria-eficiencia', 'carpintaria-tecnicas',
+  ],
 };
 
 interface SubNiche {
