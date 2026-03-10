@@ -407,8 +407,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'O platform framing se tornou dominante porque cada andar criava um deck de trabalho mais seguro, reduzia a propagação de incêndios nas cavidades das paredes e simplificava o sequenciamento; construtores adotaram métodos repetíveis que posteriormente apoiaram o desenvolvimento suburbano em larga escala após a Segunda Guerra Mundial.'
     },
     {
-      period: '1945-1980 | Suburban Boom and Mechanical Integration',
-      detail: 'Postwar demand pushed mass housing projects where carpentry coordinated with electrical, plumbing, and HVAC systems; standardized 2x4 and 2x6 assemblies, plywood sheathing, and insulation practices became routine in American residential construction workflows.'
+      period: '1945-1980 | Boom Suburbano e Integração Mecânica',
+      detail: 'A demanda pós-guerra impulsionou projetos habitacionais em massa onde a carpintaria se coordenava com sistemas elétricos, hidráulicos e de climatização (HVAC); montagens padronizadas de 2x4 e 2x6, revestimento de compensado e práticas de isolamento se tornaram rotina nos fluxos de trabalho da construção residencial americana.'
     },
     {
       period: '1980-2005 | Energy Codes and Performance Building',
