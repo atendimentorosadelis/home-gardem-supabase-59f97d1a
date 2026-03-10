@@ -254,16 +254,25 @@ export function useFullArticleGeneration() {
 
       let savedArticleId: string | null = null;
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        console.log('[Generation] User:', user?.id || 'NOT LOGGED IN', userError ? `Error: ${userError.message}` : '');
 
-        if (user) {
-          const { data: profile } = await supabase
+        if (!user) {
+          console.error('[Generation] No user logged in - cannot save article');
+          updateStep('saving', { status: 'error', detail: 'Não logado' });
+        } else {
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('id')
             .eq('user_id', user.id)
             .single();
 
-          if (profile) {
+          console.log('[Generation] Profile:', profile?.id || 'NOT FOUND', profileError ? `Error: ${profileError.message}` : '');
+
+          if (!profile) {
+            console.error('[Generation] No profile found for user - cannot save article');
+            updateStep('saving', { status: 'error', detail: 'Sem perfil' });
+          } else {
             // Check if article with this slug already exists
             // Use .limit(1) instead of .maybeSingle() to avoid error when multiple rows exist
             const { data: existingArticles, error: slugCheckError } = await supabase
