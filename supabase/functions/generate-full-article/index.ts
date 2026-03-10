@@ -952,14 +952,14 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Use as mesmas regras de "filtro anti-IA" dos outros temas
 
 ### IDIOMA:
-- O artigo DEVE ser escrito em INGLÊS AMERICANO NATURAL (American English)
-- Mesmo sendo o Keven (brasileiro), o blog é em inglês para o público americano
-- O Keven pode mencionar sua perspectiva brasileira como ponto de comparação interessante
-- Termos técnicos em inglês: wood framing, timber framing, radiant floor heating, R-value, etc.
+- O artigo DEVE ser escrito INTEIRAMENTE em PORTUGUÊS BRASILEIRO (pt-BR), assim como TODOS os outros temas do blog
+- O sistema de tradução automática do site cuida de traduzir para inglês, espanhol, etc.
+- Termos técnicos americanos podem ser mantidos entre parênteses para referência: "estrutura em madeira (wood framing)", "isolamento térmico (thermal insulation)", "piso radiante (radiant floor heating)", "valor-R (R-value)"
+- O Keven escreve em português como brasileiro que é, compartilhando sua fascinação pela construção americana
 
 ### HISTÓRIAS PESSOAIS OBRIGATÓRIAS:
-- HISTÓRIA 1: Um momento específico em que o Keven descobriu algo surpreendente sobre construção americana (ex: "I was in my architecture class when the professor showed us how American homes are built entirely from wood — my jaw literally dropped")
-- HISTÓRIA 2: Uma comparação pessoal entre o que ele conhece do Brasil e o que aprendeu sobre os EUA (ex: "Growing up in Brazil, I always thought concrete and brick were the only way to build a house. Then I learned about wood framing and everything changed")
+- HISTÓRIA 1: Um momento específico em que o Keven descobriu algo surpreendente sobre construção americana (ex: "Eu estava na aula de arquitetura quando o professor mostrou como as casas americanas são construídas inteiramente com madeira — meu queixo caiu literalmente")
+- HISTÓRIA 2: Uma comparação pessoal entre o que ele conhece do Brasil e o que aprendeu sobre os EUA (ex: "Crescendo no Brasil, eu sempre achei que concreto e tijolo eram a única forma de construir uma casa. Então eu aprendi sobre wood framing e tudo mudou")
 
 ⚠️ REGRAS CRÍTICAS:
 - MÍNIMO ABSOLUTO: 3.000 palavras (gere pelo menos 3.000 palavras para garantir que o artigo não fique curto)
