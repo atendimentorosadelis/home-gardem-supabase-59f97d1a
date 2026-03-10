@@ -188,11 +188,15 @@ export function useFullArticleGeneration() {
       // Step 1: Generate article content and metadata
       updateStep('metadata', { status: 'loading' });
 
+      // Carpentry topics need more time (3000+ words, complex prompt)
+      const isCarpentryTopic = /carpintaria|wood\s*fram|timber\s*fram/i.test(topic);
+      const timeoutMs = isCarpentryTopic ? 300000 : 180000; // 5 min for carpentry, 3 min otherwise
+
       const { data: articleData, error: articleError } = await invokeEdgeFunction(
         'generate-full-article',
         { topic },
         false,
-        { timeoutMs: 180000, retries: 1 } // 3 min timeout + 1 retry
+        { timeoutMs, retries: 1 }
       );
 
       if (cancelledRef.current) return null;
