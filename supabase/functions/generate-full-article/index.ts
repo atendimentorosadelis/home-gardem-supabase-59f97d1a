@@ -1446,7 +1446,7 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
       finalContent = finalContent.substring(0, insertionPoint) + defaultFAQ + finalContent.substring(insertionPoint);
     }
 
-    const minimumWordCount = isPaintingTopic ? 2500 : 2200;
+    const minimumWordCount = isCarpentryTopic ? 3000 : isPaintingTopic ? 2500 : 2200;
     let finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
 
     const injectAdditionalContent = (additionalContent: string) => {
