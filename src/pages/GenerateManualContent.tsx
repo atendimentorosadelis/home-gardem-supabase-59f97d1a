@@ -42,6 +42,8 @@ import {
   ArrowRight,
   Ghost,
   PaintBucket,
+  Hammer,
+  Axe,
   type LucideIcon
 } from 'lucide-react';
 import { AIIcon } from '@/components/AIIcon';
@@ -134,12 +136,24 @@ const ARQUITETURA_SUBNICHES: SubnicheItem[] = [
   { id: 'neo-classico', label: 'Neo Clássico', icon: Columns3 },
 ];
 
+const CARPINTARIA_SUBNICHES: SubnicheItem[] = [
+  { id: 'carpintaria-historia', label: 'História da Carpintaria', icon: Castle },
+  { id: 'carpintaria-wood-framing', label: 'Wood Framing & Timber Framing', icon: Building2 },
+  { id: 'carpintaria-tipos-madeira', label: 'Tipos de Madeira', icon: TreeDeciduous },
+  { id: 'carpintaria-isolamento', label: 'Isolamento Térmico', icon: Snowflake },
+  { id: 'carpintaria-aquecimento', label: 'Aquecimento & Piso Aquecido', icon: Flame },
+  { id: 'carpintaria-manutencao', label: 'Manutenção & Conservação', icon: Hammer },
+  { id: 'carpintaria-eficiencia', label: 'Eficiência Energética & Acústica', icon: Waves },
+  { id: 'carpintaria-tecnicas', label: 'Técnicas Tradicionais vs Modernas', icon: Axe },
+];
+
 function GenerateManualContentPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [showImageApproval, setShowImageApproval] = useState(false);
   const [designSelected, setDesignSelected] = useState<string[]>([]);
   const [jardimSelected, setJardimSelected] = useState<string[]>([]);
   const [arquiteturaSelected, setArquiteturaSelected] = useState<string[]>([]);
+  const [carpintariaSelected, setCarpintariaSelected] = useState<string[]>([]);
   const [commemorativeSelected, setCommemorativeSelected] = useState<string | null>(null);
   const [articleSaved, setArticleSaved] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -293,6 +307,10 @@ function GenerateManualContentPage() {
     setArquiteturaSelected(prev => prev.includes(id) ? [] : [id]);
   };
 
+  const toggleCarpintaria = (id: string) => {
+    setCarpintariaSelected(prev => prev.includes(id) ? [] : [id]);
+  };
+
   const buildDesignTopic = () => {
     const allDesignSubniches = [...DESIGN_AREAS_SOCIAIS, ...DESIGN_AREAS_INTIMAS, ...DESIGN_AREAS_SERVICO];
     const labels = designSelected.map(id => allDesignSubniches.find(s => s.id === id)?.label).filter(Boolean);
@@ -311,6 +329,13 @@ function GenerateManualContentPage() {
   const buildArquiteturaTopic = () => {
     const labels = arquiteturaSelected.map(id => ARQUITETURA_SUBNICHES.find(s => s.id === id)?.label).filter(Boolean);
     return `Dicas de arquitetura em estilo ${labels.join(', ').toLowerCase()}`;
+  };
+
+  const buildCarpintariaTopic = () => {
+    const selected = CARPINTARIA_SUBNICHES.find(s => s.id === carpintariaSelected[0]);
+    return selected
+      ? `Carpintaria americana: ${selected.label.toLowerCase()}`
+      : 'Carpintaria americana: construção em madeira nos Estados Unidos';
   };
 
   const handleGenerationComplete = async (result: GeneratedArticle | null, topic: string) => {
@@ -353,6 +378,16 @@ function GenerateManualContentPage() {
     setShowImageApproval(false);
     setArticleSaved(false);
     const topic = buildArquiteturaTopic();
+    setCurrentTopic(topic);
+    const result = await generateArticle(topic);
+    await handleGenerationComplete(result, topic);
+  };
+
+  const handleGenerateCarpintaria = async () => {
+    setShowPreview(false);
+    setShowImageApproval(false);
+    setArticleSaved(false);
+    const topic = buildCarpintariaTopic();
     setCurrentTopic(topic);
     const result = await generateArticle(topic);
     await handleGenerationComplete(result, topic);
@@ -442,6 +477,7 @@ function GenerateManualContentPage() {
     setDesignSelected([]);
     setJardimSelected([]);
     setArquiteturaSelected([]);
+    setCarpintariaSelected([]);
     setCommemorativeSelected(null);
     setShowPreview(false);
     setShowImageApproval(false);
@@ -489,7 +525,7 @@ function GenerateManualContentPage() {
   };
 
   const showCategorySelection = !showPreview && !showImageApproval;
-  const hasAnySelection = designSelected.length > 0 || jardimSelected.length > 0 || arquiteturaSelected.length > 0 || commemorativeSelected !== null;
+  const hasAnySelection = designSelected.length > 0 || jardimSelected.length > 0 || arquiteturaSelected.length > 0 || carpintariaSelected.length > 0 || commemorativeSelected !== null;
 
   return (
     <DashboardLayout>
@@ -515,6 +551,7 @@ function GenerateManualContentPage() {
                   if (designSelected.length > 0) handleGenerateDesign();
                   else if (jardimSelected.length > 0) handleGenerateJardim();
                   else if (arquiteturaSelected.length > 0) handleGenerateArquitetura();
+                  else if (carpintariaSelected.length > 0) handleGenerateCarpintaria();
                   else if (commemorativeSelected) handleGenerateCommemorativeDate();
                 }}
               >
@@ -650,6 +687,38 @@ function GenerateManualContentPage() {
                     {ARQUITETURA_SUBNICHES.map((item) => renderSubnicheCard(item, arquiteturaSelected, toggleArquitetura, 'arquitetura'))}
                   </div>
                   <Button className="w-full rounded-xl" onClick={handleGenerateArquitetura} disabled={isGenerating || arquiteturaSelected.length === 0}>
+                    {isGenerating ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>) : (<><AIIcon size="sm" className="mr-2" />Gerar Artigo</>)}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Carpintaria Card */}
+              <Card className="border-border/50 hover:border-primary/30 transition-colors">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Hammer className="h-4 w-4 text-primary" />
+                    </div>
+                    Carpintaria Americana
+                  </CardTitle>
+                  <CardDescription className="text-sm">Construção em madeira, isolamento, aquecimento e manutenção</CardDescription>
+                  {carpintariaSelected.length > 0 && (() => {
+                    const selected = CARPINTARIA_SUBNICHES.find(s => s.id === carpintariaSelected[0]);
+                    if (!selected) return null;
+                    const IconComp = selected.icon;
+                    return (
+                      <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
+                        <IconComp className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">{selected.label}</span>
+                      </div>
+                    );
+                  })()}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {CARPINTARIA_SUBNICHES.map((item) => renderSubnicheCard(item, carpintariaSelected, toggleCarpintaria, 'carpintaria'))}
+                  </div>
+                  <Button className="w-full rounded-xl" onClick={handleGenerateCarpintaria} disabled={isGenerating || carpintariaSelected.length === 0}>
                     {isGenerating ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>) : (<><AIIcon size="sm" className="mr-2" />Gerar Artigo</>)}
                   </Button>
                 </CardContent>

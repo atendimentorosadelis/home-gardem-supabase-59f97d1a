@@ -1,4 +1,4 @@
-import { Search, X, LayoutGrid, Home, Leaf, Building2 } from "lucide-react";
+import { Search, X, LayoutGrid, Home, Leaf, Building2, Hammer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ const parentCategoryIcons: Record<string, React.ComponentType<{ className?: stri
   'design-interno': Home,
   'jardim': Leaf,
   'arquitetura': Building2,
+  'carpintaria': Hammer,
 };
 
 export function BlogFilters({
@@ -47,6 +48,7 @@ export function BlogFilters({
     'design-interno': "Design Interno",
     'jardim': "Jardim",
     'arquitetura': "Arquitetura",
+    'carpintaria': "Carpintaria",
   };
 
   const parentKeys = ['all', 'design-interno', 'jardim', 'arquitetura'];

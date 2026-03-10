@@ -42,6 +42,15 @@ const categories = [
   { name: 'Europeu', slug: 'europeu' },
   { name: 'Nórdico', slug: 'nordico' },
   { name: 'Neo Clássico', slug: 'neo-classico' },
+  // Carpintaria & Construção em Madeira
+  { name: 'Carpintaria - História', slug: 'carpintaria-historia' },
+  { name: 'Carpintaria - Wood Framing', slug: 'carpintaria-wood-framing' },
+  { name: 'Carpintaria - Tipos de Madeira', slug: 'carpintaria-tipos-madeira' },
+  { name: 'Carpintaria - Isolamento Térmico', slug: 'carpintaria-isolamento' },
+  { name: 'Carpintaria - Aquecimento & Piso Aquecido', slug: 'carpintaria-aquecimento' },
+  { name: 'Carpintaria - Manutenção & Conservação', slug: 'carpintaria-manutencao' },
+  { name: 'Carpintaria - Eficiência Energética', slug: 'carpintaria-eficiencia' },
+  { name: 'Carpintaria - Técnicas Tradicionais vs Modernas', slug: 'carpintaria-tecnicas' },
 ];
 
 const FLOWER_NAMES_CATEGORY_SLUG = 'nomes-cuidados-plantas-flores';
@@ -158,6 +167,12 @@ const US_AUTHORITY_LINKS_POOL = [
   { text: "Bob Vila", url: "https://www.bobvila.com/" },
   { text: "Lowe's Home Improvement", url: "https://www.lowes.com/" },
   { text: "The Home Depot", url: "https://www.homedepot.com/" },
+  // Carpentry & Wood Construction
+  { text: "Fine Homebuilding", url: "https://www.finehomebuilding.com/" },
+  { text: "Fine Woodworking", url: "https://www.finewoodworking.com/" },
+  { text: "Popular Woodworking", url: "https://www.popularwoodworking.com/" },
+  { text: "Wood Magazine", url: "https://www.woodmagazine.com/" },
+  { text: "Journal of Light Construction", url: "https://www.jlconline.com/" },
 ];
 
 // Select random subset from pool for diversity
@@ -597,7 +612,7 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 {
   "title": "Título acolhedor e interessante (máximo 70 caracteres)",
   "excerpt": "Resumo variado e pessoal",
-  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Dicas de Pintura, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico",
+  "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Dicas de Pintura, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico, Carpintaria - História, Carpintaria - Wood Framing, Carpintaria - Tipos de Madeira, Carpintaria - Isolamento Térmico, Carpintaria - Aquecimento & Piso Aquecido, Carpintaria - Manutenção & Conservação, Carpintaria - Eficiência Energética, Carpintaria - Técnicas Tradicionais vs Modernas",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
   "content": "## Introdução\\n\\n... CONTEÚDO COMPLETO COM 2200+ PALAVRAS ...",
@@ -661,6 +676,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Nomes e Cuidados Plantas e 
     const architectureSlugs = ['colonial', 'industrial', 'moderno', 'neolitico', 'europeu', 'nordico', 'neo-classico'];
     const topicLower = topic.toLowerCase();
     const isArchitectureTopic = architectureSlugs.some(s => topicLower.includes(s)) || /arquitetura/i.test(topicLower);
+    const isCarpentryTopic = /carpintaria/i.test(topicLower) || /wood\s*fram/i.test(topicLower) || /timber\s*fram/i.test(topicLower) || /constru[çc][ãa]o.*madeira/i.test(topicLower);
 
     // forcedPlantSpecies removed (dynamic AI selection now), set null for safety
     const forcedPlantSpecies: { pt: string; en: string } | null = null;
@@ -832,6 +848,60 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - Inclua medidas reais (metros quadrados, litros de tinta, gramas de massa), tempos de secagem em horas, e dicas de economia.
 ` : '';
 
+    const carpentryInstructions = isCarpentryTopic ? `
+INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Carpintaria Americana & Construção em Madeira):
+
+Você é um especialista em carpintaria, construção residencial em madeira nos Estados Unidos e história da arquitetura americana.
+O artigo deve ser escrito em INGLÊS AMERICANO NATURAL e ser altamente informativo e técnico.
+
+⚠️ REGRAS CRÍTICAS:
+- O artigo DEVE ser escrito em INGLÊS (American English) — NÃO em português.
+- MÍNIMO ABSOLUTO: 2.200 palavras (ideal 2.500+)
+- O conteúdo deve ser profundo, técnico e educativo sobre carpintaria aplicada à construção de casas nos EUA.
+- Otimizado para SEO com keywords relevantes em inglês.
+
+## TEMAS QUE O ARTIGO DEVE EXPLORAR (conforme subtema selecionado):
+- History of carpentry in the United States
+- How wood-frame houses became the American construction standard
+- Evolution of carpentry techniques over the decades
+- Traditional carpentry techniques used in American homes
+- Structural systems: wood framing vs timber framing
+- Types of wood used in American residential construction (Douglas fir, Southern pine, Cedar, Redwood, etc.)
+- Modern carpentry and wood construction techniques
+- Thermal insulation systems in wood houses (fiberglass batts, spray foam, rigid foam, cellulose)
+- Heating systems in American homes (forced air, radiant floor heating, baseboard heaters)
+- Radiant heated floors in wood-frame houses — installation, pros/cons, costs
+- Energy efficiency in wood constructions (R-value, air sealing, vapor barriers)
+- Acoustic insulation in wood-frame homes
+- Maintenance and care of structural wood
+- Treatment against moisture, fungi, and pests (pressure-treated lumber, borate treatments)
+- Practical tips for wood structure conservation
+- Differences between traditional and modern carpentry techniques
+
+## CONTEÚDO OBRIGATÓRIO:
+- Tabela comparativa com 7+ linhas comparando técnicas, materiais ou sistemas
+- Valores e estimativas em Dólares (USD/$) — preços do mercado americano (Home Depot, Lowe's, lumber yards)
+- 5-8 links externos para sites de autoridade americanos (This Old House, Fine Homebuilding, Bob Vila, Family Handyman, etc.)
+- FAQ com 8-12 perguntas em inglês
+
+## REGRAS DE PERSONA:
+- A persona do Keven NÃO se aplica para artigos de carpintaria. Escreva como um especialista técnico em construção.
+- Use tom profissional, informativo e autoritativo — como um artigo de Fine Homebuilding ou This Old House.
+- Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
+
+- mainSubject DEVE ser em INGLÊS descrevendo o foco do artigo (ex: "American wood frame house construction", "radiant floor heating in wood-frame home")
+- visualContext DEVE ser em INGLÊS (ex: "American residential wood frame house under construction, exposed framing, clear sky")
+- galleryPrompts DEVEM mostrar 6 ângulos DIFERENTES de construção em madeira americana:
+  1. Wide-angle view of wood-frame house structure under construction
+  2. Close-up of wood framing joints, nails, and structural connections
+  3. Interior view showing wall framing, insulation, and electrical rough-in
+  4. Detail of floor joists or roof trusses system
+  5. Exterior view of finished wood-sided American home
+  6. Construction tools and lumber materials on job site
+- CADA gallery prompt DEVE incluir "wood frame", "carpentry" ou "American construction"
+- category DEVE ser uma das categorias de Carpintaria (ex: "Carpintaria - Wood Framing", "Carpintaria - Isolamento Térmico")
+` : '';
+
     const userPrompt = `Crie um artigo PROFUNDO, EMOCIONAL e ENVOLVENTE sobre: "${topic}"
 
 - Blog homegardenmanual.com focado em casa e jardim
@@ -843,7 +913,7 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 - NÃO GERE CONCLUSÃO EMOCIONAL
 - galleryPrompts: 6 prompts do MESMO CÔMODO/EDIFICAÇÃO em ângulos diferentes
 - content DEVE incluir "## Perguntas Frequentes" com 8-12 perguntas NUMERADAS em negrito
-${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}`;
+${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstructions}${vegetableHerbInstructions}${architectureInstructions}${paintingInstructions}${carpentryInstructions}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -1059,6 +1129,24 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstruct
     // 1. Multi-word specific themes (must come before generic single-word matches)
     if (/hortas.*ervas.*cuidados|hortas.*cuidados|cuidados.*hortalic|hortas.*ervas|jardim.*hortas/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'hortas-ervas-cuidados');
+    } else if (/carpintaria.*hist[oó]ria|hist[oó]ria.*carpintaria/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-historia');
+    } else if (/carpintaria.*wood\s*fram|wood\s*fram|timber\s*fram/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-wood-framing');
+    } else if (/carpintaria.*tipos.*madeira|tipos.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-tipos-madeira');
+    } else if (/carpintaria.*isolamento|isolamento.*t[eé]rmico.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-isolamento');
+    } else if (/carpintaria.*aquecimento|piso\s*aquecido|radiant.*floor|aquecimento.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-aquecimento');
+    } else if (/carpintaria.*manuten[çc][ãa]o|conserva[çc][ãa]o.*madeira|tratamento.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-manutencao');
+    } else if (/carpintaria.*efici[eê]ncia|efici[eê]ncia.*energ|ac[uú]stica.*madeira/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-eficiencia');
+    } else if (/carpintaria.*t[eé]cnicas|t[eé]cnicas.*tradicionais.*modernas/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-tecnicas');
+    } else if (/carpintaria/i.test(topicLower)) {
+      categoryMatch = categories.find(c => c.slug === 'carpintaria-tecnicas');
     } else if (/nomes.*cuidados.*plantas|nomes.*flores|cuidados.*plantas.*flores|nomes.*cuidados/i.test(topicLower)) {
       categoryMatch = categories.find(c => c.slug === 'nomes-cuidados-plantas-flores');
     } else if (/sala\s*de\s*jantar/i.test(topicLower)) {

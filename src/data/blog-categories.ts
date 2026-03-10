@@ -4,7 +4,7 @@ import {
   Recycle, Ghost, Castle, Factory, Sparkles, Landmark, Building2,
   HomeIcon, Trees, TreeDeciduous, Boxes, PaintBucket, PackageOpen,
   Zap, Moon, TreePine, Egg, HeartHandshake, PartyPopper, Sofa,
-  TrendingUp, Lightbulb,
+  TrendingUp, Lightbulb, Hammer, Axe, Thermometer,
 } from "lucide-react";
 
 // Parent category → child category slugs mapping
@@ -23,6 +23,11 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
   'arquitetura': [
     'colonial', 'industrial', 'moderno', 'neolitico',
     'europeu', 'nordico', 'neo-classico',
+  ],
+  'carpintaria': [
+    'carpintaria-historia', 'carpintaria-wood-framing', 'carpintaria-tipos-madeira',
+    'carpintaria-isolamento', 'carpintaria-aquecimento', 'carpintaria-manutencao',
+    'carpintaria-eficiencia', 'carpintaria-tecnicas',
   ],
 };
 
@@ -99,4 +104,13 @@ export const ALL_SUB_NICHES: SubNiche[] = [
   { name: 'Nomes e Cuidados Plantas e Flores', icon: Sprout },
   { name: 'Hortas, Ervas e Cuidados', icon: Leaf },
   { name: 'Dicas de Pintura', icon: PaintBucket },
+  // Carpintaria
+  { name: 'Carpintaria Americana', icon: Hammer },
+  { name: 'Wood Framing', icon: HomeIcon },
+  { name: 'Tipos de Madeira', icon: TreeDeciduous },
+  { name: 'Isolamento Térmico', icon: Thermometer },
+  { name: 'Aquecimento & Piso Aquecido', icon: Zap },
+  { name: 'Manutenção de Madeira', icon: Wrench },
+  { name: 'Eficiência Energética', icon: Lightbulb },
+  { name: 'Técnicas de Carpintaria', icon: Axe },
 ];

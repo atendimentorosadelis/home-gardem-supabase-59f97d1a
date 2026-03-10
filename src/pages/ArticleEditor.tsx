@@ -69,6 +69,15 @@ const CATEGORIES: { name: string; slug: string; icon: LucideIcon }[] = [
   { name: 'Europeu', slug: 'europeu', icon: Building2 },
   { name: 'Nórdico', slug: 'nordico', icon: Building2 },
   { name: 'Neo Clássico', slug: 'neo-classico', icon: Building2 },
+  // Carpintaria & Construção em Madeira
+  { name: 'Carpintaria - História', slug: 'carpintaria-historia', icon: Hammer },
+  { name: 'Carpintaria - Wood Framing', slug: 'carpintaria-wood-framing', icon: Home },
+  { name: 'Carpintaria - Tipos de Madeira', slug: 'carpintaria-tipos-madeira', icon: Leaf },
+  { name: 'Carpintaria - Isolamento Térmico', slug: 'carpintaria-isolamento', icon: Home },
+  { name: 'Carpintaria - Aquecimento & Piso Aquecido', slug: 'carpintaria-aquecimento', icon: Home },
+  { name: 'Carpintaria - Manutenção & Conservação', slug: 'carpintaria-manutencao', icon: Hammer },
+  { name: 'Carpintaria - Eficiência Energética', slug: 'carpintaria-eficiencia', icon: Lightbulb },
+  { name: 'Carpintaria - Técnicas Tradicionais vs Modernas', slug: 'carpintaria-tecnicas', icon: Hammer },
   // Genéricas
   { name: 'Design Interno', slug: 'design-interno', icon: Home },
   { name: 'Decoração', slug: 'decoracao', icon: Palette },
