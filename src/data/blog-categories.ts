@@ -33,6 +33,7 @@ export const PARENT_CATEGORY_SLUGS: Record<string, string[]> = {
 
 interface SubNiche {
   name: string;
+  translationKey: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
