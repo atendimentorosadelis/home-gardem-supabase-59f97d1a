@@ -1478,6 +1478,58 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
         injectAdditionalContent(carpentryExpansion);
         finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
         console.log(`✅ Applied deterministic carpentry expansion. New word count: ${finalWordCount}`);
+        
+        // If still short after deterministic expansion, try AI expansion as fallback
+        if (finalWordCount < minimumWordCount) {
+          const remainingShortfall = minimumWordCount - finalWordCount;
+          const currentElapsed = Date.now() - requestStartedAt;
+          console.log(`⚠️ Still short after carpentry expansion: ${finalWordCount}/${minimumWordCount}. Trying AI expansion... (elapsed: ${currentElapsed}ms)`);
+          
+          if (currentElapsed < 55000) {
+            try {
+              const controller2 = new AbortController();
+              const timeoutId2 = setTimeout(() => controller2.abort(), 25000);
+              
+              const expandResponse2 = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${OPENAI_API_KEY}`,
+                  "Content-Type": "application/json",
+                },
+                signal: controller2.signal,
+                body: JSON.stringify({
+                  model: "gpt-4o-mini",
+                  messages: [
+                    {
+                      role: "system",
+                      content: `Você é Keven Costa Vieira, especialista em carpintaria americana. O artigo atual tem ${finalWordCount} palavras e precisa chegar em ${minimumWordCount}+ palavras.\n\nRetorne APENAS conteúdo adicional em markdown (seções com ## e ###) sobre aspectos técnicos da carpintaria americana: isolamento térmico, tipos de fixadores, códigos de construção, impermeabilização, eficiência energética.\nRegras: primeira pessoa, valores em USD, sem repetir conteúdo existente, sem FAQ, sem assinatura.`
+                    },
+                    {
+                      role: "user",
+                      content: `TEMA: "${topic}"\n\nAdicione aproximadamente ${Math.min(remainingShortfall + 300, 1200)} palavras de conteúdo técnico novo sobre carpintaria americana.`
+                    }
+                  ],
+                  temperature: 0.8,
+                  max_tokens: 6000,
+                })
+              });
+              
+              clearTimeout(timeoutId2);
+              
+              if (expandResponse2.ok) {
+                const expandData2 = await expandResponse2.json();
+                const additionalContent2 = expandData2.choices?.[0]?.message?.content?.trim();
+                if (additionalContent2 && additionalContent2.length > 200) {
+                  injectAdditionalContent(additionalContent2);
+                  finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
+                  console.log(`✅ AI carpentry expansion complete! New word count: ${finalWordCount}`);
+                }
+              }
+            } catch (expandErr) {
+              console.warn('⚠️ AI carpentry expansion failed (non-fatal):', expandErr);
+            }
+          }
+        }
       } else if (runtimeBudgetExceeded) {
         console.warn('⚠️ Skipping OpenAI auto-expansion to avoid edge runtime timeout.');
       } else {
