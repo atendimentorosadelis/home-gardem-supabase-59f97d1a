@@ -324,10 +324,16 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
 
   if (!visualContext || visualContext.trim().length < 5) {
     const archKeywords = ['facade', 'exterior', 'colonial', 'industrial', 'modern building', 'neolithic', 'european', 'nordic', 'neoclassical', 'architecture'];
+    const carpentryKeywords = ['wood frame', 'wood framing', 'timber', 'carpentry', 'lumber', 'insulation', 'radiant floor', 'heating'];
     const isArch = archKeywords.some(k => mainSubject.toLowerCase().includes(k));
-    visualContext = isArch
-      ? 'building exterior facade, street view, clear sky, natural daylight'
-      : 'modern home interior with natural lighting';
+    const isCarpentry = carpentryKeywords.some(k => mainSubject.toLowerCase().includes(k));
+    if (isCarpentry) {
+      visualContext = 'American residential wood frame house construction site, suburban neighborhood, natural daylight, professional construction photography';
+    } else if (isArch) {
+      visualContext = 'building exterior facade, street view, clear sky, natural daylight';
+    } else {
+      visualContext = 'modern home interior with natural lighting';
+    }
     console.warn('[ImageValidation] Invalid visualContext, using fallback:', visualContext);
   }
 
