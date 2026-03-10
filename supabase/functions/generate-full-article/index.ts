@@ -995,16 +995,21 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 
 ## REGRAS DE TÍTULO E RESUMO (CARPINTARIA):
 ⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
+⚠️ REGRA CRÍTICA: NÃO copie os exemplos abaixo literalmente! Crie um título ORIGINAL e ÚNICO a cada geração.
+⚠️ Use o seed aleatório ${Math.floor(Math.random() * 99999)} para garantir variação criativa.
 ❌ PROIBIDO títulos formais como: "Guia Completo de Wood Framing", "Tudo Sobre Carpintaria Americana"
-✅ EXEMPLOS CORRETOS de títulos:
-  - "Eu Estudei o Wood Framing Americano e Isso Mudou Minha Visão da Construção Pra Sempre"
-  - "Por Que as Casas Americanas São Feitas de Madeira — A Perspectiva de um Estudante Brasileiro"
-  - "O Dia Que Eu Aprendi Sobre Piso Radiante e Minha Cabeça Explodiu"
-  - "Do Concreto à Madeira: O Que Eu Descobri Sobre a Construção Americana"
-  - "Eu Não Acreditei Quando Vi Como os Americanos Isolam Suas Casas de Madeira"
+❌ PROIBIDO começar com "Eu Estudei" - esse padrão já foi usado demais!
+❌ PROIBIDO reutilizar qualquer título dos exemplos abaixo - eles são APENAS referência de estilo.
 
-⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal e conversacional:
-✅ EXEMPLOS: "Como estudante de arquitetura brasileiro, eu fiquei chocado ao descobrir que a maioria das casas americanas são construídas com madeira. Deixa eu te contar o que eu descobri."
+Use um destes ESTILOS (não copie o texto, crie algo novo sobre o subtema "${topic}"):
+  Estilo Confissão: "Confesso que [algo inesperado sobre o tema]"
+  Estilo Pergunta: "Você sabia que [fato surpreendente]?"
+  Estilo Descoberta: "[Algo específico] me fez repensar tudo sobre [tema]"
+  Estilo Opinião: "Digo sem medo: [opinião forte sobre o tema]"
+  Estilo Narrativa: "O dia que [experiência pessoal marcante com o tema]"
+  Estilo Comparação: "[Método brasileiro] vs [Método americano]: o que ninguém te conta"
+
+⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal, conversacional e DIFERENTE a cada geração. Não repita o padrão "Como estudante de arquitetura brasileiro...".
 
 ## ASSINATURA FINAL (OBRIGATÓRIO):
 ---
