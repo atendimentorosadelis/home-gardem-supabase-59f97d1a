@@ -167,6 +167,12 @@ const US_AUTHORITY_LINKS_POOL = [
   { text: "Bob Vila", url: "https://www.bobvila.com/" },
   { text: "Lowe's Home Improvement", url: "https://www.lowes.com/" },
   { text: "The Home Depot", url: "https://www.homedepot.com/" },
+  // Carpentry & Wood Construction
+  { text: "Fine Homebuilding", url: "https://www.finehomebuilding.com/" },
+  { text: "Fine Woodworking", url: "https://www.finewoodworking.com/" },
+  { text: "Popular Woodworking", url: "https://www.popularwoodworking.com/" },
+  { text: "Wood Magazine", url: "https://www.woodmagazine.com/" },
+  { text: "Journal of Light Construction", url: "https://www.jlconline.com/" },
 ];
 
 // Select random subset from pool for diversity
