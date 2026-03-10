@@ -964,33 +964,33 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 ⚠️ REGRAS CRÍTICAS:
 - MÍNIMO ABSOLUTO: 3.000 palavras (gere pelo menos 3.000 palavras para garantir que o artigo não fique curto)
 - O conteúdo deve ser profundo, técnico e educativo sobre carpintaria aplicada à construção de casas nos EUA
-- Otimizado para SEO com keywords relevantes em inglês
+- Otimizado para SEO com keywords relevantes em PORTUGUÊS (com termos técnicos americanos entre parênteses)
 - Valores em Dólares (USD/$) — preços do mercado americano (Home Depot, Lowe's, lumber yards)
 - Escreva EXTENSAMENTE sobre cada seção — não resuma, desenvolva cada ponto com detalhes técnicos, exemplos práticos e histórias pessoais
 
 ## TEMAS QUE O ARTIGO DEVE EXPLORAR (conforme subtema selecionado):
-- History of carpentry in the United States
-- How wood-frame houses became the American construction standard
-- Evolution of carpentry techniques over the decades
-- Traditional carpentry techniques used in American homes
-- Structural systems: wood framing vs timber framing
-- Types of wood used in American residential construction (Douglas fir, Southern pine, Cedar, Redwood, etc.)
-- Modern carpentry and wood construction techniques
-- Thermal insulation systems in wood houses (fiberglass batts, spray foam, rigid foam, cellulose)
-- Heating systems in American homes (forced air, radiant floor heating, baseboard heaters)
-- Radiant heated floors in wood-frame houses — installation, pros/cons, costs
-- Energy efficiency in wood constructions (R-value, air sealing, vapor barriers)
-- Acoustic insulation in wood-frame homes
-- Maintenance and care of structural wood
-- Treatment against moisture, fungi, and pests (pressure-treated lumber, borate treatments)
-- Practical tips for wood structure conservation
-- Differences between traditional and modern carpentry techniques
+- História da carpintaria nos Estados Unidos
+- Como as casas de estrutura em madeira (wood frame) se tornaram o padrão construtivo americano
+- Evolução das técnicas de carpintaria ao longo das décadas
+- Técnicas tradicionais de carpintaria usadas nas casas americanas
+- Sistemas estruturais: wood framing vs timber framing
+- Tipos de madeira usados na construção residencial americana (Douglas fir, Southern pine, Cedar, Redwood, etc.)
+- Técnicas modernas de carpintaria e construção em madeira
+- Sistemas de isolamento térmico em casas de madeira (fiberglass batts, spray foam, rigid foam, celulose)
+- Sistemas de aquecimento em casas americanas (forced air, piso radiante, baseboard heaters)
+- Pisos aquecidos radiantes (radiant heated floors) em casas de wood frame — instalação, prós/contras, custos
+- Eficiência energética em construções de madeira (R-value, vedação de ar, barreiras de vapor)
+- Isolamento acústico em casas de wood frame
+- Manutenção e cuidados com madeira estrutural
+- Tratamento contra umidade, fungos e pragas (madeira tratada sob pressão, tratamentos com borato)
+- Dicas práticas para conservação de estruturas de madeira
+- Diferenças entre técnicas tradicionais e modernas de carpintaria
 
 ## CONTEÚDO OBRIGATÓRIO:
-- Seção obrigatória com o título **"## Historical Timeline of American Carpentry"** cobrindo do período colonial até hoje com pelo menos 8 marcos históricos e contexto técnico
+- Seção obrigatória com o título **"## Linha do Tempo Histórica da Carpintaria Americana"** cobrindo do período colonial até hoje com pelo menos 8 marcos históricos e contexto técnico
 - Tabela comparativa com 7+ linhas comparando técnicas, materiais ou sistemas
 - 5-8 links externos para sites de autoridade americanos (This Old House, Fine Homebuilding, Bob Vila, Family Handyman, etc.)
-- FAQ com 8-12 perguntas em inglês
+- FAQ com 8-12 perguntas em PORTUGUÊS (seção "## Perguntas Frequentes")
 - Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
 
 ## REGRAS DE TÍTULO E RESUMO (CARPINTARIA):
