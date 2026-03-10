@@ -689,11 +689,24 @@ const SocialMediaPostCards = ({
           <CardDescription>Formato retrato para feed e Reels</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Translate buttons */}
+          <TranslateButtons
+            originalText={igPostText}
+            currentLang={igTransLang}
+            setter={setIgTranslatedText}
+            langSetter={setIgTransLang}
+            loadingSetter={setTranslatingIg}
+            isLoading={translatingIg}
+            prefix="ig"
+          />
           {/* Preview text */}
           <div className="bg-background rounded-lg border border-border/50 p-3 text-xs text-foreground whitespace-pre-line max-h-[160px] overflow-y-auto">
-            {igPostText}
+            {igTranslatedText || igPostText}
           </div>
-          <CopyBtn field="ig-text" onClick={() => copyText(igPostText, 'ig-text')} label="Copiar Legenda" />
+          <div className="flex gap-2">
+            <CopyBtn field="ig-text" onClick={() => copyText(igTranslatedText || igPostText, 'ig-text')} label="Copiar Legenda" />
+            {igTransLang && <Badge variant="secondary" className="text-xs">{igTransLang === 'en' ? '🇺🇸 EN' : '🇪🇸 ES'}</Badge>}
+          </div>
 
           {/* Image with copy */}
           <div className="space-y-2">
