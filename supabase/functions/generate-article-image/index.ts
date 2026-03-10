@@ -302,16 +302,28 @@ serve(async (req) => {
     }
 
     const isCarpentrySubject = !!matchedCarpentryStyle;
+
+    // Resolve the effective mainSubject from article data (priority) or request params
+    const effectiveMainSubject = mainSubject || articleContext?.main_subject || '';
+    const effectiveVisualContext = visualContext || articleContext?.visual_context || '';
+    const hasArticleSpecificData = effectiveMainSubject.trim().length > 10;
     
-    // For architecture or carpentry: use STYLE-SPECIFIC subject
+    // For architecture or carpentry: use article-specific data FIRST, static mappings as FALLBACK
     let subject: string;
     if (isArchitectureSubject && matchedArchStyle) {
+      // Architecture always uses style-specific prompts (exterior facades)
       subject = architectureStylePrompts[matchedArchStyle].subject;
+    } else if (isCarpentrySubject && hasArticleSpecificData) {
+      // Carpentry: PRIORITIZE article-specific mainSubject (reflects the actual article content)
+      subject = effectiveMainSubject;
+      console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
     } else if (isCarpentrySubject && matchedCarpentryStyle) {
+      // Carpentry fallback: use static style prompts only when no article data
       subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
+      console.log(`[ImageGen] Using static fallback for carpentry style: ${matchedCarpentryStyle}`);
     } else {
-      const translatedMainSubject = mainSubject ? extractSubjectFromTitle(mainSubject) : null;
-      const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== mainSubject
+      const translatedMainSubject = effectiveMainSubject ? extractSubjectFromTitle(effectiveMainSubject) : null;
+      const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== effectiveMainSubject
         ? translatedMainSubject
         : null;
       subject = mainSubjectTranslated || extractSubjectFromTitle(title || articleContext?.title || '');
@@ -337,15 +349,16 @@ serve(async (req) => {
     }
 
     const archDetails = matchedArchStyle ? architectureStylePrompts[matchedArchStyle].details : '';
+    // For carpentry: use static details as enrichment, but article data drives the main subject
     const carpentryDetails = matchedCarpentryStyle ? carpentryStylePrompts[matchedCarpentryStyle].details : '';
 
-    console.log(`[ImageGen] Category: "${effectiveCategory}", ArchStyle: "${matchedArchStyle}", CarpentryStyle: "${matchedCarpentryStyle}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}`);
+    console.log(`[ImageGen] Category: "${effectiveCategory}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}, articleSpecific: ${hasArticleSpecificData}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
     const carpentrySetting = 'American residential construction site, suburban neighborhood, natural daylight, professional construction photography';
     
-    const resolvedVisualContext = visualContext || articleContext?.visual_context || '';
+    const resolvedVisualContext = effectiveVisualContext || '';
 
     let setting: string;
     if (isArchitectureSubject) {
@@ -372,6 +385,7 @@ serve(async (req) => {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
+        // Use article-specific subject enriched with carpentry details
         prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
@@ -398,9 +412,10 @@ serve(async (req) => {
         // Include BOTH the style subject AND the style details for consistency
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        // Ensure gallery images stay relevant to carpentry/construction
+        // Gallery images: use the article-specific customPrompt (galleryPrompt) as primary driver
+        // The customPrompt already contains detailed, article-specific image descriptions
         const carpentryGallery = translatePromptTerms(galleryDetail);
-        prompt = `${subject}, ${carpentryDetails}, ${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+        prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
       } else {
         prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
