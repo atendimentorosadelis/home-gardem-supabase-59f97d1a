@@ -192,6 +192,8 @@ export function useFullArticleGeneration() {
       const isCarpentryTopic = /carpintaria|wood\s*fram|timber\s*fram/i.test(topic);
       const timeoutMs = isCarpentryTopic ? 300000 : 180000; // 5 min for carpentry, 3 min otherwise
 
+      console.log(`[Generation] Calling generate-full-article for topic: "${topic}" (timeout: ${timeoutMs}ms)`);
+      
       const { data: articleData, error: articleError } = await invokeEdgeFunction(
         'generate-full-article',
         { topic },
@@ -200,6 +202,16 @@ export function useFullArticleGeneration() {
       );
 
       if (cancelledRef.current) return null;
+
+      console.log('[Generation] Edge function response:', {
+        success: articleData?.success,
+        hasArticle: !!articleData?.article,
+        error: articleData?.error || articleError?.message || null,
+        title: articleData?.article?.title || 'N/A',
+        mainSubject: articleData?.article?.mainSubject || 'N/A',
+        visualContext: articleData?.article?.visualContext || 'N/A',
+        galleryPromptsCount: articleData?.article?.galleryPrompts?.length || 0,
+      });
 
       if (articleError || !articleData?.success) {
         throw new Error(articleData?.error || articleError?.message || 'Failed to generate article');
