@@ -114,21 +114,35 @@ function calculateReadTime(content: string): string {
   return `${minutes} min`;
 }
 
+// Pre-validated domains that are known to be alive — skip HEAD request
+const KNOWN_GOOD_DOMAINS = new Set([
+  'bhg.com', 'thespruce.com', 'hgtv.com', 'marthastewart.com', 'housebeautiful.com',
+  'realsimple.com', 'architecturaldigest.com', 'dwell.com', 'archdaily.com', 'dezeen.com',
+  'gardeningknowhow.com', 'almanac.com', 'finegardening.com', 'gardeners.com', 'epicgardening.com',
+  'extension.umn.edu', 'thisoldhouse.com', 'familyhandyman.com', 'bobvila.com', 'lowes.com',
+  'homedepot.com', 'finehomebuilding.com', 'finewoodworking.com', 'popularwoodworking.com',
+  'woodmagazine.com', 'jlconline.com',
+]);
+
+function getDomainFromUrl(url: string): string {
+  try { return new URL(url).hostname.replace('www.', ''); } catch { return ''; }
+}
+
 async function validateUrl(url: string): Promise<boolean> {
   try {
-    if (!url || !url.startsWith('http')) {
-      return false;
-    }
+    if (!url || !url.startsWith('http')) return false;
+
+    // Skip HEAD request for known-good domains
+    const domain = getDomainFromUrl(url);
+    if (domain && KNOWN_GOOD_DOMAINS.has(domain)) return true;
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced from 5s to 3s
     
     const response = await fetch(url, {
       method: 'HEAD',
       signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; LinkValidator/1.0)',
-      },
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkValidator/1.0)' },
       redirect: 'follow',
     });
     
