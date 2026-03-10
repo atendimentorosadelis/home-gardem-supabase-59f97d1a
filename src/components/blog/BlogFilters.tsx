@@ -120,7 +120,7 @@ export function BlogFilters({
         </Select>
       </div>
 
-      {/* Parent Category Filters - Only 4 buttons */}
+      {/* Parent Category Filters - 5 buttons */}
       <div className="flex flex-wrap justify-center gap-3">
         {parentKeys.map((key) => {
           const Icon = parentCategoryIcons[key];
