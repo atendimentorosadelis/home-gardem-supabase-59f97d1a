@@ -508,31 +508,53 @@ const SocialMediaPostCards = ({
   const copyImageToClipboard = async (url: string, field: string) => {
     setCopyingImage(field);
     try {
-      const response = await fetch(url);
+      // Fetch the image as blob
+      const response = await fetch(url, { mode: 'cors' });
+      if (!response.ok) throw new Error('Fetch failed');
       const blob = await response.blob();
-      // Convert to PNG for clipboard compatibility
-      const img = document.createElement('img');
-      img.crossOrigin = 'anonymous';
-      const loaded = new Promise<void>((resolve) => { img.onload = () => resolve(); });
-      img.src = URL.createObjectURL(blob);
-      await loaded;
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(img.src);
-      const pngBlob = await new Promise<Blob>((resolve) =>
-        canvas.toBlob((b) => resolve(b!), 'image/png')
-      );
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': pngBlob })
-      ]);
+      
+      // If already PNG, use directly
+      if (blob.type === 'image/png') {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+      } else {
+        // Convert to PNG via canvas using blob URL (avoids CORS taint)
+        const blobUrl = URL.createObjectURL(blob);
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error('Image load failed'));
+          img.src = blobUrl;
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(blobUrl);
+        const pngBlob = await new Promise<Blob>((resolve, reject) =>
+          canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Canvas toBlob failed')), 'image/png')
+        );
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': pngBlob })
+        ]);
+      }
       setCopiedField(field);
-      toast.success('Imagem copiada para a memória!');
+      toast.success('Imagem copiada! Cole no seu post.');
       setTimeout(() => setCopiedField(null), 2500);
-    } catch {
-      toast.error('Não foi possível copiar a imagem. Tente baixar.');
+    } catch (err) {
+      console.error('Copy image error:', err);
+      // Fallback: try to copy the URL
+      try {
+        await navigator.clipboard.writeText(url);
+        setCopiedField(field);
+        toast.info('URL da imagem copiada (seu navegador bloqueou cópia direta da imagem). Cole no post ou baixe a imagem.');
+        setTimeout(() => setCopiedField(null), 2500);
+      } catch {
+        toast.error('Não foi possível copiar. Tente baixar a imagem.');
+      }
     } finally {
       setCopyingImage(null);
     }
