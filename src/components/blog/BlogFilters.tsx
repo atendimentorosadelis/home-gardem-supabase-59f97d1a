@@ -29,6 +29,7 @@ const parentCategoryIcons: Record<string, React.ComponentType<{ className?: stri
   'design-interno': Home,
   'jardim': Leaf,
   'arquitetura': Building2,
+  'carpintaria': Hammer,
 };
 
 export function BlogFilters({
