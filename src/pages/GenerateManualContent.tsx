@@ -42,6 +42,8 @@ import {
   ArrowRight,
   Ghost,
   PaintBucket,
+  Hammer,
+  Axe,
   type LucideIcon
 } from 'lucide-react';
 import { AIIcon } from '@/components/AIIcon';
