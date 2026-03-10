@@ -782,48 +782,6 @@ function GenerateManualContentPage() {
               </CardContent>
             </Card>
 
-            {/* Title & Excerpt Regeneration */}
-            <Card className="border-border/50">
-              <CardContent className="py-4">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <p className="text-sm font-medium">Refinar antes de publicar</p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground">Título</p>
-                        <p className="text-sm font-medium truncate">{article.title}</p>
-                      </div>
-                      <TitleExcerptSuggestionButton
-                        type="title"
-                        currentTitle={article.title}
-                        currentExcerpt={article.excerpt}
-                        body={article.content}
-                        category={article.category}
-                        onSelectTitle={(title) => setArticle({ ...article, title, slug: title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') })}
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground">Resumo</p>
-                        <p className="text-sm text-muted-foreground truncate">{article.excerpt || 'Sem resumo'}</p>
-                      </div>
-                      <TitleExcerptSuggestionButton
-                        type="excerpt"
-                        currentTitle={article.title}
-                        currentExcerpt={article.excerpt}
-                        body={article.content}
-                        category={article.category}
-                        onSelectExcerpt={(excerpt) => setArticle({ ...article, excerpt })}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             <Card className="border-border/50">
               <CardContent className="py-4">
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -841,7 +799,11 @@ function GenerateManualContentPage() {
               </CardContent>
             </Card>
 
-            <ArticlePreviewFull article={article} />
+            <ArticlePreviewFull
+              article={article}
+              onUpdateTitle={(title) => setArticle({ ...article, title, slug: title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') })}
+              onUpdateExcerpt={(excerpt) => setArticle({ ...article, excerpt })}
+            />
           </div>
         )}
       </div>
