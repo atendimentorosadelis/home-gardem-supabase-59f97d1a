@@ -691,6 +691,38 @@ function GenerateManualContentPage() {
                   </Button>
                 </CardContent>
               </Card>
+
+              {/* Carpintaria Card */}
+              <Card className="border-border/50 hover:border-primary/30 transition-colors">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Hammer className="h-4 w-4 text-primary" />
+                    </div>
+                    Carpintaria Americana
+                  </CardTitle>
+                  <CardDescription className="text-sm">Construção em madeira, isolamento, aquecimento e manutenção</CardDescription>
+                  {carpintariaSelected.length > 0 && (() => {
+                    const selected = CARPINTARIA_SUBNICHES.find(s => s.id === carpintariaSelected[0]);
+                    if (!selected) return null;
+                    const IconComp = selected.icon;
+                    return (
+                      <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
+                        <IconComp className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">{selected.label}</span>
+                      </div>
+                    );
+                  })()}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {CARPINTARIA_SUBNICHES.map((item) => renderSubnicheCard(item, carpintariaSelected, toggleCarpintaria, 'carpintaria'))}
+                  </div>
+                  <Button className="w-full rounded-xl" onClick={handleGenerateCarpintaria} disabled={isGenerating || carpintariaSelected.length === 0}>
+                    {isGenerating ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>) : (<><AIIcon size="sm" className="mr-2" />Gerar Artigo</>)}
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Commemorative Dates Card */}
