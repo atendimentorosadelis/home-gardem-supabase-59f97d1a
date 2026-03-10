@@ -7,6 +7,11 @@ const corsHeaders = {
 };
 
 const subjectTranslations: Record<string, string> = {
+  'decoração de jardim': 'garden decoration, outdoor garden with decorative elements, ornamental garden design',
+  'decoracao de jardim': 'garden decoration, outdoor garden with decorative elements, ornamental garden design',
+  'decoracao-jardim': 'garden decoration, outdoor garden with decorative elements, ornamental garden design',
+  'dicas de decoração de jardim': 'garden decoration tips, outdoor garden styling, ornamental plants and garden accessories',
+  'jardim decorado': 'decorated garden, ornamental outdoor garden with pathways and lighting',
   'horta de ervas': 'herb garden', 'horta': 'vegetable garden', 'ervas': 'herb garden',
   'ervas aromáticas': 'aromatic herb garden', 'temperos': 'herb and spice garden',
   'flores ornamentais': 'ornamental flowers', 'flores': 'flower garden',
@@ -360,6 +365,11 @@ serve(async (req) => {
     
     const resolvedVisualContext = effectiveVisualContext || '';
 
+    // Detect garden/outdoor categories
+    const gardenCategories = ['jardim', 'decoracao-jardim', 'cuidados-plantacao', 'jardim-vertical', 'suculentas-cactos', 'horta-de-ervas', 'flores-ornamentais', 'paisagismo', 'hidroponia', 'jardim-sustentavel', 'nomes-cuidados-plantas-flores', 'hortas-ervas-cuidados', 'piscina'];
+    const isGardenCategory = gardenCategories.some(g => categoryLower.includes(g) || categoryNormalized.includes(g));
+    const gardenSetting = 'beautiful outdoor garden, natural sunlight, lush green plants, professional garden photography, vibrant colors';
+
     let setting: string;
     if (isArchitectureSubject) {
       if (resolvedVisualContext && !resolvedVisualContext.toLowerCase().includes('interior')) {
@@ -369,6 +379,8 @@ serve(async (req) => {
       }
     } else if (isCarpentrySubject) {
       setting = resolvedVisualContext || carpentrySetting;
+    } else if (isGardenCategory) {
+      setting = resolvedVisualContext || gardenSetting;
     } else {
       setting = resolvedVisualContext || interiorSetting;
     }
