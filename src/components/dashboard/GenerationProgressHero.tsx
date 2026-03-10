@@ -51,7 +51,7 @@ function getStatusLabel(steps: GenerationStep[], isGenerating?: boolean): string
   return 'Aguardando início';
 }
 
-export function GenerationProgressHero({ steps, startTime, isGenerating, onCancel, topic }: GenerationProgressHeroProps) {
+export function GenerationProgressHero({ steps, startTime, isGenerating, onCancel, onReset, topic }: GenerationProgressHeroProps) {
   const [elapsed, setElapsed] = useState(0);
   const { getProviderShortLabel } = useImageProvider();
   const progress = calculateProgress(steps);
