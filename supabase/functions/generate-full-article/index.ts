@@ -387,8 +387,8 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
 function buildCarpentryHistoricalExpansion(topic: string): string {
   const timelineMilestones = [
     {
-      period: '1607-1775 | Colonial Foundations',
-      detail: 'Early settlers in Jamestown and New England adapted English timber traditions to local forests, using hand-hewn beams, mortise-and-tenon joints, and heavy-frame barns; this period established carpentry as both a survival skill and a respected trade in the colonies.'
+      period: '1607-1775 | Fundações Coloniais',
+      detail: 'Os primeiros colonos em Jamestown e na Nova Inglaterra adaptaram as tradições inglesas de carpintaria às florestas locais, usando vigas lavradas à mão, juntas de encaixe (mortise-and-tenon) e celeiros de estrutura pesada; esse período estabeleceu a carpintaria como habilidade de sobrevivência e ofício respeitado nas colônias.'
     },
     {
       period: '1776-1820 | Early Republic Craftsmanship',
