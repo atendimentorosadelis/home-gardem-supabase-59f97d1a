@@ -525,7 +525,7 @@ function GenerateManualContentPage() {
   };
 
   const showCategorySelection = !showPreview && !showImageApproval;
-  const hasAnySelection = designSelected.length > 0 || jardimSelected.length > 0 || arquiteturaSelected.length > 0 || commemorativeSelected !== null;
+  const hasAnySelection = designSelected.length > 0 || jardimSelected.length > 0 || arquiteturaSelected.length > 0 || carpintariaSelected.length > 0 || commemorativeSelected !== null;
 
   return (
     <DashboardLayout>
