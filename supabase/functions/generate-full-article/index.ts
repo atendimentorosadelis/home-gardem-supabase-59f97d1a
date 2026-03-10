@@ -495,6 +495,22 @@ serve(async (req) => {
       }
     }
 
+    // Anti-duplication: fetch recent titles to avoid repetitive titles
+    let recentTitles: string[] = [];
+    if (supabase) {
+      try {
+        const { data: recentArticles } = await supabase
+          .from('content_articles')
+          .select('title')
+          .order('created_at', { ascending: false })
+          .limit(30);
+        recentTitles = (recentArticles || []).map((a) => a.title).filter(Boolean);
+        console.log(`[AntiDuplicate] Loaded ${recentTitles.length} recent titles for anti-repetition`);
+      } catch (e) {
+        console.warn('[AntiDuplicate] Failed to load recent titles:', e);
+      }
+    }
+
     if (!topic) {
       throw new Error("Topic is required");
     }
