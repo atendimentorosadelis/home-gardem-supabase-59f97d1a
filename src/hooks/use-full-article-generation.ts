@@ -192,6 +192,8 @@ export function useFullArticleGeneration() {
       const isCarpentryTopic = /carpintaria|wood\s*fram|timber\s*fram/i.test(topic);
       const timeoutMs = isCarpentryTopic ? 300000 : 180000; // 5 min for carpentry, 3 min otherwise
 
+      console.log(`[Generation] Calling generate-full-article for topic: "${topic}" (timeout: ${timeoutMs}ms)`);
+      
       const { data: articleData, error: articleError } = await invokeEdgeFunction(
         'generate-full-article',
         { topic },
@@ -200,6 +202,16 @@ export function useFullArticleGeneration() {
       );
 
       if (cancelledRef.current) return null;
+
+      console.log('[Generation] Edge function response:', {
+        success: articleData?.success,
+        hasArticle: !!articleData?.article,
+        error: articleData?.error || articleError?.message || null,
+        title: articleData?.article?.title || 'N/A',
+        mainSubject: articleData?.article?.mainSubject || 'N/A',
+        visualContext: articleData?.article?.visualContext || 'N/A',
+        galleryPromptsCount: articleData?.article?.galleryPrompts?.length || 0,
+      });
 
       if (articleError || !articleData?.success) {
         throw new Error(articleData?.error || articleError?.message || 'Failed to generate article');
@@ -254,23 +266,39 @@ export function useFullArticleGeneration() {
 
       let savedArticleId: string | null = null;
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        console.log('[Generation] User:', user?.id || 'NOT LOGGED IN', userError ? `Error: ${userError.message}` : '');
 
-        if (user) {
-          const { data: profile } = await supabase
+        if (!user) {
+          console.error('[Generation] No user logged in - cannot save article');
+          updateStep('saving', { status: 'error', detail: 'Não logado' });
+        } else {
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('id')
             .eq('user_id', user.id)
             .single();
 
-          if (profile) {
-            // Check if article with this slug already exists AS DRAFT ONLY
-            // NEVER overwrite published articles - create a new one with modified slug instead
-            const { data: existingArticle } = await supabase
+          console.log('[Generation] Profile:', profile?.id || 'NOT FOUND', profileError ? `Error: ${profileError.message}` : '');
+
+          if (!profile) {
+            console.error('[Generation] No profile found for user - cannot save article');
+            updateStep('saving', { status: 'error', detail: 'Sem perfil' });
+          } else {
+            // Check if article with this slug already exists
+            // Use .limit(1) instead of .maybeSingle() to avoid error when multiple rows exist
+            const { data: existingArticles, error: slugCheckError } = await supabase
               .from('content_articles')
               .select('id, status')
               .eq('slug', generatedArticle.slug)
-              .maybeSingle();
+              .order('created_at', { ascending: false })
+              .limit(1);
+
+            if (slugCheckError) {
+              console.error('[ArticleGen] Slug check error:', slugCheckError);
+            }
+
+            const existingArticle = existingArticles?.[0] || null;
 
             // If slug already exists and is published, append timestamp to make unique slug
             let finalSlug = generatedArticle.slug;
@@ -303,19 +331,27 @@ export function useFullArticleGeneration() {
 
             // Only reuse existing article if it's a draft (not published)
             if (existingArticle && existingArticle.status === 'draft') {
+              console.log(`[ArticleGen] Updating existing draft: ${existingArticle.id}`);
               const result = await supabase
                 .from('content_articles')
                 .update(articleRecord)
                 .eq('id', existingArticle.id)
                 .select()
                 .single();
+              if (result.error) {
+                console.error('[ArticleGen] Update error:', result.error);
+              }
               savedArticle = result.data;
             } else {
+              console.log(`[ArticleGen] Inserting new article with slug: ${finalSlug}`);
               const result = await supabase
                 .from('content_articles')
                 .insert(articleRecord)
                 .select()
                 .single();
+              if (result.error) {
+                console.error('[ArticleGen] Insert error:', result.error);
+              }
               savedArticle = result.data;
             }
 
