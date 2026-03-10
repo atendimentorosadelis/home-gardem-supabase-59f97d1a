@@ -384,6 +384,49 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
   return { mainSubject, visualContext, galleryPrompts };
 }
 
+function buildCarpentryHistoricalExpansion(topic: string): string {
+  const timelineMilestones = [
+    {
+      period: '1607-1775 | Colonial Foundations',
+      detail: 'Early settlers in Jamestown and New England adapted English timber traditions to local forests, using hand-hewn beams, mortise-and-tenon joints, and heavy-frame barns; this period established carpentry as both a survival skill and a respected trade in the colonies.'
+    },
+    {
+      period: '1776-1820 | Early Republic Craftsmanship',
+      detail: 'After independence, regional carpentry guilds and apprenticeships expanded, and builders standardized framing dimensions for homes, taverns, and civic buildings; carpenters balanced speed with durability while responding to rapid town growth and new infrastructure demands.'
+    },
+    {
+      period: '1820-1860 | Balloon Framing Revolution',
+      detail: 'Industrial sawmills and affordable machine-cut nails made balloon framing viable, replacing many heavy-timber systems; long studs running from sill to roof accelerated construction, reduced labor costs, and transformed housing production across expanding Midwestern cities.'
+    },
+    {
+      period: '1860-1910 | Railroads, Catalog Homes, and Code Beginnings',
+      detail: 'Rail networks moved lumber nationwide and enabled mail-order house kits, while cities introduced early fire and structural ordinances; carpenters began following emerging code culture, combining practical field techniques with gradually formalized engineering requirements.'
+    },
+    {
+      period: '1910-1945 | Platform Framing and Suburban Preparation',
+      detail: 'Platform framing became dominant because each floor created a safer working deck, reduced fire spread in wall cavities, and simplified sequencing; builders adopted repeatable methods that later supported large-scale suburban development after World War II.'
+    },
+    {
+      period: '1945-1980 | Suburban Boom and Mechanical Integration',
+      detail: 'Postwar demand pushed mass housing projects where carpentry coordinated with electrical, plumbing, and HVAC systems; standardized 2x4 and 2x6 assemblies, plywood sheathing, and insulation practices became routine in American residential construction workflows.'
+    },
+    {
+      period: '1980-2005 | Energy Codes and Performance Building',
+      detail: 'Rising energy costs and stricter regulations drove better air sealing, vapor control, and insulation detailing; carpenters increasingly collaborated with inspectors and designers to meet thermal targets, moisture management standards, and occupant comfort requirements.'
+    },
+    {
+      period: '2005-Today | High-Performance and Hybrid Wood Construction',
+      detail: 'Modern carpentry combines advanced fasteners, engineered wood products, digital layout tools, and resilient detailing against moisture and wind; builders now integrate performance testing, sustainability goals, and code compliance from design through final inspection.'
+    },
+  ];
+
+  const timelineSection = timelineMilestones
+    .map((item, index) => `### ${index + 1}. ${item.period}\n${item.detail}`)
+    .join('\n\n');
+
+  return `\n\n## Historical Timeline of American Carpentry (Deep Dive)\n\nWhen I researched ${topic} in depth, I realized that American carpentry did not evolve in a straight line. It grew through climate challenges, migration waves, industrial innovation, and code enforcement cycles that forced builders to improve structure, safety, and thermal performance. This timeline helps contextualize why modern wood-frame housing in the United States is so systemized and efficient today.\n\n${timelineSection}\n\n## Why This Historical Context Still Matters on Real Job Sites\n\nUnderstanding this history changes how we interpret current best practices. Balloon framing explains old-house fire blocking retrofits; platform framing explains why today\'s crews sequence floors and walls differently; and post-1980 code pressure explains why insulation, air sealing, and moisture control are treated as structural priorities rather than optional upgrades. In practical terms, history informs every decision from stud spacing and sheathing attachment to vapor retarder placement and thermal bridge mitigation.\n\nAs I compare U.S. methods with the masonry-heavy tradition we know in Brazil, I see that American carpentry evolved around modular logistics and repeatable labor workflows. That is why dimensional lumber standards, fastening schedules, and inspection checkpoints are so explicit. The goal is not only speed, but predictable performance under weather loads, seasonal temperature swings, and long-term maintenance cycles.\n\n## Technical Legacy That Connects Past and Present\n\nThe historical shift from craft-only framing to code-driven framing created a culture where carpenters must understand load paths, moisture movement, and energy metrics. Today, concepts like R-value continuity, airtightness, flashing hierarchy, and mechanical coordination are direct descendants of lessons learned over centuries of field mistakes and innovation.\n\nFor anyone studying American carpentry seriously, this perspective is essential: every modern wall assembly carries historical DNA. The framing patterns, insulation standards, fastening rules, and detailing checklists we use now were built layer by layer through decades of experimentation, failures, and refinements. Knowing that lineage helps us design better, build safer, and maintain wood structures with far more confidence.`;
+}
+
 function getCurrentDateFormatted(): string {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
@@ -457,6 +500,7 @@ serve(async (req) => {
     }
 
     console.log(`Generating full article for topic: ${topic}`);
+    const requestStartedAt = Date.now();
 
     const currentDate = getCurrentDateFormatted();
     
@@ -943,6 +987,7 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Differences between traditional and modern carpentry techniques
 
 ## CONTEÚDO OBRIGATÓRIO:
+- Seção obrigatória com o título **"## Historical Timeline of American Carpentry"** cobrindo do período colonial até hoje com pelo menos 8 marcos históricos e contexto técnico
 - Tabela comparativa com 7+ linhas comparando técnicas, materiais ou sistemas
 - 5-8 links externos para sites de autoridade americanos (This Old House, Fine Homebuilding, Bob Vila, Family Handyman, etc.)
 - FAQ com 8-12 perguntas em inglês
@@ -1404,77 +1449,85 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
     const minimumWordCount = isPaintingTopic ? 2500 : 2200;
     let finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
 
-    // AUTO-COMPLETION: if content is too short, ask GPT to expand it instead of discarding
+    const injectAdditionalContent = (additionalContent: string) => {
+      const faqMatch = finalContent.match(/##\s*(FAQ|Perguntas\s+Frequentes)/i);
+      if (faqMatch && faqMatch.index !== undefined) {
+        finalContent = finalContent.substring(0, faqMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(faqMatch.index);
+        return;
+      }
+
+      const sigMatch = finalContent.match(/\n---\s*\n\*\*Escrito com carinho/i);
+      if (sigMatch && sigMatch.index !== undefined) {
+        finalContent = finalContent.substring(0, sigMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(sigMatch.index);
+        return;
+      }
+
+      finalContent = finalContent + '\n\n' + additionalContent;
+    };
+
+    // AUTO-COMPLETION: if content is too short, expand while respecting runtime budget
     if (finalWordCount < minimumWordCount) {
       const shortfall = minimumWordCount - finalWordCount;
-      console.log(`⚠️ Content too short: ${finalWordCount} words (min ${minimumWordCount}). Auto-expanding by ~${shortfall} words...`);
+      const elapsedMs = Date.now() - requestStartedAt;
+      const runtimeBudgetExceeded = elapsedMs > 45000;
 
-      try {
-        const expandResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${OPENAI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "gpt-4o",
-            messages: [
-              {
-                role: "system",
-                content: `Você é Keven Costa Vieira. Você recebeu um artigo que está CURTO demais (${finalWordCount} palavras, precisa de no mínimo ${minimumWordCount}).
+      console.log(`⚠️ Content too short: ${finalWordCount} words (min ${minimumWordCount}). Shortfall: ${shortfall} words. Elapsed: ${elapsedMs}ms`);
 
-Sua tarefa: EXPANDIR o artigo existente adicionando mais ${shortfall + 300} palavras de conteúdo NOVO e RELEVANTE.
+      if (isCarpentryTopic) {
+        const carpentryExpansion = buildCarpentryHistoricalExpansion(topic);
+        injectAdditionalContent(carpentryExpansion);
+        finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
+        console.log(`✅ Applied deterministic carpentry expansion. New word count: ${finalWordCount}`);
+      } else if (runtimeBudgetExceeded) {
+        console.warn('⚠️ Skipping OpenAI auto-expansion to avoid edge runtime timeout.');
+      } else {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 25000);
 
-REGRAS:
-- Mantenha o TOM PESSOAL e CONFESSIONAL do Keven (1ª pessoa, vulnerável, amoroso)
-- NÃO repita informações já presentes no artigo
-- Adicione novas seções com ## (H2) que complementam o tema
-- Adicione mais dicas práticas, histórias pessoais, comparações do dia a dia
-- Mantenha valores em DÓLARES (USD/$)
-- NÃO adicione nova FAQ (já existe no artigo)
-- NÃO adicione nova assinatura (já existe no artigo)
-- Retorne APENAS o conteúdo ADICIONAL (sem repetir o que já existe)
-- Use formatação markdown: ## para títulos, - para listas, **negrito**`
-              },
-              {
-                role: "user",
-                content: `TEMA: "${topic}"\n\nARTIGO ATUAL (${finalWordCount} palavras):\n\n${finalContent.substring(0, 8000)}\n\n---\nAdicione mais ${shortfall + 300} palavras de conteúdo NOVO e RELEVANTE para complementar este artigo. Retorne APENAS o conteúdo adicional.`
-              }
-            ],
-            temperature: 0.85,
-            max_tokens: 8000,
-          })
-        });
+          const expandResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${OPENAI_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [
+                {
+                  role: "system",
+                  content: `Você é Keven Costa Vieira. O artigo atual está curto (${finalWordCount} palavras) e precisa chegar no mínimo em ${minimumWordCount} palavras.\n\nRetorne APENAS conteúdo adicional em markdown para ser inserido antes do FAQ.\nRegras: não repetir trechos existentes, manter primeira pessoa, manter USD, sem nova FAQ e sem nova assinatura.`
+                },
+                {
+                  role: "user",
+                  content: `TEMA: "${topic}"\n\nRESUMO DO ARTIGO ATUAL:\n${finalContent.substring(0, 5000)}\n\nAdicione aproximadamente ${Math.min(shortfall + 250, 900)} palavras de conteúdo novo e útil.`
+                }
+              ],
+              temperature: 0.8,
+              max_tokens: 5000,
+            })
+          });
 
-        if (expandResponse.ok) {
-          const expandData = await expandResponse.json();
-          const additionalContent = expandData.choices?.[0]?.message?.content?.trim();
+          clearTimeout(timeoutId);
 
-          if (additionalContent && additionalContent.length > 200) {
-            // Insert additional content BEFORE the FAQ section
-            const faqMatch = finalContent.match(/##\s*(FAQ|Perguntas\s+Frequentes)/i);
-            if (faqMatch && faqMatch.index !== undefined) {
-              finalContent = finalContent.substring(0, faqMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(faqMatch.index);
+          if (expandResponse.ok) {
+            const expandData = await expandResponse.json();
+            const additionalContent = expandData.choices?.[0]?.message?.content?.trim();
+
+            if (additionalContent && additionalContent.length > 200) {
+              injectAdditionalContent(additionalContent);
+              finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
+              console.log(`✅ Auto-expansion complete! New word count: ${finalWordCount}`);
             } else {
-              // Insert before signature
-              const sigMatch = finalContent.match(/\n---\s*\n\*\*Escrito com carinho/i);
-              if (sigMatch && sigMatch.index !== undefined) {
-                finalContent = finalContent.substring(0, sigMatch.index) + '\n\n' + additionalContent + '\n\n' + finalContent.substring(sigMatch.index);
-              } else {
-                finalContent = finalContent + '\n\n' + additionalContent;
-              }
+              console.warn('⚠️ Expansion returned insufficient content, proceeding with original');
             }
-
-            finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
-            console.log(`✅ Auto-expansion complete! New word count: ${finalWordCount}`);
           } else {
-            console.warn('⚠️ Expansion returned insufficient content, proceeding with original');
+            console.error('⚠️ Expansion API call failed, proceeding with original content');
           }
-        } else {
-          console.error('⚠️ Expansion API call failed, proceeding with original content');
+        } catch (expandError) {
+          console.error('⚠️ Auto-expansion error (non-fatal):', expandError);
         }
-      } catch (expandError) {
-        console.error('⚠️ Auto-expansion error (non-fatal):', expandError);
       }
     }
 
