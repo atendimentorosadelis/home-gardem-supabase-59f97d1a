@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 const categories = [
@@ -1446,7 +1446,7 @@ Antes de começar, faça um projeto visual mesmo que simples. Use aplicativos de
       finalContent = finalContent.substring(0, insertionPoint) + defaultFAQ + finalContent.substring(insertionPoint);
     }
 
-    const minimumWordCount = isPaintingTopic ? 2500 : 2200;
+    const minimumWordCount = isCarpentryTopic ? 3000 : isPaintingTopic ? 2500 : 2200;
     let finalWordCount = finalContent.split(/\s+/).filter(Boolean).length;
 
     const injectAdditionalContent = (additionalContent: string) => {
