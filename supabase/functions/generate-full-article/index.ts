@@ -495,6 +495,22 @@ serve(async (req) => {
       }
     }
 
+    // Anti-duplication: fetch recent titles to avoid repetitive titles
+    let recentTitles: string[] = [];
+    if (supabase) {
+      try {
+        const { data: recentArticles } = await supabase
+          .from('content_articles')
+          .select('title')
+          .order('created_at', { ascending: false })
+          .limit(30);
+        recentTitles = (recentArticles || []).map((a) => a.title).filter(Boolean);
+        console.log(`[AntiDuplicate] Loaded ${recentTitles.length} recent titles for anti-repetition`);
+      } catch (e) {
+        console.warn('[AntiDuplicate] Failed to load recent titles:', e);
+      }
+    }
+
     if (!topic) {
       throw new Error("Topic is required");
     }
@@ -684,12 +700,65 @@ REGRAS CRÍTICAS:
 ⚠️ MÍNIMO ABSOLUTO: 2.200 palavras
 ✅ IDEAL: 2.500 - 3.000 palavras
 
+# REGRAS OBRIGATÓRIAS PARA O TÍTULO (CRÍTICO)
+
+🎲 NÚMERO SORTEADO PARA ESTILO DO TÍTULO: ${Math.floor(Math.random() * 8) + 1}
+
+Use o ESTILO correspondente ao número sorteado:
+1. 🫂 CONFISSÃO — "Eu Quase Desisti de Ter um ${topic} Até Que..." / "Meu Maior Erro Com ${topic}"
+2. 🤔 PERGUNTA PROVOCATIVA — "Será Que Seu ${topic} Está Te Sabotando?" / "Por Que Ninguém Fala Disso Sobre ${topic}?"
+3. 💡 EPIFANIA — "O Dia Que Entendi o Verdadeiro Segredo do ${topic}" / "Quando Finalmente Acertei no ${topic}"
+4. 🎯 OPINIÃO FORTE — "Cansei de Ver ${topic} Sem Personalidade" / "A Verdade Que Ninguém Conta Sobre ${topic}"
+5. 🌿 SENSORIAL — "Aquele Cantinho de ${topic} Que Faz a Alma Respirar" / "A Luz Perfeita no ${topic}: Uma Sensação de Paz"
+6. 📖 NARRATIVA — "A História Por Trás do Meu ${topic} Favorito" / "Como um ${topic} Mudou Minha Forma de Viver"
+7. 🔥 COMPARAÇÃO — "${topic} Minimalista vs. Clássico: Qual Combina Com Você?" / "Antes e Depois: Meu ${topic} Transformado"
+8. 💬 CONVERSA — "Vem Ver o Que Fiz no Meu ${topic}" / "Preciso Te Mostrar Esse ${topic}"
+
+❌ TÍTULOS PROIBIDOS (BANIDOS - NUNCA USE):
+- "Criando o/a [qualquer coisa] dos Seus Sonhos" - BANIDO PERMANENTEMENTE
+- "Transformando Seu/Sua [qualquer coisa]" - BANIDO
+- "Guia Completo/Definitivo" - BANIDO
+- "Dicas Essenciais/Imperdíveis/Incríveis" - BANIDO
+- "Descubra Como" - BANIDO
+- "Tudo Sobre" - BANIDO
+- Qualquer título genérico que poderia servir para QUALQUER tema - BANIDO
+- Títulos que começam com "Como Criar" ou "Como Montar" - BANIDO
+
+✅ O TÍTULO DEVE:
+- Ser ÚNICO e impossível de confundir com outro artigo
+- Ter personalidade e emoção REAL
+- Mencionar algo ESPECÍFICO (um detalhe, uma emoção, um momento)
+- Ter entre 45 e 70 caracteres
+- Soar como algo que uma PESSOA REAL diria, não uma IA
+
+${recentTitles.length > 0 ? `⚠️ TÍTULOS RECENTES (NÃO REPITA PADRÕES SIMILARES):
+${recentTitles.slice(0, 15).map(t => `- "${t}"`).join('\n')}
+O novo título DEVE ser COMPLETAMENTE DIFERENTE dos listados acima em estrutura e palavras.` : ''}
+
+# REGRAS OBRIGATÓRIAS PARA O EXCERPT/RESUMO
+
+🎲 NÚMERO SORTEADO PARA EXCERPT: ${Math.floor(Math.random() * 25) + 1}
+
+O resumo DEVE:
+- Ter entre 100 e 155 caracteres
+- Complementar o título sem repeti-lo
+- Soar como um áudio que você mandaria pra um amigo
+- Provocar curiosidade EMOCIONAL, não racional
+
+❌ PROIBIDO NO EXCERPT:
+- "Outro dia percebi" - BANIDO
+- "Neste artigo" - BANIDO
+- "Descubra como" - BANIDO
+- "Confira dicas" - BANIDO
+- "Veja como" - BANIDO
+- Repetir palavras do título - EVITAR
+
 # FORMATO DE RESPOSTA (CRÍTICO)
 
 Retorne APENAS JSON válido (sem markdown code blocks):
 {
-  "title": "Título acolhedor e interessante (máximo 70 caracteres)",
-  "excerpt": "Resumo variado e pessoal",
+  "title": "Título ÚNICO seguindo o estilo sorteado acima (máximo 70 caracteres)",
+  "excerpt": "Resumo pessoal e envolvente (100-155 caracteres)",
   "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Dicas de Pintura, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico, Carpintaria - História, Carpintaria - Wood Framing, Carpintaria - Tipos de Madeira, Carpintaria - Isolamento Térmico, Carpintaria - Aquecimento & Piso Aquecido, Carpintaria - Manutenção & Conservação, Carpintaria - Eficiência Energética, Carpintaria - Técnicas Tradicionais vs Modernas",
   "tags": ["5", "a", "7", "tags"],
   "keywords": "palavras-chave para SEO separadas por vírgula",
@@ -701,13 +770,6 @@ Retorne APENAS JSON válido (sem markdown code blocks):
 }
 
 ⚠️ TODOS os 6 gallery prompts devem mostrar O MESMO CÔMODO!
-
-🎲 NÚMERO SORTEADO PARA EXCERPT: ${Math.floor(Math.random() * 25) + 1}
-
-❌ PROIBIDO NO EXCERPT:
-- "Outro dia percebi" - BANIDO
-- "Neste artigo" - BANIDO
-- "Descubra como" - BANIDO
 
 - content DEVE OBRIGATORIAMENTE incluir "## Perguntas Frequentes" com 8-12 perguntas numeradas em negrito`;
 
