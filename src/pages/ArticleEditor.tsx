@@ -403,6 +403,12 @@ const SocialMediaPostCards = ({
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [copyingImage, setCopyingImage] = useState<string | null>(null);
+  const [fbLang, setFbLang] = useState<string>('pt-BR');
+  const [igLang, setIgLang] = useState<string>('pt-BR');
+  const [fbTranslatedText, setFbTranslatedText] = useState<string>('');
+  const [igTranslatedText, setIgTranslatedText] = useState<string>('');
+  const [translatingFb, setTranslatingFb] = useState(false);
+  const [translatingIg, setTranslatingIg] = useState(false);
 
   const siteUrl = 'https://homegardenmanual.com';
   const articleUrl = category && slug ? `${siteUrl}/${category}/${slug}` : '';
