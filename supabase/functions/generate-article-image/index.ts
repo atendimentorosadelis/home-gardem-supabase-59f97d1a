@@ -7,6 +7,11 @@ const corsHeaders = {
 };
 
 const subjectTranslations: Record<string, string> = {
+  'decoração de jardim': 'garden decoration, outdoor garden with decorative elements, ornamental garden design',
+  'decoracao de jardim': 'garden decoration, outdoor garden with decorative elements, ornamental garden design',
+  'decoracao-jardim': 'garden decoration, outdoor garden with decorative elements, ornamental garden design',
+  'dicas de decoração de jardim': 'garden decoration tips, outdoor garden styling, ornamental plants and garden accessories',
+  'jardim decorado': 'decorated garden, ornamental outdoor garden with pathways and lighting',
   'horta de ervas': 'herb garden', 'horta': 'vegetable garden', 'ervas': 'herb garden',
   'ervas aromáticas': 'aromatic herb garden', 'temperos': 'herb and spice garden',
   'flores ornamentais': 'ornamental flowers', 'flores': 'flower garden',
