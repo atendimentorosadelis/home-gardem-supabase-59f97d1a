@@ -264,13 +264,20 @@ export function useFullArticleGeneration() {
             .single();
 
           if (profile) {
-            // Check if article with this slug already exists AS DRAFT ONLY
-            // NEVER overwrite published articles - create a new one with modified slug instead
-            const { data: existingArticle } = await supabase
+            // Check if article with this slug already exists
+            // Use .limit(1) instead of .maybeSingle() to avoid error when multiple rows exist
+            const { data: existingArticles, error: slugCheckError } = await supabase
               .from('content_articles')
               .select('id, status')
               .eq('slug', generatedArticle.slug)
-              .maybeSingle();
+              .order('created_at', { ascending: false })
+              .limit(1);
+
+            if (slugCheckError) {
+              console.error('[ArticleGen] Slug check error:', slugCheckError);
+            }
+
+            const existingArticle = existingArticles?.[0] || null;
 
             // If slug already exists and is published, append timestamp to make unique slug
             let finalSlug = generatedArticle.slug;
@@ -303,19 +310,27 @@ export function useFullArticleGeneration() {
 
             // Only reuse existing article if it's a draft (not published)
             if (existingArticle && existingArticle.status === 'draft') {
+              console.log(`[ArticleGen] Updating existing draft: ${existingArticle.id}`);
               const result = await supabase
                 .from('content_articles')
                 .update(articleRecord)
                 .eq('id', existingArticle.id)
                 .select()
                 .single();
+              if (result.error) {
+                console.error('[ArticleGen] Update error:', result.error);
+              }
               savedArticle = result.data;
             } else {
+              console.log(`[ArticleGen] Inserting new article with slug: ${finalSlug}`);
               const result = await supabase
                 .from('content_articles')
                 .insert(articleRecord)
                 .select()
                 .single();
+              if (result.error) {
+                console.error('[ArticleGen] Insert error:', result.error);
+              }
               savedArticle = result.data;
             }
 
