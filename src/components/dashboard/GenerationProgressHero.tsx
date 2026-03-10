@@ -1,4 +1,4 @@
-import { Check, Loader2, X, Clock, Ban, Sparkles, Zap } from 'lucide-react';
+import { Check, Loader2, X, Clock, Ban, Sparkles, Zap, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ interface GenerationProgressHeroProps {
   startTime?: number;
   isGenerating?: boolean;
   onCancel?: () => void;
+  onReset?: () => void;
   topic?: string;
 }
 
@@ -50,7 +51,7 @@ function getStatusLabel(steps: GenerationStep[], isGenerating?: boolean): string
   return 'Aguardando início';
 }
 
-export function GenerationProgressHero({ steps, startTime, isGenerating, onCancel, topic }: GenerationProgressHeroProps) {
+export function GenerationProgressHero({ steps, startTime, isGenerating, onCancel, onReset, topic }: GenerationProgressHeroProps) {
   const [elapsed, setElapsed] = useState(0);
   const { getProviderShortLabel } = useImageProvider();
   const progress = calculateProgress(steps);
@@ -110,6 +111,12 @@ export function GenerationProgressHero({ steps, startTime, isGenerating, onCance
             <Button variant="ghost" size="sm" onClick={onCancel} className="text-destructive">
               <X className="h-4 w-4 mr-1" />
               Cancelar
+            </Button>
+          )}
+          {!isGenerating && hasStarted && onReset && (
+            <Button variant="outline" size="sm" onClick={onReset} className="gap-1.5">
+              <RotateCcw className="h-4 w-4" />
+              {hasError ? 'Tentar novamente' : 'Nova geração'}
             </Button>
           )}
         </div>
