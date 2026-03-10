@@ -527,7 +527,19 @@ export function ArticlePreviewFull({ article, onUpdateTitle, onUpdateExcerpt }: 
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Título</label>
+              <div className="flex items-center gap-1">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Título</label>
+                {onUpdateTitle && (
+                  <TitleExcerptSuggestionButton
+                    type="title"
+                    currentTitle={article.title}
+                    currentExcerpt={article.excerpt}
+                    body={article.content}
+                    category={article.category}
+                    onSelectTitle={onUpdateTitle}
+                  />
+                )}
+              </div>
               <p className="mt-1 font-medium">{article.title}</p>
             </div>
             <div>
@@ -552,7 +564,19 @@ export function ArticlePreviewFull({ article, onUpdateTitle, onUpdateExcerpt }: 
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resumo</label>
+            <div className="flex items-center gap-1">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resumo</label>
+              {onUpdateExcerpt && (
+                <TitleExcerptSuggestionButton
+                  type="excerpt"
+                  currentTitle={article.title}
+                  currentExcerpt={article.excerpt}
+                  body={article.content}
+                  category={article.category}
+                  onSelectExcerpt={onUpdateExcerpt}
+                />
+              )}
+            </div>
             <p className="mt-1 text-sm text-muted-foreground">{article.excerpt}</p>
           </div>
 
