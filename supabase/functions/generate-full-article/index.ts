@@ -391,8 +391,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'Os primeiros colonos em Jamestown e na Nova Inglaterra adaptaram as tradições inglesas de carpintaria às florestas locais, usando vigas lavradas à mão, juntas de encaixe (mortise-and-tenon) e celeiros de estrutura pesada; esse período estabeleceu a carpintaria como habilidade de sobrevivência e ofício respeitado nas colônias.'
     },
     {
-      period: '1776-1820 | Early Republic Craftsmanship',
-      detail: 'After independence, regional carpentry guilds and apprenticeships expanded, and builders standardized framing dimensions for homes, taverns, and civic buildings; carpenters balanced speed with durability while responding to rapid town growth and new infrastructure demands.'
+      period: '1776-1820 | Artesanato da República Inicial',
+      detail: 'Após a independência, guildas regionais de carpintaria e programas de aprendizagem se expandiram, e construtores padronizaram as dimensões de estruturação para casas, tavernas e edifícios cívicos; os carpinteiros equilibravam velocidade com durabilidade enquanto respondiam ao rápido crescimento urbano e às novas demandas de infraestrutura.'
     },
     {
       period: '1820-1860 | Balloon Framing Revolution',
