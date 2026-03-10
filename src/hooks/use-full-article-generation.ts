@@ -194,12 +194,22 @@ export function useFullArticleGeneration() {
 
       console.log(`[Generation] Calling generate-full-article for topic: "${topic}" (timeout: ${timeoutMs}ms)`);
       
-      const { data: articleData, error: articleError } = await invokeEdgeFunction(
-        'generate-full-article',
-        { topic },
-        false,
-        { timeoutMs, retries: 1 }
-      );
+      let articleData: any;
+      let articleError: Error | null = null;
+      
+      try {
+        const result = await invokeEdgeFunction(
+          'generate-full-article',
+          { topic },
+          false,
+          { timeoutMs, retries: 1 }
+        );
+        articleData = result.data;
+        articleError = result.error;
+      } catch (edgeFnError) {
+        console.error('[Generation] Edge function call crashed:', edgeFnError);
+        articleError = edgeFnError instanceof Error ? edgeFnError : new Error(String(edgeFnError));
+      }
 
       if (cancelledRef.current) return null;
 
@@ -234,6 +244,40 @@ export function useFullArticleGeneration() {
         );
       };
 
+      // Extract H2 headings from article body to derive unique gallery prompts
+      const extractSectionsFromBody = (body: string): string[] => {
+        const h2Matches = body.match(/##\s+([^\n]+)/g) || [];
+        return h2Matches
+          .map(h => h.replace(/^##\s+/, '').replace(/[*#_]/g, '').trim())
+          .filter(h => h.length > 5 && !/FAQ|Perguntas Frequentes|Reflexão Final|Escrito com/i.test(h));
+      };
+
+      // Build article-specific gallery prompts from content sections
+      const buildArticleSpecificPrompts = (
+        title: string,
+        body: string,
+        mainSubj: string,
+        visCont: string
+      ): string[] => {
+        const sections = extractSectionsFromBody(body);
+        const baseSubject = mainSubj || title;
+        const baseContext = visCont || 'natural lighting, ultra realistic, professional photography';
+        
+        // Create unique prompts based on article sections
+        const prompts: string[] = [];
+        const usedSections = sections.slice(0, 8); // Use up to 8 sections for variety
+        
+        for (let i = 0; i < 6; i++) {
+          const section = usedSections[i] || `detail view ${i + 1}`;
+          const sectionClean = section.replace(/[^\w\s]/g, '').trim();
+          prompts.push(
+            `${baseSubject}, focusing on ${sectionClean}, ${baseContext}, sharp focus, no text, no words, no watermarks, no logos`
+          );
+        }
+        
+        return prompts;
+      };
+
       // Clean visual metadata - remove placeholders
       const cleanMainSubject = isPlaceholder(articleData.article.mainSubject)
         ? ''
@@ -241,12 +285,27 @@ export function useFullArticleGeneration() {
       const cleanVisualContext = isPlaceholder(articleData.article.visualContext)
         ? ''
         : articleData.article.visualContext;
-      const cleanGalleryPrompts = (articleData.article.galleryPrompts || [])
+      let cleanGalleryPrompts = (articleData.article.galleryPrompts || [])
         .filter((p: string) => !isPlaceholder(p));
+
+      // CRITICAL FIX: If mainSubject is empty, derive from title
+      const derivedMainSubject = cleanMainSubject || articleData.article.title || topic;
+      
+      // CRITICAL FIX: If galleryPrompts are empty or all identical, generate from article body
+      const uniquePrompts = new Set(cleanGalleryPrompts.map((p: string) => p.substring(0, 50)));
+      if (cleanGalleryPrompts.length < 3 || uniquePrompts.size < 3) {
+        console.log('[Generation] Gallery prompts are empty/duplicate - generating from article body sections');
+        cleanGalleryPrompts = buildArticleSpecificPrompts(
+          derivedMainSubject,
+          articleData.article.content || '',
+          derivedMainSubject,
+          cleanVisualContext
+        );
+      }
 
       const generatedArticle: GeneratedArticle = {
         ...articleData.article,
-        mainSubject: cleanMainSubject || '',
+        mainSubject: derivedMainSubject,
         visualContext: cleanVisualContext || '',
         galleryPrompts: cleanGalleryPrompts,
         coverImage: undefined,

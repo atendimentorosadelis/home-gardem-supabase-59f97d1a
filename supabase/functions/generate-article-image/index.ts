@@ -409,15 +409,21 @@ serve(async (req) => {
           .replace(/\bliving room\b/gi, 'building exterior')
           .replace(/\bbedroom\b/gi, 'building facade')
           .replace(/\bkitchen\b/gi, 'entrance');
-        // Include BOTH the style subject AND the style details for consistency
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        // Gallery images: use the article-specific customPrompt (galleryPrompt) as primary driver
-        // The customPrompt already contains detailed, article-specific image descriptions
         const carpentryGallery = translatePromptTerms(galleryDetail);
         prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
       } else {
-        prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+        // CRITICAL FIX: Use customPrompt as PRIMARY driver when available
+        // This ensures each gallery image is UNIQUE and article-specific
+        // Only prepend subject when no customPrompt was provided
+        if (customPrompt && customPrompt.trim().length > 20) {
+          const translatedPrompt = translatePromptTerms(customPrompt);
+          prompt = `${translatedPrompt}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+          console.log(`[ImageGen] Using article-specific gallery prompt (${prompt.substring(0, 80)}...)`);
+        } else {
+          prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
+        }
       }
     }
 
