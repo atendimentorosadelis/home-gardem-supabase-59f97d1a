@@ -399,8 +399,8 @@ function buildCarpentryHistoricalExpansion(topic: string): string {
       detail: 'Serrarias industriais e pregos fabricados por máquina tornaram o balloon framing viável, substituindo muitos sistemas de madeira pesada; montantes longos indo da soleira ao telhado aceleraram a construção, reduziram custos de mão de obra e transformaram a produção habitacional nas cidades em expansão do Meio-Oeste.'
     },
     {
-      period: '1860-1910 | Railroads, Catalog Homes, and Code Beginnings',
-      detail: 'Rail networks moved lumber nationwide and enabled mail-order house kits, while cities introduced early fire and structural ordinances; carpenters began following emerging code culture, combining practical field techniques with gradually formalized engineering requirements.'
+      period: '1860-1910 | Ferrovias, Casas por Catálogo e Início dos Códigos',
+      detail: 'As redes ferroviárias transportaram madeira para todo o país e permitiram kits de casas por correio, enquanto as cidades introduziram as primeiras regulamentações contra incêndio e estruturais; os carpinteiros começaram a seguir uma cultura de código emergente, combinando técnicas práticas de campo com requisitos de engenharia gradualmente formalizados.'
     },
     {
       period: '1910-1945 | Platform Framing and Suburban Preparation',
