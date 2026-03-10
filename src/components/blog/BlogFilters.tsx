@@ -48,6 +48,7 @@ export function BlogFilters({
     'design-interno': "Design Interno",
     'jardim': "Jardim",
     'arquitetura': "Arquitetura",
+    'carpintaria': "Carpintaria",
   };
 
   const parentKeys = ['all', 'design-interno', 'jardim', 'arquitetura'];
