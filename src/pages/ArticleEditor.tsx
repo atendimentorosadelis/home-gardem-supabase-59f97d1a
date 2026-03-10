@@ -403,12 +403,93 @@ const SocialMediaPostCards = ({
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [copyingImage, setCopyingImage] = useState<string | null>(null);
-  const [fbLang, setFbLang] = useState<string>('pt-BR');
-  const [igLang, setIgLang] = useState<string>('pt-BR');
   const [fbTranslatedText, setFbTranslatedText] = useState<string>('');
   const [igTranslatedText, setIgTranslatedText] = useState<string>('');
+  const [fbTransLang, setFbTransLang] = useState<string>('');
+  const [igTransLang, setIgTransLang] = useState<string>('');
   const [translatingFb, setTranslatingFb] = useState(false);
   const [translatingIg, setTranslatingIg] = useState(false);
+
+  const translatePostText = async (
+    originalText: string, 
+    targetLang: string, 
+    setter: (text: string) => void, 
+    langSetter: (lang: string) => void,
+    loadingSetter: (v: boolean) => void
+  ) => {
+    if (targetLang === 'pt-BR') {
+      setter('');
+      langSetter('');
+      return;
+    }
+    loadingSetter(true);
+    try {
+      const { data, error: fnError } = await invokeEdgeFunction('translate-content', {
+        title: originalText,
+        excerpt: '',
+        content: '',
+        targetLanguage: targetLang,
+      });
+      if (fnError) throw new Error(fnError.message);
+      if (data?.title) {
+        setter(data.title);
+        langSetter(targetLang);
+        toast.success(`Traduzido para ${targetLang === 'en' ? 'Inglês' : 'Espanhol'}!`);
+      }
+    } catch (err) {
+      console.error('Translation error:', err);
+      toast.error('Erro ao traduzir');
+    } finally {
+      loadingSetter(false);
+    }
+  };
+
+  const TranslateButtons = ({ 
+    originalText, currentLang, setter, langSetter, loadingSetter, isLoading, prefix 
+  }: { 
+    originalText: string; currentLang: string; setter: (t: string) => void; 
+    langSetter: (l: string) => void; loadingSetter: (v: boolean) => void; 
+    isLoading: boolean; prefix: string;
+  }) => (
+    <div className="flex items-center gap-1.5">
+      <span className="text-xs text-muted-foreground flex items-center gap-1">
+        <Languages className="h-3.5 w-3.5" />
+        Traduzir:
+      </span>
+      {[
+        { code: 'en', label: '🇺🇸 EN', name: 'Inglês' },
+        { code: 'es', label: '🇪🇸 ES', name: 'Espanhol' },
+      ].map(lang => (
+        <Button
+          key={lang.code}
+          size="sm"
+          variant={currentLang === lang.code ? "default" : "outline"}
+          className="h-7 text-xs px-2 gap-1"
+          disabled={isLoading}
+          onClick={() => {
+            if (currentLang === lang.code) {
+              setter('');
+              langSetter('');
+            } else {
+              translatePostText(originalText, lang.code, setter, langSetter, loadingSetter);
+            }
+          }}
+        >
+          {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : lang.label}
+        </Button>
+      ))}
+      {currentLang && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-7 text-xs px-2"
+          onClick={() => { setter(''); langSetter(''); }}
+        >
+          🇧🇷 Original
+        </Button>
+      )}
+    </div>
+  );
 
   const siteUrl = 'https://homegardenmanual.com';
   const articleUrl = category && slug ? `${siteUrl}/${category}/${slug}` : '';
