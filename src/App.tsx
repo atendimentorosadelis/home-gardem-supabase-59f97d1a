@@ -12,6 +12,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ImageApprovalProvider } from "@/contexts/ImageApprovalContext";
 import { NavigationBlockProvider } from "@/contexts/NavigationBlockContext";
 import { OnlinePresenceProvider } from "@/contexts/OnlinePresenceContext";
+import { ArticleGenerationProvider } from "@/contexts/ArticleGenerationContext";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { registerServiceWorker } from "@/utils/serviceWorker";
@@ -98,6 +99,7 @@ const App = () => (
         <OnlinePresenceProvider>
         <ImageApprovalProvider>
         <NavigationBlockProvider>
+        <ArticleGenerationProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -148,6 +150,7 @@ const App = () => (
             <ConsentManager />
           </BrowserRouter>
         </TooltipProvider>
+        </ArticleGenerationProvider>
         </NavigationBlockProvider>
         </ImageApprovalProvider>
         </OnlinePresenceProvider>

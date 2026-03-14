@@ -79,33 +79,38 @@ export function useFullArticleGeneration() {
   // Load persisted state on mount
   const persistedState = loadPersistedState();
 
-  // If generation was interrupted (loading steps exist but page reloaded),
-  // mark those steps as error instead of keeping them stuck forever.
-  // BUT: if all steps are already 'done', don't touch them - generation completed successfully.
+  // Since the hook now lives at App level (via context), it never unmounts during navigation.
+  // If isGenerating was true in persisted state, the process is still running in memory.
+  // Only mark as interrupted if the page was fully reloaded (not just navigated).
+  const wasPageReloaded = !persistedState?.isGenerating ? false : (() => {
+    // Check if the generation function is actually running by looking at a performance marker
+    const marker = sessionStorage.getItem('lovable_generation_active');
+    return marker !== 'true'; // If marker is not set, page was reloaded
+  })();
+
   const fixedSteps = (() => {
     if (!persistedState?.steps) return undefined;
     
-    // Check if generation actually completed (all steps done or only last ones pending)
     const allDone = persistedState.steps.every(s => s.status === 'done');
-    if (allDone) return persistedState.steps; // Generation completed, don't mark as error
+    if (allDone) return persistedState.steps;
     
-    const hasLoadingSteps = persistedState.steps.some(s => s.status === 'loading');
-    if (hasLoadingSteps && persistedState.isGenerating) {
-      // Check if loading step is the only non-done step and all previous are done
-      // This suggests generation was actually in progress when interrupted
-      return persistedState.steps.map(step =>
-        step.status === 'loading'
-          ? { ...step, status: 'error' as const, detail: 'Interrompido' }
-          : step.status === 'pending'
-            ? { ...step, status: 'cancelled' as const }
-            : step
-      );
+    // Only mark as interrupted if the page was actually reloaded (not just route change)
+    if (wasPageReloaded && persistedState.isGenerating) {
+      const hasLoadingSteps = persistedState.steps.some(s => s.status === 'loading');
+      if (hasLoadingSteps) {
+        return persistedState.steps.map(step =>
+          step.status === 'loading'
+            ? { ...step, status: 'error' as const, detail: 'Interrompido (recarregamento)' }
+            : step.status === 'pending'
+              ? { ...step, status: 'cancelled' as const }
+              : step
+        );
+      }
     }
     return persistedState.steps;
   })();
 
-  // Never restore isGenerating as true - the process isn't actually running after reload
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(wasPageReloaded ? false : (persistedState?.isGenerating ?? false));
   const [article, setArticle] = useState<GeneratedArticle | null>(persistedState?.article ?? null);
   const [startTime, setStartTime] = useState<number | null>(persistedState?.startTime ?? null);
   const [articleSavedId, setArticleSavedId] = useState<string | null>(persistedState?.articleSavedId ?? null);
@@ -151,6 +156,7 @@ export function useFullArticleGeneration() {
   const cancelGeneration = useCallback(() => {
     cancelledRef.current = true;
     setIsGenerating(false);
+    sessionStorage.removeItem('lovable_generation_active');
 
     // Mark loading steps as cancelled
     setSteps(prev => prev.map(step =>
@@ -169,6 +175,7 @@ export function useFullArticleGeneration() {
     }
 
     setIsGenerating(true);
+    sessionStorage.setItem('lovable_generation_active', 'true');
     setCurrentTopic(topic);
     resetGeneration();
     setCurrentTopic(topic); // Set again after reset
@@ -659,7 +666,7 @@ export function useFullArticleGeneration() {
     } finally {
       if (!cancelledRef.current) {
         setIsGenerating(false);
-        // Force-persist final state synchronously using functional updaters
+        sessionStorage.removeItem('lovable_generation_active');
         // to capture the CURRENT values (not stale closure values)
         setSteps(prev => {
           // Use a microtask to persist after React has batched updates
