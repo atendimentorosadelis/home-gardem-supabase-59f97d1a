@@ -416,6 +416,16 @@ function GenerateManualContentPage() {
     await handleGenerationComplete(result, topic);
   };
 
+  const handleGeneratePinturaPremium = async () => {
+    setShowPreview(false);
+    setShowImageApproval(false);
+    setArticleSaved(false);
+    const topic = buildPinturaPremiumTopic();
+    setCurrentTopic(topic);
+    const result = await generateArticle(topic);
+    await handleGenerationComplete(result, topic);
+  };
+
   const handleGenerateCarpintaria = async () => {
     setShowPreview(false);
     setShowImageApproval(false);
