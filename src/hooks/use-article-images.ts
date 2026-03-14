@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
+import { supabase } from '@/lib/supabase';
 
 interface UseArticleImagesProps {
   postId: string;
@@ -12,6 +13,18 @@ interface UseArticleImagesProps {
 interface GeneratedImage {
   url: string;
   prompt: string;
+}
+
+interface ArticleContextForImages {
+  title: string | null;
+  slug: string | null;
+  category_slug: string | null;
+  tags: string[] | null;
+  main_subject: string | null;
+  visual_context: string | null;
+  gallery_prompts: string[] | null;
+  excerpt: string | null;
+  body: string | null;
 }
 
 const CACHE_KEY_PREFIX = 'article_images_';
@@ -50,33 +63,43 @@ export function useArticleImages({ postId, title, category, tags, count = 6 }: U
       }
 
       const generatedImages: GeneratedImage[] = [];
-      const galleryStyles = [
-        'wide-angle front view establishing shot',
-        'medium shot from left side, showing furniture arrangement',
-        'close-up macro shot, focusing on textures and materials',
-        'shot from right side, alternative perspective',
-        'low angle dramatic shot from floor level',
-        'high angle bird eye overview, showing full spatial layout',
-      ].slice(0, count);
 
-      for (let i = 0; i < galleryStyles.length; i++) {
-        try {
-          const { data, error: fnError } = await invokeEdgeFunction('generate-article-image', {
-            title,
-            category,
-            tags,
-            type: 'gallery',
-            customPrompt: `${title}, ${galleryStyles[i]}`,
-          });
+      try {
+        const { data: articleContext } = await supabase
+          .from('content_articles')
+          .select('title, slug, category_slug, tags, main_subject, visual_context, gallery_prompts, excerpt, body')
+          .eq('id', postId)
+          .maybeSingle<ArticleContextForImages>();
 
-          if (fnError) continue;
+        for (let i = 0; i < count; i++) {
+          try {
+            const { data, error: fnError } = await invokeEdgeFunction('generate-article-image', {
+              articleId: postId,
+              title: articleContext?.title || title,
+              slug: articleContext?.slug || undefined,
+              category: articleContext?.category_slug || category,
+              tags: articleContext?.tags || tags,
+              type: 'gallery',
+              regenerate: true,
+              imageIndex: i,
+              customPrompt: articleContext?.gallery_prompts?.[i] || undefined,
+              mainSubject: articleContext?.main_subject || undefined,
+              visualContext: articleContext?.visual_context || undefined,
+              articleExcerpt: articleContext?.excerpt || undefined,
+              articleBody: articleContext?.body || undefined,
+            });
 
-          if (data?.success && data?.imageUrl) {
-            generatedImages.push({ url: data.imageUrl, prompt: data.prompt });
+            if (fnError) continue;
+
+            if (data?.success && data?.imageUrl) {
+              generatedImages.push({ url: data.imageUrl, prompt: data.prompt });
+            }
+          } catch (err) {
+            console.error('Error generating image:', err);
           }
-        } catch (err) {
-          console.error('Error generating image:', err);
         }
+      } catch (err) {
+        console.error('Error fetching article context for images:', err);
       }
 
       if (generatedImages.length > 0) {
@@ -90,7 +113,7 @@ export function useArticleImages({ postId, title, category, tags, count = 6 }: U
     };
 
     fetchImages();
-  }, [postId, title, category, count, refreshKey]);
+  }, [postId, title, category, count, refreshKey, tags]);
 
   const regenerate = () => {
     const cacheKey = `${CACHE_KEY_PREFIX}${postId}`;
