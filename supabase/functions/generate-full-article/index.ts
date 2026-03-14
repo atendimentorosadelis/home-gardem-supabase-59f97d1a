@@ -1735,11 +1735,18 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstruct
     const rawExternalLinks = articleData.externalLinks || [];
     const validExternalLinks = await validateExternalLinks(rawExternalLinks, 3);
 
-    let imageData = validateAndSanitizeImageData({
-      mainSubject: articleData.mainSubject,
-      visualContext: articleData.visualContext,
-      galleryPrompts: articleData.galleryPrompts,
-    });
+    let imageData = validateAndSanitizeImageData(
+      {
+        mainSubject: articleData.mainSubject,
+        visualContext: articleData.visualContext,
+        galleryPrompts: articleData.galleryPrompts,
+      },
+      {
+        categorySlug,
+        content: articleData.content,
+        topic,
+      }
+    );
 
     if (forcedPlantSpecies && !namesLikelySame(imageData.mainSubject, forcedPlantSpecies.en)) {
       imageData = {
