@@ -182,7 +182,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: "HomeGarden <newsletter@homegardenmanual.com>",
-        to: [recipientEmail],
+        to: emails,
         subject,
         html: htmlContent,
       }),
