@@ -139,7 +139,7 @@ serve(async (req) => {
               body: JSON.stringify({
                 from: "HomeGarden <newsletter@homegardenmanual.com>",
                 to: [admin.email],
-                subject: `🌿 Novo artigo gerado: ${articleTitle}`,
+                subject: `Novo artigo gerado: ${articleTitle}`,
                 html: htmlContent,
               }),
             });

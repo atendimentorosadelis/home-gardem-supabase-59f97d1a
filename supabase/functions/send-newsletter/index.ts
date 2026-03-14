@@ -40,7 +40,7 @@ const translations: Record<string, {
     readMore: "Leer más →",
     footer: "Tu guía de hogar, jardín, decoración y arquitectura",
     unsubscribe: "Cancelar suscripción",
-    subject: (title) => `🌿 ${title}`,
+    subject: (title) => title,
   },
 };
 
