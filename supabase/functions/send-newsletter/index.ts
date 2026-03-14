@@ -22,7 +22,7 @@ const translations: Record<string, {
     readMore: "Ler mais →",
     footer: "Seu guia de casa, jardim, decoração e arquitetura",
     unsubscribe: "Cancelar inscrição",
-    subject: (title) => `🌿 ${title}`,
+    subject: (title) => title,
   },
   en: {
     greeting: "Hello",
@@ -31,7 +31,7 @@ const translations: Record<string, {
     readMore: "Read more →",
     footer: "Your guide to home, garden, decor and architecture",
     unsubscribe: "Unsubscribe",
-    subject: (title) => `🌿 ${title}`,
+    subject: (title) => title,
   },
   es: {
     greeting: "Hola",
@@ -40,7 +40,7 @@ const translations: Record<string, {
     readMore: "Leer más →",
     footer: "Tu guía de hogar, jardín, decoración y arquitectura",
     unsubscribe: "Cancelar suscripción",
-    subject: (title) => `🌿 ${title}`,
+    subject: (title) => title,
   },
 };
 

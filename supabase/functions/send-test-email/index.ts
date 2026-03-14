@@ -87,7 +87,7 @@ serve(async (req) => {
     let htmlContent = "";
 
     if (type === "newsletter") {
-      subject = `🌿 [TESTE] ${articleTitle}`;
+      subject = `[TESTE] ${articleTitle}`;
       htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -125,7 +125,7 @@ serve(async (req) => {
 </body>
 </html>`;
     } else if (type === "admin-notification") {
-      subject = `🌿 [TESTE] Novo artigo gerado: ${articleTitle}`;
+      subject = `[TESTE] Novo artigo gerado: ${articleTitle}`;
       htmlContent = `
 <!DOCTYPE html>
 <html>
