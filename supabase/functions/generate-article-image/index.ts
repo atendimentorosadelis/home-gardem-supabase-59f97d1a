@@ -652,7 +652,7 @@ serve(async (req) => {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        const carpentryCoverHint = articleHeadingHints[0] || articleContext?.excerpt || title || '';
+        const carpentryCoverHint = articleHeadingHints[0] || effectiveExcerpt || effectiveTitle;
         const coverHintSegment = carpentryCoverHint ? `article context: ${carpentryCoverHint}, ` : '';
         if (isWoodTypesTopic) {
           prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
@@ -660,11 +660,19 @@ serve(async (req) => {
           prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}professional photograph for American carpentry article. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic technical scene. ${antiTextClause}.`;
         }
       } else {
-        prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
+        const coverHint = regenerate ? (articleHeadingHints[0] || effectiveExcerpt || '') : '';
+        const coverHintSegment = coverHint ? `article context: ${coverHint}, ` : '';
+        prompt = `${subject}, ${coverHintSegment}professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
     } else {
-      let galleryDetail = customPrompt || 'detailed professional photography';
-      galleryDetail = translatePromptTerms(galleryDetail);
+      const galleryDetail = buildSectionDrivenDetail({
+        customPrompt,
+        headingHints: articleHeadingHints,
+        excerpt: effectiveExcerpt,
+        title: effectiveTitle,
+        imageIndex,
+        regenerate,
+      });
 
       const paintingTechniqueDetail = isPaintingCategory ? detectPaintingTechniqueFromText(`${galleryDetail} | ${combinedContext}`) : null;
       if (paintingTechniqueDetail && isGenericPaintingSubject(subject)) {
@@ -685,9 +693,9 @@ serve(async (req) => {
           style: matchedCarpentryStyle,
           customPrompt: galleryDetail,
           imageIndex,
-          articleTitle: articleContext?.title || title,
-          articleExcerpt: articleContext?.excerpt || '',
-          articleBody: articleContext?.body || '',
+          articleTitle: effectiveTitle,
+          articleExcerpt: effectiveExcerpt,
+          articleBody: effectiveBody,
           isWoodTypesTopic,
         });
 
@@ -698,13 +706,7 @@ serve(async (req) => {
           prompt = `${subject}, ${carpentryDetails}, ${carpentryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic technical carpentry scene. ${antiTextClause}.`;
         }
       } else {
-        if (customPrompt && customPrompt.trim().length > 20) {
-          const translatedPrompt = translatePromptTerms(customPrompt);
-          prompt = `${translatedPrompt}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
-          console.log(`[ImageGen] Using article-specific gallery prompt (${prompt.substring(0, 80)}...)`);
-        } else {
-          prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
-        }
+        prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
     }
 
