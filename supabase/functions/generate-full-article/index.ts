@@ -1119,66 +1119,62 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Hortas, Ervas e Cuidados):
 
     const paintingInstructions = isPaintingTopic ? `
 INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
-- O artigo deve ser um GUIA PRÁTICO e PESSOAL sobre técnicas de pintura, acabamentos e texturas para casa.
-- O Keven deve falar sobre suas experiências REAIS pintando paredes, ajudando a mãe a renovar a casa, experimentando texturas.
-- NÃO mencione "PUC Minas" ou "faculdade" na introdução — fale sobre experiência prática de pintura em casa.
 
-## REGRA CRÍTICA DE TÍTULO E RESUMO (DICAS DE PINTURA):
-⚠️ O título DEVE ser PESSOAL, ÍNTIMO e CONVERSACIONAL — como se o Keven estivesse contando para um amigo.
-❌ PROIBIDO títulos formais como: "Pinturas de Parede: Dicas para Transformar sua Casa", "Guia Completo de Pintura", "Tudo sobre Tintas e Texturas"
-✅ EXEMPLOS CORRETOS de títulos:
-  - "Eu pintei minha parede de cimento queimado e quase chorei de emoção"
-  - "Aquele fim de semana que eu e minha mãe renovamos a sala inteira"
-  - "Confesso: eu tinha MEDO de pegar no rolo de pintura"
-  - "O dia que aprendi a fazer grafiato sozinho (e errei feio na primeira vez)"
-  - "Verniz na madeira velha: como dei vida nova ao móvel da minha avó"
-  - "Minha parede estava horrível — até eu aprender esse truque com a tinta"
+## REGRA #1 — FOCO EXCLUSIVO EM UMA ÚNICA TÉCNICA (CRÍTICO):
+⚠️ O artigo DEVE abordar UMA ÚNICA técnica ou acabamento de pintura em profundidade.
+❌ PROIBIDO fazer um artigo genérico que fale superficialmente de várias técnicas.
+❌ PROIBIDO misturar cimento queimado + grafiato + verniz + esponjado no mesmo artigo.
 
-⚠️ O resumo (excerpt) DEVE ser uma CONVERSA DIRETA com o leitor, como se falasse olhando nos olhos.
-❌ PROIBIDO resumos formais como: "Explore o mundo das tintas e texturas", "Aprenda técnicas profissionais"
-✅ EXEMPLOS CORRETOS de resumos:
-  - "Vem comigo que vou te mostrar como eu transformei minha sala gastando pouco e com as minhas próprias mãos."
-  - "Sabe aquela parede sem graça? Eu mudei a cara dela num fim de semana — e você também consegue."
-  - "Peguei o rolo, a tinta, e fui com tudo. Te conto cada detalhe pra você não errar como eu errei."
+A IA deve ESCOLHER ALEATORIAMENTE UMA dessas técnicas específicas e escrever o artigo INTEIRO sobre ela:
+- Efeito Cimento Queimado (passo a passo completo, materiais, acabamento, selador)
+- Grafiato e Texturas de Parede (tipos: rústica, lisa, riscada; ferramentas; aplicação)
+- Verniz para Madeira (tipos: marítimo, copal, poliuretano; preparação; demãos)
+- Pintura com Rolo — Técnica Profissional (movimentos em W, demãos, secagem)
+- Esponjado e Pátina (efeito envelhecido, materiais, passo a passo)
+- Stencil e Parede Geométrica (fita crepe, padrões, planejamento)
+- Preparação de Parede (massa corrida, fundo preparador, selador, lixamento)
+- Pintura de Teto (técnicas específicas, ergonomia, rolo extensível)
+- Tinta Epóxi para Pisos e Banheiros (aplicação, preparação, cura)
+- Degradê e Ombré em Parede (técnica de transição de cores)
+- Pintura de Portas e Janelas (esmalte sintético, lixa, primer)
+- Cores e Psicologia: Como Escolher a Cor Certa para Cada Cômodo
 
-## CONTEÚDO OBRIGATÓRIO (TODOS estes tópicos devem aparecer no artigo):
-  * COMO PREPARAR A PAREDE: lixar, aplicar massa corrida, fundo preparador, selador — passo a passo detalhado
-  * TIPOS DE TINTA: acrílica, látex, esmalte sintético, tinta epóxi — diferenças, vantagens e quando usar cada uma
-  * COMO PINTAR UMA PAREDE: técnica correta com rolo, pincel e trincha — de cima para baixo, movimentos em W, quantas demãos
-  * EFEITO CIMENTO QUEIMADO: como fazer passo a passo, materiais necessários (argamassa, desempenadeira, selador), dicas de acabamento
-  * GRAFIATO/TEXTURA: como aplicar grafiato na parede, tipos de textura (rústica, lisa, riscada), ferramentas necessárias (desempenadeira dentada, rolo texturizado)
-  * VERNIZ PARA MADEIRA: tipos de verniz (marítimo, copal, poliuretano), como lixar e preparar a madeira, quantas demãos, tempo de secagem entre demãos
-  * PINTURA DECORATIVA: técnicas como esponjado, pátina, stencil, degradê, parede geométrica
-  * FERRAMENTAS ESSENCIAIS: tipos de rolo (lã, espuma, anti-gota), pincéis, bandejas, fita crepe, lona de proteção
-  * CÁLCULO DE TINTA: como calcular a quantidade de tinta necessária por metro quadrado
-  * CORES E COMBINAÇÕES: como escolher cores, usar o círculo cromático, combinações que funcionam
-  * ERROS COMUNS: pintar sem preparar a parede, não esperar secagem entre demãos, economizar na qualidade da tinta
-  * VALORES E ESTIMATIVAS EM DÓLARES (USD): preço médio de tintas, massa corrida, verniz, ferramentas — custo por cômodo
-   * TEMPO ESTIMADO: quanto tempo leva para pintar cada cômodo, secar entre demãos
+🎲 NÚMERO SORTEADO PARA ESCOLHA DA TÉCNICA: ${Math.floor(Math.random() * 100)}
+Use este número para escolher a técnica. Cada artigo deve ser DIFERENTE dos anteriores.
+
+## REGRA #2 — PROFUNDIDADE TÉCNICA TOTAL:
+O artigo deve cobrir TODOS estes aspectos da técnica escolhida:
+1. O que é e qual o resultado visual esperado
+2. Lista COMPLETA de materiais e ferramentas necessárias (com quantidades e valores em USD)
+3. Preparação do ambiente e da superfície (passo a passo)
+4. Aplicação: passo a passo detalhado com dicas de cada etapa
+5. Tempo de secagem entre etapas (em horas)
+6. Erros comuns desta técnica específica e como evitá-los
+7. Quanto custa: orçamento detalhado por metro quadrado em USD
+8. Dicas de manutenção e conservação do acabamento
+9. Quando NÃO usar esta técnica (limitações e contraindicações)
+
+## REGRA #3 — PERSONA E TOM:
+- O Keven deve falar sobre sua experiência REAL com esta técnica específica.
+- NÃO mencione "PUC Minas" ou "faculdade" — fale sobre experiência prática em casa.
+- O título DEVE ser PESSOAL, ÍNTIMO e sobre A TÉCNICA ESPECÍFICA escolhida.
+- O resumo deve ser uma conversa direta sobre ESTA técnica, não sobre pintura em geral.
 
 ⚠️ REGRA OBRIGATÓRIA DE MOEDA (DICAS DE PINTURA):
 - TODOS os valores monetários DEVEM usar DÓLARES AMERICANOS (USD) com o símbolo "$".
 - ❌ PROIBIDO usar "R$", "reais", "BRL" ou qualquer referência à moeda brasileira.
 - ✅ Use APENAS "$" seguido do valor em dólares. Exemplos: "$15", "$30", "$120", "$5 to $10".
-- Se precisar dar faixas de preço, use: "$20 to $50", "$100 to $200".
 - NÃO converta de real para dólar — pense diretamente em preços do mercado americano (Home Depot, Lowe's).
 
-- mainSubject DEVE ser em INGLÊS: "wall painting techniques and decorative textures"
-- visualContext DEVE ser: "home interior wall being painted, paint supplies, colorful paint cans, roller and brushes"
-- galleryPrompts DEVEM mostrar 6 ângulos DIFERENTES de técnicas de pintura:
-  1. Pessoa aplicando tinta com rolo em parede (paint roller applying fresh color on interior wall)
-  2. Close-up de efeito cimento queimado (close-up of burnt cement polished concrete wall texture finish)
-  3. Aplicação de grafiato/textura (grafiato textured wall application with trowel, decorative plaster)
-  4. Verniz sendo aplicado em madeira (wood varnish application with brush, glossy protective coating on wood surface)
-  5. Ferramentas e latas de tinta organizadas (painting supplies arrangement, colorful paint cans, rollers, brushes, tape)
-  6. Parede com pintura decorativa geométrica (geometric decorative wall painting, modern accent wall design, tape patterns)
+- mainSubject DEVE ser em INGLÊS e ESPECÍFICO à técnica escolhida (ex: "burnt cement wall finish technique" ou "wood varnish application")
+- visualContext DEVE ser específico à técnica escolhida
+- galleryPrompts DEVEM mostrar 6 ângulos DIFERENTES da MESMA técnica escolhida (não misturar técnicas nas imagens)
 - category DEVE ser "Dicas de Pintura"
 
 ⚠️ TAMANHO MÍNIMO REFORÇADO PARA DICAS DE PINTURA:
-- Este tema exige MUITOS detalhes técnicos. O artigo DEVE ter NO MÍNIMO 2.500 palavras.
-- Cada seção técnica (cimento queimado, grafiato, verniz, preparação, etc.) deve ter NO MÍNIMO 200 palavras cada.
-- NÃO resuma, NÃO pule etapas, NÃO encurte. O leitor precisa de um GUIA COMPLETO que ele possa seguir passo a passo.
-- Inclua medidas reais (metros quadrados, litros de tinta, gramas de massa), tempos de secagem em horas, e dicas de economia.
+- O artigo DEVE ter NO MÍNIMO 2.500 palavras focadas na técnica escolhida.
+- Como o foco é UMA técnica, cada seção deve ser MUITO detalhada (250+ palavras por seção).
+- Inclua medidas reais (metros quadrados, litros, gramas), tempos de secagem em horas, e dicas de economia.
 ` : '';
 
     const carpentryInstructions = isCarpentryTopic ? `
