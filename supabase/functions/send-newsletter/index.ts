@@ -66,6 +66,14 @@ serve(async (req) => {
 
     const { articleId, articleTitle, articleSlug, articleExcerpt, articleCategory, coverImage } = await req.json();
 
+    // Fetch category_slug from DB for correct URL
+    const { data: articleRecord } = await supabase
+      .from("content_articles")
+      .select("category_slug")
+      .eq("id", articleId)
+      .maybeSingle();
+    const articleCategorySlug = articleRecord?.category_slug || "jardim";
+
     if (!articleId || !articleTitle) {
       throw new Error("articleId and articleTitle are required");
     }
@@ -120,7 +128,7 @@ serve(async (req) => {
       try {
         const lang = subscriber.language || "pt-BR";
         const t = getTranslation(lang);
-        const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
+        const articleUrl = `${siteUrl}/${articleCategorySlug}/${articleSlug || articleId}`;
         const trackedArticleUrl = historyId ? `${trackClickUrl}?id=${historyId}&url=${encodeURIComponent(articleUrl)}` : articleUrl;
         const unsubscribeUrl = `${siteUrl}/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
         const openPixelUrl = historyId ? `${trackOpenUrl}?id=${historyId}` : "";

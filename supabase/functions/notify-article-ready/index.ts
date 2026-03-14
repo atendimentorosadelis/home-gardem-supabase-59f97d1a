@@ -67,15 +67,16 @@ serve(async (req) => {
         const sourceLabel = creationSource === "autopilot" ? "Piloto Automático" : "Geração Manual";
         const siteUrl = "https://homegardenmanual.com";
         const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
-        const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
-        const editorUrl = `${siteUrl}/admin/articles`;
-
-        // Get article cover image
+        // Get article details including cover image and category_slug
         const { data: articleData } = await supabase
           .from("content_articles")
-          .select("cover_image, excerpt, category")
+          .select("cover_image, excerpt, category, category_slug")
           .eq("id", articleId)
           .maybeSingle();
+
+        const articleCategorySlug = articleData?.category_slug || "jardim";
+        const articleUrl = `${siteUrl}/${articleCategorySlug}/${articleSlug || articleId}`;
+        const editorUrl = `${siteUrl}/admin/articles`;
 
         const coverImage = articleData?.cover_image || "";
         const excerpt = articleData?.excerpt || "";

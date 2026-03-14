@@ -47,10 +47,12 @@ serve(async (req) => {
 
     if (!roleData) throw new Error("Not authorized");
 
-    const { type, recipientEmail } = await req.json();
+    const { type, recipientEmail, recipientEmails } = await req.json();
 
-    if (!type || !recipientEmail) {
-      throw new Error("type and recipientEmail are required");
+    // Support both single email and array of emails
+    const emails: string[] = recipientEmails || (recipientEmail ? [recipientEmail] : []);
+    if (!type || emails.length === 0) {
+      throw new Error("type and at least one recipient email are required");
     }
 
     // Get user profile for name
@@ -67,7 +69,7 @@ serve(async (req) => {
     // Fetch a real published article to use as sample data (with cover image)
     const { data: sampleArticle } = await supabase
       .from("content_articles")
-      .select("id, title, slug, excerpt, category, cover_image")
+      .select("id, title, slug, excerpt, category, category_slug, cover_image")
       .eq("status", "published")
       .not("cover_image", "is", null)
       .order("published_at", { ascending: false })
@@ -79,7 +81,8 @@ serve(async (req) => {
     const articleCategory = sampleArticle?.category || "Jardim";
     const coverImage = sampleArticle?.cover_image || "";
     const articleSlug = sampleArticle?.slug || "";
-    const articleUrl = articleSlug ? `${siteUrl}/article/${articleSlug}` : siteUrl;
+    const articleCategorySlug = sampleArticle?.category_slug || "jardim";
+    const articleUrl = articleSlug ? `${siteUrl}/${articleCategorySlug}/${articleSlug}` : siteUrl;
 
     let subject = "";
     let htmlContent = "";
@@ -179,7 +182,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: "HomeGarden <newsletter@homegardenmanual.com>",
-        to: [recipientEmail],
+        to: emails,
         subject,
         html: htmlContent,
       }),
@@ -192,7 +195,7 @@ serve(async (req) => {
     }
 
     const resData = await res.json();
-    console.log(`[send-test-email] Test ${type} email sent to ${recipientEmail}:`, resData.id);
+    console.log(`[send-test-email] Test ${type} email sent to ${emails.join(", ")}:`, resData.id);
 
     return new Response(
       JSON.stringify({ success: true, emailId: resData.id, usedArticle: sampleArticle?.title || null }),

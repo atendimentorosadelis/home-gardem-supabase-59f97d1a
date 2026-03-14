@@ -44,6 +44,7 @@ function EmailTemplatesManagerContent() {
 
   // Test email state
   const [testEmail, setTestEmail] = useState('');
+  const [testEmail2, setTestEmail2] = useState('');
   const [sendingNewsletter, setSendingNewsletter] = useState(false);
   const [sendingAdmin, setSendingAdmin] = useState(false);
 
@@ -82,8 +83,9 @@ function EmailTemplatesManagerContent() {
   };
 
   const sendTestEmail = async (type: 'newsletter' | 'admin-notification') => {
-    if (!testEmail.trim()) {
-      toast.error('Informe um e-mail de destino');
+    const emails = [testEmail.trim(), testEmail2.trim()].filter(Boolean);
+    if (emails.length === 0) {
+      toast.error('Informe pelo menos um e-mail de destino');
       return;
     }
 
@@ -93,7 +95,7 @@ function EmailTemplatesManagerContent() {
     try {
       const { data, error } = await invokeEdgeFunction<{ success: boolean; error?: string }>(
         'send-test-email',
-        { type, recipientEmail: testEmail.trim() }
+        { type, recipientEmails: emails }
       );
 
       if (error) throw error;
@@ -101,8 +103,8 @@ function EmailTemplatesManagerContent() {
 
       toast.success(
         type === 'newsletter'
-          ? `E-mail de teste da newsletter enviado para ${testEmail}`
-          : `E-mail de teste de notificação admin enviado para ${testEmail}`
+          ? `Newsletter de teste enviada para ${emails.join(', ')}`
+          : `Notificação admin de teste enviada para ${emails.join(', ')}`
       );
     } catch (error) {
       console.error('Error sending test email:', error);
@@ -151,21 +153,32 @@ function EmailTemplatesManagerContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="test-email">E-mail de destino</Label>
-              <Input
-                id="test-email"
-                type="email"
-                placeholder="seu@email.com"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                className="max-w-md"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="test-email">E-mail Admin 1</Label>
+                <Input
+                  id="test-email"
+                  type="email"
+                  placeholder="admin1@email.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="test-email-2">E-mail Admin 2 (opcional)</Label>
+                <Input
+                  id="test-email-2"
+                  type="email"
+                  placeholder="admin2@email.com"
+                  value={testEmail2}
+                  onChange={(e) => setTestEmail2(e.target.value)}
+                />
+              </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
                 onClick={() => sendTestEmail('newsletter')}
-                disabled={sendingNewsletter || !testEmail.trim()}
+                disabled={sendingNewsletter || (!testEmail.trim() && !testEmail2.trim())}
                 variant="outline"
                 className="gap-2"
               >
@@ -174,7 +187,7 @@ function EmailTemplatesManagerContent() {
               </Button>
               <Button
                 onClick={() => sendTestEmail('admin-notification')}
-                disabled={sendingAdmin || !testEmail.trim()}
+                disabled={sendingAdmin || (!testEmail.trim() && !testEmail2.trim())}
                 variant="outline"
                 className="gap-2"
               >
