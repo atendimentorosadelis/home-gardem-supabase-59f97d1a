@@ -1046,19 +1046,20 @@ export default function ArticleEditor() {
     setGeneratingImageIndex(index);
     try {
       const promptConfig = IMAGE_PROMPTS[index];
-      const savedPrompt = index > 0 && article?.gallery_prompts?.[index - 1];
-      const customPrompt = savedPrompt || `${title}, ${promptConfig.promptSuffix}`;
+      const savedPrompt = index > 0 ? article?.gallery_prompts?.[index - 1] : undefined;
       const finalMainSubject = article?.main_subject || extractMainSubjectFromTitle(title);
 
       const { data, error } = await invokeEdgeFunction('generate-article-image', {
         title,
-        category: category || 'decoracao',
-        tags: tags || [],
+        category: category || article?.category_slug || 'decoracao',
+        tags: tags || article?.tags || [],
         type: promptConfig.type,
-        customPrompt,
-        slug: slug || generateSlug(title),
+        customPrompt: savedPrompt,
+        slug: slug || article?.slug || generateSlug(title),
         mainSubject: finalMainSubject,
         visualContext: article?.visual_context || '',
+        articleExcerpt: excerpt,
+        articleBody: body,
         articleId: id,
         regenerate: true,
         imageIndex: index > 0 ? index - 1 : 0,
