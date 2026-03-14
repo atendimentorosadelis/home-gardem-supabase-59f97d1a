@@ -153,21 +153,32 @@ function EmailTemplatesManagerContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="test-email">E-mail de destino</Label>
-              <Input
-                id="test-email"
-                type="email"
-                placeholder="seu@email.com"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                className="max-w-md"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="test-email">E-mail Admin 1</Label>
+                <Input
+                  id="test-email"
+                  type="email"
+                  placeholder="admin1@email.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="test-email-2">E-mail Admin 2 (opcional)</Label>
+                <Input
+                  id="test-email-2"
+                  type="email"
+                  placeholder="admin2@email.com"
+                  value={testEmail2}
+                  onChange={(e) => setTestEmail2(e.target.value)}
+                />
+              </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
                 onClick={() => sendTestEmail('newsletter')}
-                disabled={sendingNewsletter || !testEmail.trim()}
+                disabled={sendingNewsletter || (!testEmail.trim() && !testEmail2.trim())}
                 variant="outline"
                 className="gap-2"
               >
@@ -176,7 +187,7 @@ function EmailTemplatesManagerContent() {
               </Button>
               <Button
                 onClick={() => sendTestEmail('admin-notification')}
-                disabled={sendingAdmin || !testEmail.trim()}
+                disabled={sendingAdmin || (!testEmail.trim() && !testEmail2.trim())}
                 variant="outline"
                 className="gap-2"
               >
