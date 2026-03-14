@@ -150,6 +150,16 @@ const CARPINTARIA_SUBNICHES: SubnicheItem[] = [
   { id: 'carpintaria-tecnicas', label: 'Técnicas Tradicionais vs Modernas', icon: Axe },
 ];
 
+const PINTURA_PREMIUM_SUBNICHES: SubnicheItem[] = [
+  { id: 'premium-estuques-italianos', label: 'Estuques Italianos', icon: Crown },
+  { id: 'premium-acabamentos-mediterraneos', label: 'Acabamentos Mediterrâneos', icon: Gem },
+  { id: 'premium-efeitos-minerais-concreto', label: 'Efeitos Minerais e Concreto', icon: Building2 },
+  { id: 'premium-efeitos-metalicos', label: 'Efeitos Metálicos Sofisticados', icon: Sparkles },
+  { id: 'premium-texturas-europeias', label: 'Texturas Europeias Sofisticadas', icon: Landmark },
+  { id: 'premium-efeitos-texteis', label: 'Efeitos Têxteis e Suaves', icon: Layers },
+  { id: 'premium-tecnicas-artisticas-raras', label: 'Técnicas Artísticas Raras', icon: Palette },
+];
+
 function GenerateManualContentPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [showImageApproval, setShowImageApproval] = useState(false);
