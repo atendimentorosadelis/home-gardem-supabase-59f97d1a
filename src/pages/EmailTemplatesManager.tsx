@@ -100,7 +100,9 @@ function EmailTemplatesManagerContent() {
       const { data, error } = await invokeEdgeFunction<{ success: boolean; error?: string }>('update-email-template', { templateId });
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || 'Failed to set default template');
-      toast.success('Template definido como padrão!'); await fetchTemplates();
+      // Update local state without re-fetching to avoid scroll jump
+      setTemplates(prev => prev.map(t => ({ ...t, is_default: t.id === templateId })));
+      toast.success('Template ativado com sucesso!');
     } catch (error) { toast.error('Erro ao definir template padrão'); } finally { setUpdatingId(null); }
   };
 
