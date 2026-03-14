@@ -22,7 +22,7 @@ const translations: Record<string, {
     readMore: "Ler mais →",
     footer: "Seu guia de casa, jardim, decoração e arquitetura",
     unsubscribe: "Cancelar inscrição",
-    subject: (title) => `🌿 ${title}`,
+    subject: (title) => title,
   },
   en: {
     greeting: "Hello",
