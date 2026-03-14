@@ -517,6 +517,8 @@ serve(async (req) => {
       articleContext?.body,
     ].filter(Boolean).join(' | ');
 
+    const articleHeadingHints = extractMarkdownHeadings(articleContext?.body, 6);
+
     const isPaintingCategory = categoryLower.includes('pintura') || categoryLower.includes('dicas-de-pintura');
     if (isPaintingCategory) {
       const detectedTechnique = detectPaintingTechniqueFromText(combinedContext);
