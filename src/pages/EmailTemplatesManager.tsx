@@ -14,6 +14,7 @@ import { invokeEdgeFunction } from '@/lib/edge-functions';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Mail, Check, Eye, ArrowLeft, Sparkles, Palette, Leaf, Moon, Square, Sunrise, Send, Loader2, Bell, Newspaper } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import React from 'react';
 
 interface EmailTemplate { id: string; name: string; description: string | null; category: string; html_template: string; is_active: boolean; is_default: boolean; created_at: string; updated_at: string; }
