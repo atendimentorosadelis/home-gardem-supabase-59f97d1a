@@ -54,14 +54,19 @@ serve(async (req) => {
       throw new Error("type and at least one recipient email are required");
     }
 
-    // Get user profile for name
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("user_id", userId)
-      .maybeSingle();
+    // Fetch subscriber names for all recipient emails
+    const { data: subscribers } = await supabase
+      .from("newsletter_subscribers")
+      .select("email, name")
+      .in("email", emails);
 
-    const userName = profile?.username || "Admin";
+    const subscriberMap: Record<string, string> = {};
+    if (subscribers) {
+      for (const sub of subscribers) {
+        subscriberMap[sub.email] = sub.name || "Leitor(a)";
+      }
+    }
+
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
     const siteUrl = "https://homegardenmanual.com";
 
@@ -83,12 +88,17 @@ serve(async (req) => {
     const articleCategorySlug = sampleArticle?.category_slug || "jardim";
     const articleUrl = articleSlug ? `${siteUrl}/${articleCategorySlug}/${articleSlug}` : siteUrl;
 
-    let subject = "";
-    let htmlContent = "";
+    let sent = 0;
+    let failed = 0;
 
-    if (type === "newsletter") {
-      subject = `[TESTE] ${articleTitle}`;
-      htmlContent = `
+    for (const email of emails) {
+      const recipientName = subscriberMap[email] || "Leitor(a)";
+      let subject = "";
+      let htmlContent = "";
+
+      if (type === "newsletter") {
+        subject = `[TESTE] ${articleTitle}`;
+        htmlContent = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -104,7 +114,7 @@ serve(async (req) => {
         ${coverImage ? `<!-- Cover Image --><tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ""}
         <!-- Content -->
         <tr><td style="padding:40px 30px;">
-          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}!</p>
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${recipientName}!</p>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ""}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
           <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>
@@ -116,7 +126,7 @@ serve(async (req) => {
             © ${new Date().getFullYear()} HomeGarden — Seu guia de casa, jardim, decoração e arquitetura
           </p>
           <p style="margin:8px 0 0;">
-            <a href="${siteUrl}/unsubscribe" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">Cancelar inscrição</a>
+            <a href="${siteUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">Cancelar inscrição</a>
           </p>
         </td></tr>
       </table>
@@ -124,9 +134,9 @@ serve(async (req) => {
   </table>
 </body>
 </html>`;
-    } else if (type === "admin-notification") {
-      subject = `[TESTE] Novo artigo gerado: ${articleTitle}`;
-      htmlContent = `
+      } else if (type === "admin-notification") {
+        subject = `[TESTE] Novo artigo gerado: ${articleTitle}`;
+        htmlContent = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -142,7 +152,7 @@ serve(async (req) => {
         ${coverImage ? `<!-- Cover Image --><tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ""}
         <!-- Content -->
         <tr><td style="padding:40px 30px;">
-          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}!</p>
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${recipientName}!</p>
           <span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">Piloto Automático</span>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;margin-left:8px;">${articleCategory}</span>` : ""}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
@@ -169,35 +179,41 @@ serve(async (req) => {
   </table>
 </body>
 </html>`;
-    } else {
-      throw new Error(`Unknown test type: ${type}`);
+      } else {
+        throw new Error(`Unknown test type: ${type}`);
+      }
+
+      try {
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: "HomeGarden <newsletter@homegardenmanual.com>",
+            to: [email],
+            subject,
+            html: htmlContent,
+          }),
+        });
+
+        if (res.ok) {
+          sent++;
+          console.log(`[send-test-email] Test ${type} email sent to ${email}`);
+        } else {
+          const errText = await res.text();
+          console.error(`[send-test-email] Failed for ${email}:`, errText);
+          failed++;
+        }
+      } catch (e) {
+        console.error(`[send-test-email] Error sending to ${email}:`, e);
+        failed++;
+      }
     }
-
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: "HomeGarden <newsletter@homegardenmanual.com>",
-        to: emails,
-        subject,
-        html: htmlContent,
-      }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("[send-test-email] Resend error:", errText);
-      throw new Error(`Failed to send email: ${errText}`);
-    }
-
-    const resData = await res.json();
-    console.log(`[send-test-email] Test ${type} email sent to ${emails.join(", ")}:`, resData.id);
 
     return new Response(
-      JSON.stringify({ success: true, emailId: resData.id, usedArticle: sampleArticle?.title || null }),
+      JSON.stringify({ success: true, sent, failed, usedArticle: sampleArticle?.title || null }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
