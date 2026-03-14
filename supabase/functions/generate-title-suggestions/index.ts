@@ -111,14 +111,14 @@ Retorne APENAS JSON: { "suggestions": ["título 1", "título 2", "título 3", "t
 Gere exatamente 5 combinações de título + resumo COMPLETAMENTE DIFERENTES entre si.
 ${bannedPhrases}
 
-REGRAS PARA TÍTULOS (cada um com estilo diferente):
-1. 🫂 CONFISSÃO PESSOAL — tom íntimo, vulnerável
+REGRAS PARA TÍTULOS (cada um com estilo diferente — as 3 primeiras palavras NÃO podem se repetir):
+1. 🎯 OBJETO CONCRETO — comece com um objeto/material específico
 2. 🤔 PERGUNTA que gera curiosidade genuína
-3. 💡 MOMENTO DE DESCOBERTA pessoal
-4. 🎯 OPINIÃO FORTE e autêntica
-5. 🌿 SENSORIAL — evoca cheiros, texturas, sensações
+3. 💡 DECLARAÇÃO OUSADA e autêntica
+4. 🌿 SENSORIAL — evoca cheiros, texturas, sensações
+5. 🔥 AÇÃO DIRETA — convida à experiência
 
-Títulos: 45-70 caracteres.
+Títulos: 45-80 caracteres, frases COMPLETAS (nunca cortadas).
 
 REGRAS PARA RESUMOS:
 - Cada resumo deve COMPLEMENTAR o estilo do título
