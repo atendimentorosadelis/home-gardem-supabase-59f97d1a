@@ -219,7 +219,7 @@ const Article = () => {
   const { data: viewCount = 0 } = useArticleViewCount(postId);
 
   const { images: generatedImages, isLoading: imagesLoading, error: imagesError, regenerate } = useArticleImages({
-    postId: post?.id || '',
+    postId: dbArticle?.id || '',
     title: post?.title || '',
     category: post?.categorySlug || '',
     tags: post?.tags || [],

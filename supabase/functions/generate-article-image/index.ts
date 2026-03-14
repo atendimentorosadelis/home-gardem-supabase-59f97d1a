@@ -334,6 +334,67 @@ function hasGenericCarpentryBias(text: string): boolean {
   return hits >= 2;
 }
 
+const GENERIC_THEME_PROMPT_MARKERS = [
+  'same room same decor same lighting',
+  'wide-angle front view establishing shot',
+  'close-up macro shot',
+  'side perspective view',
+  'low angle dramatic shot',
+  'high angle bird eye overview',
+  'under construction',
+  'suburban lot',
+  'house under construction',
+  'building materials organized',
+];
+
+function isThemeDrivenPrompt(prompt: string): boolean {
+  const normalized = (prompt || '').toLowerCase();
+  if (!normalized) return false;
+  return GENERIC_THEME_PROMPT_MARKERS.some((marker) => normalized.includes(marker));
+}
+
+function buildSectionDrivenDetail(params: {
+  customPrompt?: string;
+  headingHints: string[];
+  excerpt?: string;
+  title?: string;
+  imageIndex: number;
+  regenerate: boolean;
+}): string {
+  const { customPrompt, headingHints, excerpt, title, imageIndex, regenerate } = params;
+
+  const headingHint =
+    headingHints[imageIndex] ||
+    headingHints[0] ||
+    (excerpt || '').trim() ||
+    (title || '').trim() ||
+    '';
+
+  const translatedPrompt = translatePromptTerms(customPrompt || '').trim();
+  const promptIsGeneric = isThemeDrivenPrompt(translatedPrompt);
+
+  if (regenerate) {
+    if (headingHint) {
+      if (!translatedPrompt || promptIsGeneric) {
+        return `article section focus: ${headingHint}`;
+      }
+      if (!translatedPrompt.toLowerCase().includes(headingHint.toLowerCase())) {
+        return `${translatedPrompt}, article section focus: ${headingHint}`;
+      }
+    }
+
+    if (!translatedPrompt || promptIsGeneric) {
+      return 'article-driven visual detail with emphasis on the generated content section';
+    }
+
+    return translatedPrompt;
+  }
+
+  if (translatedPrompt) return translatedPrompt;
+  if (headingHint) return `article section focus: ${headingHint}`;
+  return 'detailed professional photography';
+}
+
 function resolveCarpentryGalleryDetail(params: {
   style: string | null;
   customPrompt?: string;
@@ -396,6 +457,7 @@ serve(async (req) => {
     const {
       title, type = 'cover', customPrompt, visualContext, mainSubject,
       slug, articleId, imageIndex = 0, regenerate = false, category,
+      articleBody, articleExcerpt,
     } = await req.json();
 
     if (!title && !customPrompt) throw new Error("Title or customPrompt is required");
@@ -403,7 +465,7 @@ serve(async (req) => {
     const { data: articleContext } = articleId
       ? await supabase
           .from('content_articles')
-          .select('title, category, category_slug, main_subject, visual_context, excerpt, body')
+          .select('title, category, category_slug, main_subject, visual_context, excerpt, body, gallery_prompts')
           .eq('id', articleId)
           .maybeSingle()
       : { data: null as any };
@@ -471,11 +533,15 @@ serve(async (req) => {
 
     const isCarpentrySubject = !!matchedCarpentryStyle;
 
+    const effectiveTitle = title || articleContext?.title || '';
+    const effectiveExcerpt = articleExcerpt || articleContext?.excerpt || '';
+    const effectiveBody = articleBody || articleContext?.body || '';
+
     // Resolve the effective mainSubject from article data (priority) or request params
     const effectiveMainSubject = mainSubject || articleContext?.main_subject || '';
     const effectiveVisualContext = visualContext || articleContext?.visual_context || '';
     const hasArticleSpecificData = effectiveMainSubject.trim().length > 10;
-    const carpentryContextText = `${effectiveCategory} ${title || ''} ${effectiveMainSubject} ${articleContext?.main_subject || ''}`.toLowerCase();
+    const carpentryContextText = `${effectiveCategory} ${effectiveTitle} ${effectiveMainSubject} ${articleContext?.main_subject || ''}`.toLowerCase();
     const isWoodTypesTopic =
       matchedCarpentryStyle === 'carpintaria-tipos-madeira' ||
       /tipos?.*madeira|wood\s+species|douglas\s+fir|southern\s+pine|cedar|redwood|grain\s+pattern|lumber\s+grade/.test(carpentryContextText);
@@ -486,10 +552,17 @@ serve(async (req) => {
       // Architecture always uses style-specific prompts (exterior facades)
       subject = architectureStylePrompts[matchedArchStyle].subject;
     } else if (isCarpentrySubject && hasArticleSpecificData) {
-      const isInvalidForWoodTypes = isWoodTypesTopic && isConstructionFocusedText(effectiveMainSubject);
-      if (isInvalidForWoodTypes) {
-        subject = carpentryStylePrompts['carpintaria-tipos-madeira'].subject;
-        console.log('[ImageGen] Replacing construction-biased mainSubject with wood-types fallback subject');
+      const carpentryMainSubjectLooksGeneric =
+        hasGenericCarpentryBias(effectiveMainSubject) ||
+        isConstructionFocusedText(effectiveMainSubject);
+
+      const forceStyleFallback =
+        (isWoodTypesTopic && isConstructionFocusedText(effectiveMainSubject)) ||
+        (!!matchedCarpentryStyle && matchedCarpentryStyle !== 'carpintaria-wood-framing' && carpentryMainSubjectLooksGeneric);
+
+      if (forceStyleFallback && matchedCarpentryStyle) {
+        subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
+        console.log(`[ImageGen] Replacing generic carpentry subject with style fallback: ${matchedCarpentryStyle}`);
       } else {
         subject = effectiveMainSubject;
         console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
@@ -503,21 +576,21 @@ serve(async (req) => {
       const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== effectiveMainSubject
         ? translatedMainSubject
         : null;
-      subject = mainSubjectTranslated || extractSubjectFromTitle(title || articleContext?.title || '');
+      subject = mainSubjectTranslated || extractSubjectFromTitle(effectiveTitle);
     }
 
     const combinedContext = [
       mainSubject,
       visualContext,
       customPrompt,
-      title,
+      effectiveTitle,
       articleContext?.main_subject,
       articleContext?.visual_context,
-      articleContext?.excerpt,
-      articleContext?.body,
+      effectiveExcerpt,
+      effectiveBody,
     ].filter(Boolean).join(' | ');
 
-    const articleHeadingHints = extractMarkdownHeadings(articleContext?.body, 6);
+    const articleHeadingHints = extractMarkdownHeadings(effectiveBody, 6);
 
     const isPaintingCategory = categoryLower.includes('pintura') || categoryLower.includes('dicas-de-pintura');
     if (isPaintingCategory) {
@@ -579,7 +652,7 @@ serve(async (req) => {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        const carpentryCoverHint = articleHeadingHints[0] || articleContext?.excerpt || title || '';
+        const carpentryCoverHint = articleHeadingHints[0] || effectiveExcerpt || effectiveTitle;
         const coverHintSegment = carpentryCoverHint ? `article context: ${carpentryCoverHint}, ` : '';
         if (isWoodTypesTopic) {
           prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
@@ -587,11 +660,19 @@ serve(async (req) => {
           prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}professional photograph for American carpentry article. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic technical scene. ${antiTextClause}.`;
         }
       } else {
-        prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
+        const coverHint = regenerate ? (articleHeadingHints[0] || effectiveExcerpt || '') : '';
+        const coverHintSegment = coverHint ? `article context: ${coverHint}, ` : '';
+        prompt = `${subject}, ${coverHintSegment}professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
     } else {
-      let galleryDetail = customPrompt || 'detailed professional photography';
-      galleryDetail = translatePromptTerms(galleryDetail);
+      const galleryDetail = buildSectionDrivenDetail({
+        customPrompt,
+        headingHints: articleHeadingHints,
+        excerpt: effectiveExcerpt,
+        title: effectiveTitle,
+        imageIndex,
+        regenerate,
+      });
 
       const paintingTechniqueDetail = isPaintingCategory ? detectPaintingTechniqueFromText(`${galleryDetail} | ${combinedContext}`) : null;
       if (paintingTechniqueDetail && isGenericPaintingSubject(subject)) {
@@ -612,9 +693,9 @@ serve(async (req) => {
           style: matchedCarpentryStyle,
           customPrompt: galleryDetail,
           imageIndex,
-          articleTitle: articleContext?.title || title,
-          articleExcerpt: articleContext?.excerpt || '',
-          articleBody: articleContext?.body || '',
+          articleTitle: effectiveTitle,
+          articleExcerpt: effectiveExcerpt,
+          articleBody: effectiveBody,
           isWoodTypesTopic,
         });
 
@@ -625,13 +706,7 @@ serve(async (req) => {
           prompt = `${subject}, ${carpentryDetails}, ${carpentryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic technical carpentry scene. ${antiTextClause}.`;
         }
       } else {
-        if (customPrompt && customPrompt.trim().length > 20) {
-          const translatedPrompt = translatePromptTerms(customPrompt);
-          prompt = `${translatedPrompt}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
-          console.log(`[ImageGen] Using article-specific gallery prompt (${prompt.substring(0, 80)}...)`);
-        } else {
-          prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
-        }
+        prompt = `${subject}, ${galleryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       }
     }
 
