@@ -596,6 +596,7 @@ function GenerateManualContentPage() {
                   else if (jardimSelected.length > 0) handleGenerateJardim();
                   else if (arquiteturaSelected.length > 0) handleGenerateArquitetura();
                   else if (carpintariaSelected.length > 0) handleGenerateCarpintaria();
+                  else if (pinturaPremiumSelected.length > 0) handleGeneratePinturaPremium();
                   else if (commemorativeSelected) handleGenerateCommemorativeDate();
                 }}
               >
