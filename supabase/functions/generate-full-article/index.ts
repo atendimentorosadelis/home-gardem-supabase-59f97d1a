@@ -1456,6 +1456,11 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstruct
     if (forcedPlantSpecies && !namesLikelySame(validatedTitle, forcedPlantSpecies.pt)) {
       validatedTitle = `${forcedPlantSpecies.pt}: ${validatedTitle}`.slice(0, 75);
     }
+
+    if (isTitleTooSimilar(validatedTitle, recentTitles)) {
+      validatedTitle = generateFallbackTitle(topic);
+    }
+
     // PRIORITY 1: Infer category from the TOPIC (most reliable - user chose it)
     let categoryMatch: typeof categories[0] | undefined = undefined;
     // topicLower already declared above (line 578)
