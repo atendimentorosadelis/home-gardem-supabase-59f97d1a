@@ -554,19 +554,22 @@ function ImagesDashboardContent() {
         // Buscar contexto visual do artigo para manter consistência
         const { data: articleData } = await supabase
           .from('content_articles')
-          .select('main_subject, visual_context, gallery_prompts, category, tags')
+          .select('slug, title, excerpt, body, category, category_slug, tags, main_subject, visual_context, gallery_prompts')
           .eq('id', image.article_id)
           .maybeSingle();
 
         const { error } = await invokeEdgeFunction('generate-article-image', {
           articleId: image.article_id,
-          title: image.article_title,
+          title: articleData?.title || image.article_title,
+          slug: articleData?.slug || '',
           type: image.image_type,
           imageIndex: image.image_index,
           regenerate: true,
           mainSubject: articleData?.main_subject || '',
           visualContext: articleData?.visual_context || '',
-          category: articleData?.category || 'decoracao',
+          articleExcerpt: articleData?.excerpt || '',
+          articleBody: articleData?.body || '',
+          category: articleData?.category_slug || articleData?.category || 'decoracao',
           tags: articleData?.tags || [],
           customPrompt: image.image_type === 'gallery' && articleData?.gallery_prompts?.[image.image_index]
             ? articleData.gallery_prompts[image.image_index]
