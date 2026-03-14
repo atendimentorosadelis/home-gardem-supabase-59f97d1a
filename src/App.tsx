@@ -99,6 +99,7 @@ const App = () => (
         <OnlinePresenceProvider>
         <ImageApprovalProvider>
         <NavigationBlockProvider>
+        <ArticleGenerationProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
