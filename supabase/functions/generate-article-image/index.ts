@@ -243,6 +243,141 @@ function sanitizeWoodTypesPrompt(prompt: string): string {
     .trim();
 }
 
+const GENERIC_CARPENTRY_PROMPT_MARKERS = [
+  'wood frame house construction',
+  'skeletal structure',
+  'roof trusses',
+  'wall studs',
+  'suburban lot',
+  'under construction',
+  'building materials organized',
+];
+
+const CARPENTRY_GALLERY_FALLBACKS: Record<string, string[]> = {
+  'carpintaria-historia': [
+    'historical evolution of American carpentry with handcrafted timber elements and archival woodworking tools',
+    'traditional mortise and tenon joinery close-up with aged wood texture and hand tool marks',
+    'comparative timeline scene showing early timber framing and later standardized carpentry methods',
+    'macro documentation of vintage fasteners, timber wear patterns, and restoration references',
+    'workbench composition with old plans, measuring tools, and historical construction notes',
+    'editorial storytelling frame connecting legacy techniques to current carpentry practices',
+  ],
+  'carpintaria-wood-framing': [
+    'platform framing layout with aligned stud walls, floor deck, and structural sequencing',
+    'close-up of framing connectors, nailing patterns, and structural bracing details',
+    'interior framing perspective highlighting openings, spans, and load path continuity',
+    'roof framing geometry with truss integration and sheathing preparation details',
+    'side view of sheathing and weather barrier transitions on framed wall assemblies',
+    'construction workflow scene with lumber staging and framing quality checkpoints',
+  ],
+  'carpintaria-tipos-madeira': [
+    'comparative lineup of wood species boards organized by color, density, and intended structural use',
+    'close-up of grain texture, knots, and cut quality across multiple wood species samples',
+    'cross-section comparison of boards showing ring patterns, moisture behavior, and density differences',
+    'finish test panel with raw wood, sealer, and varnish outcomes on selected species',
+    'technical labeling scene with lumber grades, moisture meter readings, and species identifiers',
+    'editorial composition with organized material samples and woodworking measuring tools',
+  ],
+  'carpintaria-isolamento': [
+    'wood wall assembly layers with thermal and acoustic insulation continuity and cavity detailing',
+    'insulation fit close-up between framing members with no compression gaps and airtight transitions',
+    'cutaway perspective of vapor control membrane and sealing around penetrations',
+    'acoustic detail showing resilient interfaces and insulation around service points',
+    'thermal diagnostic setup illustrating heat-loss mapping in insulated wood assemblies',
+    'comparative insulation board with performance notes for multiple climate conditions',
+  ],
+  'carpintaria-aquecimento': [
+    'radiant floor tubing layout integrated with wood subfloor and heating zone planning',
+    'manifold connection detail with loop spacing and balancing strategy for radiant systems',
+    'floor assembly cutaway showing heat transfer layers and insulation support',
+    'HVAC routing detail through wood structure with thermal protection and air sealing',
+    'control panel scene with thermostat zoning and commissioning parameters',
+    'comparison of radiant and forced-air heating solutions adapted to wood construction',
+  ],
+  'carpintaria-manutencao': [
+    'maintenance workflow with wood elements sorted by inspection status and repair priority',
+    'close-up of moisture damage, cracking patterns, and biological wear indicators',
+    'surface preparation detail before protective treatment with sanding and cleaning stages',
+    'preservative and sealer application on wood components with correct coating sequence',
+    'repair detail showing reinforcement and replacement inserts for deteriorated areas',
+    'before-and-after documentation scene with maintenance checklist and restored pieces',
+  ],
+  'carpintaria-eficiencia': [
+    'high-performance wood envelope assembly with airtight continuity and insulation strategy',
+    'air-sealing transition detail at critical framing joints and sheathing interfaces',
+    'window perimeter insulation setup reducing thermal bridging in wood wall systems',
+    'thermal imaging capture of energy-loss points and corrected envelope detailing',
+    'mechanical integration scene with controlled ventilation and insulated distribution paths',
+    'performance comparison board with efficiency metrics and retrofit priorities',
+  ],
+  'carpintaria-tecnicas': [
+    'side-by-side carpentry workflow comparing traditional joinery and modern framing execution',
+    'close-up of handcrafted joinery precision next to pneumatic fastening technique',
+    'tooling comparison showing hand tools and modern power equipment in practical use',
+    'layout and measurement process scene with sequencing notes for each method',
+    'structural behavior comparison between traditional and contemporary wood assemblies',
+    'editorial synthesis frame highlighting method selection by project constraints',
+  ],
+};
+
+function extractMarkdownHeadings(markdown?: string, max: number = 8): string[] {
+  if (!markdown) return [];
+  return [...markdown.matchAll(/^##+\s+(.+)$/gm)]
+    .map((match) => (match[1] || '').replace(/[*_`]/g, '').trim())
+    .filter((heading) => heading.length >= 6)
+    .slice(0, max);
+}
+
+function hasGenericCarpentryBias(text: string): boolean {
+  const normalized = (text || '').toLowerCase();
+  const hits = GENERIC_CARPENTRY_PROMPT_MARKERS.filter((marker) => normalized.includes(marker)).length;
+  return hits >= 2;
+}
+
+function resolveCarpentryGalleryDetail(params: {
+  style: string | null;
+  customPrompt?: string;
+  imageIndex: number;
+  articleTitle?: string;
+  articleExcerpt?: string;
+  articleBody?: string;
+  isWoodTypesTopic: boolean;
+}): string {
+  const {
+    style,
+    customPrompt,
+    imageIndex,
+    articleTitle,
+    articleExcerpt,
+    articleBody,
+    isWoodTypesTopic,
+  } = params;
+
+  const fallbackList = CARPENTRY_GALLERY_FALLBACKS[style || ''] || CARPENTRY_GALLERY_FALLBACKS['carpintaria-tecnicas'];
+  const fallbackDetail = fallbackList[imageIndex] || fallbackList[0];
+  const translatedPrompt = translatePromptTerms(customPrompt || '').trim();
+  const isFramingStyle = style === 'carpintaria-wood-framing';
+
+  const shouldUseFallback =
+    !translatedPrompt ||
+    translatedPrompt.length < 28 ||
+    (!isFramingStyle && hasGenericCarpentryBias(translatedPrompt));
+
+  let detail = shouldUseFallback ? fallbackDetail : translatedPrompt;
+
+  if (isWoodTypesTopic) {
+    detail = sanitizeWoodTypesPrompt(detail);
+  }
+
+  const headingHints = extractMarkdownHeadings(articleBody, 6);
+  const headingHint = headingHints[imageIndex] || headingHints[0] || articleExcerpt || articleTitle || '';
+  if (headingHint && !detail.toLowerCase().includes(headingHint.toLowerCase())) {
+    detail = `${detail}, article section focus: ${headingHint}`;
+  }
+
+  return detail;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -382,6 +517,8 @@ serve(async (req) => {
       articleContext?.body,
     ].filter(Boolean).join(' | ');
 
+    const articleHeadingHints = extractMarkdownHeadings(articleContext?.body, 6);
+
     const isPaintingCategory = categoryLower.includes('pintura') || categoryLower.includes('dicas-de-pintura');
     if (isPaintingCategory) {
       const detectedTechnique = detectPaintingTechniqueFromText(combinedContext);
@@ -442,18 +579,18 @@ serve(async (req) => {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        // Use article-specific subject enriched with carpentry details
+        const carpentryCoverHint = articleHeadingHints[0] || articleContext?.excerpt || title || '';
+        const coverHintSegment = carpentryCoverHint ? `article context: ${carpentryCoverHint}, ` : '';
         if (isWoodTypesTopic) {
-          prompt = `${subject}, ${carpentryDetails}, premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
+          prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
         } else {
-          prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
+          prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}professional photograph for American carpentry article. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic technical scene. ${antiTextClause}.`;
         }
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
     } else {
       let galleryDetail = customPrompt || 'detailed professional photography';
-      // Translate Portuguese terms in gallery prompts to English
       galleryDetail = translatePromptTerms(galleryDetail);
 
       const paintingTechniqueDetail = isPaintingCategory ? detectPaintingTechniqueFromText(`${galleryDetail} | ${combinedContext}`) : null;
@@ -461,7 +598,6 @@ serve(async (req) => {
         subject = paintingTechniqueDetail;
       }
       if (isArchitectureSubject) {
-        // Strip any interior keywords from the gallery detail
         const cleanedDetail = galleryDetail
           .replace(/\binterior\b/gi, 'exterior')
           .replace(/\bindoor\b/gi, 'outdoor')
@@ -472,17 +608,23 @@ serve(async (req) => {
           .replace(/\bkitchen\b/gi, 'entrance');
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        const carpentryGallery = translatePromptTerms(galleryDetail);
+        const carpentryDetail = resolveCarpentryGalleryDetail({
+          style: matchedCarpentryStyle,
+          customPrompt: galleryDetail,
+          imageIndex,
+          articleTitle: articleContext?.title || title,
+          articleExcerpt: articleContext?.excerpt || '',
+          articleBody: articleContext?.body || '',
+          isWoodTypesTopic,
+        });
+
         if (isWoodTypesTopic) {
-          const sanitizedGallery = sanitizeWoodTypesPrompt(carpentryGallery) || 'comparative close-up of different wood species, grain textures, and board finishes';
+          const sanitizedGallery = sanitizeWoodTypesPrompt(carpentryDetail) || 'comparative close-up of different wood species, grain textures, and board finishes';
           prompt = `${subject}, ${carpentryDetails}, ${sanitizedGallery}. Setting: ${setting}. ${photoStyle}, species differentiation focus, no house framing skeleton, sharp focus. ${antiTextClause}.`;
         } else {
-          prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+          prompt = `${subject}, ${carpentryDetails}, ${carpentryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic technical carpentry scene. ${antiTextClause}.`;
         }
       } else {
-        // CRITICAL FIX: Use customPrompt as PRIMARY driver when available
-        // This ensures each gallery image is UNIQUE and article-specific
-        // Only prepend subject when no customPrompt was provided
         if (customPrompt && customPrompt.trim().length > 20) {
           const translatedPrompt = translatePromptTerms(customPrompt);
           prompt = `${translatedPrompt}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
