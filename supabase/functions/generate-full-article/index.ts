@@ -308,22 +308,163 @@ function validateGalleryPrompts(
   return { valid: errors.length === 0, errors };
 }
 
-function generateFallbackPrompts(mainSubject: string, visualContext: string): string[] {
+const GENERIC_CARPENTRY_MARKERS = [
+  'wood frame house construction',
+  'skeletal structure',
+  'roof trusses',
+  'wall studs',
+  'building materials organized on job site',
+  'suburban lot',
+  'under construction',
+];
+
+const CARPENTRY_CONTEXTUAL_FALLBACKS: Record<string, { subject: string; context: string; angles: string[] }> = {
+  'carpintaria-historia': {
+    subject: 'historical American carpentry timeline with handcrafted timber details, joinery marks, and evolution of techniques',
+    context: 'heritage carpentry workshop with archival tools, restored timber pieces, documentary style lighting',
+    angles: [
+      'wide editorial view of historical woodworking benches and old hand tools organized by era',
+      'close-up of traditional mortise and tenon joinery with visible hand-tool marks and patina',
+      'side perspective comparing antique timber framing details with modern reference samples',
+      'macro shot of aged wood grain, nail heads, and restoration notes from historical structures',
+      'overhead table layout with timeline cards showing milestones of American carpentry evolution',
+      'final composed storytelling scene combining vintage plans, measuring tools, and timber samples',
+    ],
+  },
+  'carpintaria-wood-framing': {
+    subject: 'American wood framing system with structural lumber, engineered connectors, and platform framing workflow',
+    context: 'active residential framing site with code-compliant sequencing, daylight, and professional construction photography',
+    angles: [
+      'wide-angle view of complete platform framing sequence with aligned stud walls and floor deck',
+      'detail shot of wall framing junctions with metal connectors, nailing pattern, and bracing',
+      'interior perspective showing framing grid coordination for openings and service routes',
+      'low angle photograph of roof framing geometry and load path continuity details',
+      'side view highlighting sheathing installation and air barrier preparation on framed walls',
+      'context scene showing framing crew workflow, lumber staging, and quality inspection checklist',
+    ],
+  },
+  'carpintaria-tipos-madeira': {
+    subject: 'comparative wood species board set with Douglas fir, Southern pine, cedar, grain texture, and lumber grading',
+    context: 'professional lumberyard and woodworking materials studio with organized samples and neutral editorial lighting',
+    angles: [
+      'wide comparison table with multiple wood species boards arranged by tone, density, and intended use',
+      'macro close-up of grain texture, knots, and growth rings highlighting species differences',
+      'cross-section lineup of boards showing color variation, density, and cut orientation details',
+      'finish test panel with raw wood, sealer, and varnish outcomes on distinct species',
+      'technical identification scene with grade stamps, labels, and moisture readings on lumber pieces',
+      'editorial composition with hand tools and categorized wood samples prepared for material selection',
+    ],
+  },
+  'carpintaria-isolamento': {
+    subject: 'thermal and acoustic insulation layers in American wood assemblies with cavity detailing and air sealing focus',
+    context: 'wood frame wall mockup lab with insulation materials, vapor control layers, and diagnostic tools',
+    angles: [
+      'wide mockup view showing wall assembly layers from exterior sheathing to interior finish line',
+      'detail close-up of insulation fit quality between studs with no compression gaps',
+      'side cutaway perspective highlighting vapor control membrane and sealing continuity',
+      'macro shot of acoustic insulation interfaces around service penetrations and framing edges',
+      'testing scene with thermal camera and blower-door style diagnostic setup on wall sample',
+      'final assembled section comparing insulation options and performance notes for climate zones',
+    ],
+  },
+  'carpintaria-aquecimento': {
+    subject: 'heating systems integrated with wood construction including radiant floor loops and forced-air distribution details',
+    context: 'technical installation environment with wood subfloor sections, HVAC components, and commissioning tools',
+    angles: [
+      'wide view of radiant floor tubing layout over prepared wood subfloor before finish layer',
+      'close-up of manifold connections and loop spacing standards for balanced floor heating',
+      'cutaway perspective showing floor build-up layers and thermal transfer strategy in wood assembly',
+      'detail image of duct routing and insulation around wood framing without thermal bridging',
+      'control scene with thermostats, zoning panel, and temperature monitoring setup',
+      'integrated system composition comparing radiant floor and forced-air solutions in one technical frame',
+    ],
+  },
+  'carpintaria-manutencao': {
+    subject: 'wood maintenance workflow for structural and finish durability with inspection, repair, and protective treatment stages',
+    context: 'residential carpentry maintenance setup with restored wood components, tools, and product application sequence',
+    angles: [
+      'wide maintenance bench with wood parts separated by condition and intervention priority',
+      'close-up of moisture-related deterioration signs, cracks, and biological damage indicators',
+      'detail shot of sanding and surface preparation before protective coating application',
+      'treatment scene showing preservative and sealer layers applied with correct technique',
+      'repair composition with replacement inserts and reinforcement details on damaged wood elements',
+      'final before-and-after layout documenting restored pieces and maintenance schedule checklist',
+    ],
+  },
+  'carpintaria-eficiencia': {
+    subject: 'energy-efficient wood construction envelope with airtight detailing, thermal continuity, and performance verification',
+    context: 'high-performance building mockup with wood framing, insulation strategy, and energy diagnostic instruments',
+    angles: [
+      'wide view of high-performance wall section with complete envelope continuity references',
+      'close-up of air-sealing transitions at critical joints between framing and sheathing',
+      'detail perspective of window perimeter insulation and thermal bridge mitigation in wood wall',
+      'diagnostic scene with thermal imaging map highlighting heat-loss reduction points',
+      'mechanical integration shot showing controlled ventilation and insulated distribution paths',
+      'final comparative board with efficiency metrics, assembly notes, and climate-specific recommendations',
+    ],
+  },
+  'carpintaria-tecnicas': {
+    subject: 'comparative carpentry techniques showing traditional joinery craftsmanship and modern framing execution standards',
+    context: 'split woodworking studio and framing workshop environment, documenting tools, methods, and construction outcomes',
+    angles: [
+      'wide side-by-side scene of traditional joinery station and modern framing workstation',
+      'close-up of hand-cut joinery precision alongside pneumatic fastening details',
+      'detail shot comparing tool marks, tolerances, and assembly speed indicators',
+      'process frame showing layout lines, measurement references, and sequencing logic',
+      'low angle composition capturing structural behavior in traditional versus modern assemblies',
+      'editorial finish combining both methods with decision notes for practical project scenarios',
+    ],
+  },
+};
+
+function extractMarkdownHeadings(markdown?: string, max: number = 10): string[] {
+  if (!markdown) return [];
+  const matches = [...markdown.matchAll(/^##+\s+(.+)$/gm)]
+    .map((m) => (m[1] || '').replace(/[*_`]/g, '').trim())
+    .filter((line) => line.length >= 6)
+    .slice(0, max);
+  return matches;
+}
+
+function isGenericCarpentryPromptPack(prompts: string[]): boolean {
+  const joined = (prompts || []).join(' ').toLowerCase();
+  const hits = GENERIC_CARPENTRY_MARKERS.filter((marker) => joined.includes(marker)).length;
+  return hits >= 2;
+}
+
+function getCarpentryFallbackPack(categorySlug?: string) {
+  return CARPENTRY_CONTEXTUAL_FALLBACKS[categorySlug || ''] || CARPENTRY_CONTEXTUAL_FALLBACKS['carpintaria-tecnicas'];
+}
+
+function generateCarpentryContextualFallbackPrompts(
+  mainSubject: string,
+  visualContext: string,
+  options?: { categorySlug?: string; content?: string; topic?: string }
+): string[] {
+  const pack = getCarpentryFallbackPack(options?.categorySlug);
+  const headingHints = extractMarkdownHeadings(options?.content, 6);
+  const topicHint = (options?.topic || '').replace(/[:\-–—]/g, ' ').trim();
+  const resolvedSubject = mainSubject?.trim().length >= 12 ? mainSubject : pack.subject;
+  const resolvedContext = visualContext?.trim().length >= 12 ? visualContext : pack.context;
+
+  return pack.angles.map((angle, index) => {
+    const headingHint = headingHints[index] || headingHints[0] || topicHint;
+    const headingSegment = headingHint ? `article focus: ${headingHint}, ` : '';
+    return `${resolvedSubject}, ${headingSegment}${angle}, environment: ${resolvedContext}, natural daylight, professional editorial photography, ultra realistic, sharp focus, no text, no words, no watermarks, no logos`;
+  });
+}
+
+function generateFallbackPrompts(
+  mainSubject: string,
+  visualContext: string,
+  options?: { categorySlug?: string; content?: string; topic?: string }
+): string[] {
+  const isCarpentryCategory = (options?.categorySlug || '').startsWith('carpintaria');
   const carpentryKeywords = ['wood frame', 'wood framing', 'timber', 'carpentry', 'lumber', 'insulation', 'radiant floor', 'heating', 'construction'];
-  const isCarpentry = carpentryKeywords.some(k => mainSubject.toLowerCase().includes(k));
+  const isCarpentry = isCarpentryCategory || carpentryKeywords.some(k => mainSubject.toLowerCase().includes(k));
 
   if (isCarpentry) {
-    const carpentryAngles = [
-      { angle: 'wide-angle establishing shot of entire structure', composition: 'showing full wood frame skeleton, cinematic 16:9 framing' },
-      { angle: 'medium shot from side angle', composition: 'showing wall stud framing details, plywood sheathing, and structural connections' },
-      { angle: 'close-up macro shot', composition: 'focusing on wood joinery, nails, metal brackets, and lumber grain texture' },
-      { angle: 'interior perspective shot', composition: 'showing wall cavity with insulation, electrical rough-in, and framing members' },
-      { angle: 'low angle dramatic shot from ground level', composition: 'looking up at roof trusses and floor joists system' },
-      { angle: 'exterior finished view', composition: 'showing completed American wood-sided home with landscaping and driveway' }
-    ];
-    return carpentryAngles.map(({ angle, composition }) => 
-      `${mainSubject} in ${visualContext}, ${angle}, ${composition}, American residential construction, natural daylight, ultra realistic, professional construction photography, sharp focus, no text, no words, no watermarks, no logos`
-    );
+    return generateCarpentryContextualFallbackPrompts(mainSubject, visualContext, options);
   }
 
   const cameraAngles = [
@@ -340,13 +481,19 @@ function generateFallbackPrompts(mainSubject: string, visualContext: string): st
   );
 }
 
-function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetadata {
+function validateAndSanitizeImageData(
+  data: Partial<ImageMetadata>,
+  options?: { categorySlug?: string; content?: string; topic?: string }
+): ImageMetadata {
+  const isCarpentryCategory = (options?.categorySlug || '').startsWith('carpintaria');
+  const carpentryPack = getCarpentryFallbackPack(options?.categorySlug);
+
   let mainSubject = data.mainSubject || '';
   let visualContext = data.visualContext || '';
   let galleryPrompts = data.galleryPrompts || [];
 
   if (!mainSubject || mainSubject.trim().length < 5) {
-    mainSubject = 'home design element';
+    mainSubject = isCarpentryCategory ? carpentryPack.subject : 'home design element';
     console.warn('[ImageValidation] Invalid mainSubject, using fallback');
   }
 
@@ -354,9 +501,9 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
     const archKeywords = ['facade', 'exterior', 'colonial', 'industrial', 'modern building', 'neolithic', 'european', 'nordic', 'neoclassical', 'architecture'];
     const carpentryKeywords = ['wood frame', 'wood framing', 'timber', 'carpentry', 'lumber', 'insulation', 'radiant floor', 'heating'];
     const isArch = archKeywords.some(k => mainSubject.toLowerCase().includes(k));
-    const isCarpentry = carpentryKeywords.some(k => mainSubject.toLowerCase().includes(k));
+    const isCarpentry = isCarpentryCategory || carpentryKeywords.some(k => mainSubject.toLowerCase().includes(k));
     if (isCarpentry) {
-      visualContext = 'American residential wood frame house construction site, suburban neighborhood, natural daylight, professional construction photography';
+      visualContext = carpentryPack.context;
     } else if (isArch) {
       visualContext = 'building exterior facade, street view, clear sky, natural daylight';
     } else {
@@ -365,12 +512,17 @@ function validateAndSanitizeImageData(data: Partial<ImageMetadata>): ImageMetada
     console.warn('[ImageValidation] Invalid visualContext, using fallback:', visualContext);
   }
 
+  if (isCarpentryCategory && isGenericCarpentryPromptPack(galleryPrompts)) {
+    console.warn('[ImageValidation] Generic carpentry gallery prompts detected, rebuilding from article context');
+    galleryPrompts = generateCarpentryContextualFallbackPrompts(mainSubject, visualContext, options);
+  }
+
   const validation = validateGalleryPrompts(galleryPrompts, mainSubject);
   
   if (!validation.valid) {
     console.warn('[ImageValidation] Invalid galleryPrompts:', validation.errors);
     console.warn('[ImageValidation] Generating fallback prompts...');
-    galleryPrompts = generateFallbackPrompts(mainSubject, visualContext);
+    galleryPrompts = generateFallbackPrompts(mainSubject, visualContext, options);
   }
 
   while (galleryPrompts.length < 6) {
