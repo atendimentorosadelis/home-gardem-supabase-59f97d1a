@@ -195,7 +195,7 @@ serve(async (req) => {
     }
 
     const resData = await res.json();
-    console.log(`[send-test-email] Test ${type} email sent to ${recipientEmail}:`, resData.id);
+    console.log(`[send-test-email] Test ${type} email sent to ${emails.join(", ")}:`, resData.id);
 
     return new Response(
       JSON.stringify({ success: true, emailId: resData.id, usedArticle: sampleArticle?.title || null }),
