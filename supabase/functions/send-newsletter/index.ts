@@ -17,7 +17,7 @@ const translations: Record<string, {
 }> = {
   "pt-BR": {
     greeting: "Olá",
-    defaultName: "Amante da jardinagem",
+    defaultName: "Leitor(a)",
     tagline: "Seu guia de casa, jardim, decoração e arquitetura",
     readMore: "Ler mais →",
     footer: "Seu guia de casa, jardim, decoração e arquitetura",
