@@ -356,6 +356,21 @@ function GenerateManualContentPage() {
       : 'Carpintaria americana: construção em madeira nos Estados Unidos';
   };
 
+  const PREMIUM_TOPIC_MAP: Record<string, string> = {
+    'premium-estuques-italianos': 'Dicas de pintura premium: técnicas de estuques italianos de luxo — Stucco Veneziano, Marmorino, Grassello di Calce',
+    'premium-acabamentos-mediterraneos': 'Dicas de pintura premium: acabamentos mediterrâneos e naturais — Tadelakt marroquino, Lime Plaster, Clay Plaster, Terra Toscana',
+    'premium-efeitos-minerais-concreto': 'Dicas de pintura premium: efeitos minerais e de concreto sofisticado — Microcimento, Cimento Queimado Premium, Venetian Concrete Finish',
+    'premium-efeitos-metalicos': 'Dicas de pintura premium: efeitos metálicos sofisticados — Metalizado Italiano, Ouro Velho, Cobre Oxidado, Aço Corten, Bronze Polido',
+    'premium-texturas-europeias': 'Dicas de pintura premium: texturas europeias sofisticadas — Travertino Romano, Pietra Spaccata, Velatura Italiana, Spatolato, Striato Veneziano',
+    'premium-efeitos-texteis': 'Dicas de pintura premium: efeitos têxteis e suaves — Efeito Veludo, Seda, Linho, Camurça, Couro em paredes',
+    'premium-tecnicas-artisticas-raras': 'Dicas de pintura premium: técnicas artísticas raras — Trompe-l\'oeil, Fresco Artístico, Gilding com Folha de Ouro, Marbleizing Profissional',
+  };
+
+  const buildPinturaPremiumTopic = () => {
+    const id = pinturaPremiumSelected[0];
+    return PREMIUM_TOPIC_MAP[id] || 'Dicas de pintura premium: técnicas sofisticadas de acabamento';
+  };
+
   const handleGenerationComplete = async (result: GeneratedArticle | null, topic: string) => {
     if (result) {
       if (requireApproval) {
