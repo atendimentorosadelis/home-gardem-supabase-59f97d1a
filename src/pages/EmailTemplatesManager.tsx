@@ -55,12 +55,34 @@ function EmailTemplatesManagerContent() {
 
   const loadUserEmail = async () => {
     if (!user) return;
+    // Load current user email
     const { data } = await supabase
       .from('profiles')
       .select('email')
       .eq('user_id', user.id)
       .maybeSingle();
     if (data?.email) setTestEmail(data.email);
+
+    // Load second admin email
+    const { data: adminRoles } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('role', 'admin');
+    
+    if (adminRoles && adminRoles.length > 0) {
+      const otherAdminIds = adminRoles
+        .map(r => r.user_id)
+        .filter(id => id !== user.id);
+      
+      if (otherAdminIds.length > 0) {
+        const { data: otherProfile } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('user_id', otherAdminIds[0])
+          .maybeSingle();
+        if (otherProfile?.email) setTestEmail2(otherProfile.email);
+      }
+    }
   };
 
   const fetchTemplates = async () => {
