@@ -503,7 +503,7 @@ serve(async (req) => {
           .from('content_articles')
           .select('title')
           .order('created_at', { ascending: false })
-          .limit(30);
+          .limit(120);
         recentTitles = (recentArticles || []).map((a) => a.title).filter(Boolean);
         console.log(`[AntiDuplicate] Loaded ${recentTitles.length} recent titles for anti-repetition`);
       } catch (e) {
@@ -1086,22 +1086,21 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
 
 ## REGRAS DE TÍTULO E RESUMO (CARPINTARIA):
-⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
-⚠️ REGRA CRÍTICA: NÃO copie os exemplos abaixo literalmente! Crie um título ORIGINAL e ÚNICO a cada geração.
-⚠️ Use o seed aleatório ${Math.floor(Math.random() * 99999)} para garantir variação criativa.
-❌ PROIBIDO títulos formais como: "Guia Completo de Wood Framing", "Tudo Sobre Carpintaria Americana"
-❌ PROIBIDO começar com "Eu Estudei" - esse padrão já foi usado demais!
-❌ PROIBIDO reutilizar qualquer título dos exemplos abaixo - eles são APENAS referência de estilo.
+⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA, mas sem frases prontas repetidas.
+⚠️ REGRA CRÍTICA: comece com um detalhe concreto (material, peça, textura, ferramenta ou situação real), não com fórmulas genéricas.
+⚠️ Use o seed aleatório ${Math.floor(Math.random() * 99999)} para variar radicalmente a estrutura.
+❌ PROIBIDO título genérico como "Confesso que a Carpintaria Americana mudou minha perspectiva" (ou variações próximas).
+❌ PROIBIDO começar com "Confesso que" quando isso gerar frases vagas sem detalhe técnico.
+❌ PROIBIDO usar apenas "carpintaria americana" sem citar um elemento específico do subtema.
 
-Use um destes ESTILOS (não copie o texto, crie algo novo sobre o subtema "${topic}"):
-  Estilo Confissão: "Confesso que [algo inesperado sobre o tema]"
-  Estilo Pergunta: "Você sabia que [fato surpreendente]?"
-  Estilo Descoberta: "[Algo específico] me fez repensar tudo sobre [tema]"
-  Estilo Opinião: "Digo sem medo: [opinião forte sobre o tema]"
-  Estilo Narrativa: "O dia que [experiência pessoal marcante com o tema]"
-  Estilo Comparação: "[Método brasileiro] vs [Método americano]: o que ninguém te conta"
+ESTILOS PERMITIDOS (use só como DIREÇÃO, nunca copie):
+  - Cena real de obra/oficina com detalhe material
+  - Comparação Brasil x EUA com objeto concreto
+  - Descoberta técnica aplicada no dia a dia
+  - Opinião forte com exemplo prático
+  - Micro-história com material/ferramenta específica
 
-⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal, conversacional e DIFERENTE a cada geração. Não repita o padrão "Como estudante de arquitetura brasileiro...".
+⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal, conversacional e diferente a cada geração.
 
 ## ASSINATURA FINAL (OBRIGATÓRIO):
 ---
@@ -1111,16 +1110,26 @@ Use um destes ESTILOS (não copie o texto, crie algo novo sobre o subtema "${top
 📅 Publicado em: [date]
 ---
 
-- mainSubject DEVE ser em INGLÊS com pelo menos 8 palavras descrevendo o foco do artigo (ex: "American wood frame house construction with exposed lumber framing and structural connections")
-- visualContext DEVE ser em INGLÊS com pelo menos 15 palavras (ex: "American residential wood frame house under construction in suburban neighborhood, exposed framing members, clear sky, natural daylight")
-- CADA galleryPrompt DEVE ter NO MÍNIMO 20 palavras em INGLÊS e DEVE começar com o mainSubject. Exemplos:
-  1. "American wood frame house construction wide-angle view showing entire skeletal structure of beams and joists under construction, suburban lot, clear sky, natural daylight"
-  2. "American wood frame house construction close-up of wood framing joints showing nails, metal brackets, and structural connections between wall studs"
-  3. "American wood frame house construction interior view showing wall cavity with fiberglass insulation installed between wood studs and electrical rough-in"
-  4. "American wood frame house construction detail of floor joists and roof trusses system from low angle showing structural engineering"
-  5. "American wood frame house construction exterior view of finished wood-sided home with landscaping, driveway, and front porch"
-  6. "American wood frame house construction site showing stacked dimensional lumber, power tools, and building materials organized on job site"
-- CADA gallery prompt DEVE incluir "wood frame", "carpentry" ou "American construction"
+- mainSubject DEVE ser em INGLÊS, específico ao SUBTEMA escolhido (mínimo 8 palavras) e sem generalizações.
+- visualContext DEVE ser em INGLÊS, com no mínimo 15 palavras, descrevendo o cenário real do subtema.
+- CADA galleryPrompt DEVE ter NO MÍNIMO 20 palavras em INGLÊS e começar com o mainSubject.
+
+### REGRA ESPECIAL — SUBTEMA "Carpintaria - Tipos de Madeira" (OBRIGATÓRIA)
+- mainSubject DEVE focar em espécies, corte e textura de madeira (ex: Douglas fir, Southern pine, cedar, grain pattern, kiln-dried lumber).
+- visualContext DEVE ser lumberyard, marcenaria/oficina ou bancada técnica de materiais.
+- PROIBIDO em mainSubject/visualContext/galleryPrompts: "house under construction", "skeletal structure", "roof trusses", "wall studs", "building frame", "construction site".
+- Os 6 galleryPrompts DEVEM mostrar comparação de espécies e acabamentos da madeira:
+  1. visão geral das tábuas de espécies diferentes
+  2. close-up de veios e nós
+  3. corte transversal comparando densidade/cor
+  4. teste de acabamento (verniz/selador)
+  5. identificação e etiquetagem técnica das peças
+  6. composição editorial com ferramentas e madeira organizada
+
+### REGRA PARA DEMAIS SUBTEMAS DE CARPINTARIA
+- Os prompts podem mostrar estrutura/construção SOMENTE quando o subtema for framing/isolamento/aquecimento/técnicas estruturais.
+- Sempre priorize fidelidade ao conteúdo real do artigo, nunca um template único para todos os subtemas.
+
 - category DEVE ser uma das categorias de Carpintaria (ex: "Carpintaria - Wood Framing", "Carpintaria - Isolamento Térmico")
 ` : '';
 
@@ -1265,42 +1274,146 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstruct
     const BANNED_TITLE_PATTERNS = [
       /^descubra\s+/i, /^transforme\s+/i, /^aprenda\s+/i, /^veja\s+/i,
       /^confira\s+/i, /^conheça\s+/i, /^explore\s+/i, /^entenda\s+/i,
+      /^confesso\s+que\b/i,
       /guia\s+completo/i, /guia\s+definitivo/i, /dicas\s+essenciais/i,
       /dicas\s+imperdíveis/i, /tudo\s+sobre/i, /segredos?\s+(para|de|do|da)/i, /o\s+segredo/i,
+      /mudou\s+minha\s+perspectiva/i,
+      /carpintaria\s+americana\s+mudou/i,
     ];
 
     const BANNED_TITLE_PHRASES = [
       'guia completo', 'guia definitivo', 'dicas essenciais', 'dicas imperdíveis',
       'tudo sobre', 'o segredo', 'transforme sua', 'descubra como', 'aprenda a',
+      'confesso que', 'mudou minha perspectiva',
     ];
+
+    const TITLE_STOPWORDS = new Set([
+      'a', 'o', 'os', 'as', 'de', 'da', 'do', 'das', 'dos', 'e', 'em', 'na', 'no', 'nas', 'nos',
+      'que', 'para', 'por', 'com', 'sem', 'uma', 'um', 'minha', 'meu', 'suas', 'seu', 'sobre',
+      'carpintaria', 'americana', 'tipos', 'madeira', 'como', 'foi', 'isso', 'aqui', 'mais',
+    ]);
+
+    function normalizeTitleForComparison(text: string): string {
+      return (text || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function extractTitleTokens(text: string): string[] {
+      return normalizeTitleForComparison(text)
+        .split(' ')
+        .filter((token) => token.length >= 4 && !TITLE_STOPWORDS.has(token));
+    }
+
+    function buildTitleSignature(text: string): string {
+      return extractTitleTokens(text).slice(0, 5).join(' ');
+    }
+
+    function isTitleTooSimilar(candidate: string, existingTitles: string[]): boolean {
+      const normalizedCandidate = normalizeTitleForComparison(candidate);
+      if (!normalizedCandidate) return true;
+
+      const candidateSig = buildTitleSignature(candidate);
+      const candidateTokens = new Set(extractTitleTokens(candidate));
+      const candidateWords = normalizedCandidate.split(' ');
+      const candidatePrefix = candidateWords.slice(0, 4).join(' ');
+
+      for (const existing of existingTitles) {
+        const normalizedExisting = normalizeTitleForComparison(existing);
+        if (!normalizedExisting) continue;
+        if (normalizedExisting === normalizedCandidate) return true;
+
+        const existingSig = buildTitleSignature(existing);
+        if (candidateSig && existingSig && candidateSig === existingSig) return true;
+
+        const existingWords = normalizedExisting.split(' ');
+        const existingPrefix = existingWords.slice(0, 4).join(' ');
+        if (candidatePrefix && existingPrefix && candidatePrefix === existingPrefix) return true;
+
+        const existingTokens = new Set(extractTitleTokens(existing));
+        const intersection = [...candidateTokens].filter((token) => existingTokens.has(token)).length;
+        const minSize = Math.min(candidateTokens.size, existingTokens.size);
+        if (minSize >= 3 && intersection / minSize >= 0.8) return true;
+      }
+
+      return false;
+    }
+
+    function truncateTitle(title: string, maxLength: number = 70): string {
+      if (title.length <= maxLength) return title;
+      return title.slice(0, maxLength).replace(/\s+\S*$/, '').trim();
+    }
+
+    function extractWoodDetailHint(topicArg: string, mainSubjectArg: string, contentArg: string): string {
+      const combined = `${topicArg} ${mainSubjectArg} ${contentArg?.slice(0, 2000) || ''}`.toLowerCase();
+      const detailCandidates = [
+        'douglas fir', 'southern pine', 'cedar', 'redwood', 'oak', 'maple',
+        'plywood', 'osb', 'mdf', 'kiln-dried lumber', 'grain pattern', 'cross section',
+        'wood stain', 'lumber grade', 'wood knots',
+      ];
+
+      const matchedDetail = detailCandidates.find((detail) => combined.includes(detail));
+      if (matchedDetail) return matchedDetail;
+
+      const cleanedTopic = topicArg
+        .replace(/carpintaria\s*americana/gi, ' ')
+        .replace(/carpintaria/gi, ' ')
+        .replace(/tipos?\s+de/gi, ' ')
+        .replace(/[:\-–—]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      return cleanedTopic || 'madeira estrutural';
+    }
+
+    function generateFallbackTitle(topicArg: string): string {
+      const detailHint = extractWoodDetailHint(topicArg, articleData.mainSubject || '', articleData.content || '');
+      const readableDetail = detailHint
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+        .slice(0, 40);
+
+      const fallbackTemplates = [
+        `${readableDetail}: o detalhe que virou meu ponto de virada`,
+        `Foi nessa etapa com ${readableDetail} que tudo fez sentido`,
+        `Entre cortes e veios, ${readableDetail} mudou meu projeto`,
+        `Ninguém me contou isso sobre ${readableDetail} na primeira obra`,
+        `O acabamento de ${readableDetail} me fez rever cada escolha`,
+        `${readableDetail} na prática: o erro que eu não repito mais`,
+      ];
+
+      const shuffled = [...fallbackTemplates].sort(() => Math.random() - 0.5);
+      for (const template of shuffled) {
+        const candidate = truncateTitle(template);
+        if (!isTitleTooSimilar(candidate, recentTitles)) {
+          return candidate;
+        }
+      }
+
+      const entropy = Math.floor(Math.random() * 900 + 100);
+      return truncateTitle(`${readableDetail}: o ajuste ${entropy} que salvou meu acabamento`);
+    }
 
     function validateAndSanitizeTitle(titleArg: string, topicArg: string): string {
       if (!titleArg || typeof titleArg !== 'string' || titleArg.trim().length < 10) {
         return generateFallbackTitle(topicArg);
       }
-      const cleanTitle = titleArg.trim();
+
+      const cleanTitle = truncateTitle(titleArg.trim());
       const lowerTitle = cleanTitle.toLowerCase();
-      
+
       for (const phrase of BANNED_TITLE_PHRASES) {
         if (lowerTitle.includes(phrase)) return generateFallbackTitle(topicArg);
       }
       for (const pattern of BANNED_TITLE_PATTERNS) {
         if (pattern.test(cleanTitle)) return generateFallbackTitle(topicArg);
       }
-      if (cleanTitle.length > 75) return cleanTitle.substring(0, 72) + '...';
-      return cleanTitle;
-    }
+      if (isTitleTooSimilar(cleanTitle, recentTitles)) return generateFallbackTitle(topicArg);
 
-    function generateFallbackTitle(topicArg: string): string {
-      const topicWord = topicArg.split(/[\s-]+/)[0];
-      const capitalizedTopic = topicWord.charAt(0).toUpperCase() + topicWord.slice(1).toLowerCase();
-      const genericTemplates = [
-        `${capitalizedTopic}: O Que Aprendi na Prática`,
-        `${capitalizedTopic}: Ideias que Funcionam de Verdade`,
-        `${capitalizedTopic} em Casa: Minha Experiência`,
-        `${capitalizedTopic}: Como Fazer Sem Gastar Fortuna`,
-      ];
-      return genericTemplates[Math.floor(Math.random() * genericTemplates.length)];
+      return cleanTitle;
     }
 
     // Excerpt validation
@@ -1343,6 +1456,11 @@ ${plantFlowerInstructions}${antiDuplicatePlantInstructions}${forcedPlantInstruct
     if (forcedPlantSpecies && !namesLikelySame(validatedTitle, forcedPlantSpecies.pt)) {
       validatedTitle = `${forcedPlantSpecies.pt}: ${validatedTitle}`.slice(0, 75);
     }
+
+    if (isTitleTooSimilar(validatedTitle, recentTitles)) {
+      validatedTitle = generateFallbackTitle(topic);
+    }
+
     // PRIORITY 1: Infer category from the TOPIC (most reliable - user chose it)
     let categoryMatch: typeof categories[0] | undefined = undefined;
     // topicLower already declared above (line 578)

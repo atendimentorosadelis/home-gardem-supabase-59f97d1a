@@ -215,6 +215,34 @@ function isGenericPaintingSubject(text: string): boolean {
   );
 }
 
+function isConstructionFocusedText(text: string): boolean {
+  const normalized = (text || '').toLowerCase();
+  const constructionMarkers = [
+    'house under construction',
+    'construction site',
+    'skeletal structure',
+    'roof trusses',
+    'wall studs',
+    'building frame',
+    'wood frame house',
+    'residential framing',
+  ];
+  return constructionMarkers.some((marker) => normalized.includes(marker));
+}
+
+function sanitizeWoodTypesPrompt(prompt: string): string {
+  return (prompt || '')
+    .replace(/house under construction/gi, 'wood species comparison')
+    .replace(/construction site/gi, 'lumberyard scene')
+    .replace(/skeletal structure/gi, 'organized wood samples')
+    .replace(/roof trusses?/gi, 'grain texture details')
+    .replace(/wall studs?/gi, 'finished and raw boards')
+    .replace(/building frame/gi, 'material bench layout')
+    .replace(/american construction/gi, 'woodworking editorial')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -312,16 +340,25 @@ serve(async (req) => {
     const effectiveMainSubject = mainSubject || articleContext?.main_subject || '';
     const effectiveVisualContext = visualContext || articleContext?.visual_context || '';
     const hasArticleSpecificData = effectiveMainSubject.trim().length > 10;
-    
+    const carpentryContextText = `${effectiveCategory} ${title || ''} ${effectiveMainSubject} ${articleContext?.main_subject || ''}`.toLowerCase();
+    const isWoodTypesTopic =
+      matchedCarpentryStyle === 'carpintaria-tipos-madeira' ||
+      /tipos?.*madeira|wood\s+species|douglas\s+fir|southern\s+pine|cedar|redwood|grain\s+pattern|lumber\s+grade/.test(carpentryContextText);
+
     // For architecture or carpentry: use article-specific data FIRST, static mappings as FALLBACK
     let subject: string;
     if (isArchitectureSubject && matchedArchStyle) {
       // Architecture always uses style-specific prompts (exterior facades)
       subject = architectureStylePrompts[matchedArchStyle].subject;
     } else if (isCarpentrySubject && hasArticleSpecificData) {
-      // Carpentry: PRIORITIZE article-specific mainSubject (reflects the actual article content)
-      subject = effectiveMainSubject;
-      console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
+      const isInvalidForWoodTypes = isWoodTypesTopic && isConstructionFocusedText(effectiveMainSubject);
+      if (isInvalidForWoodTypes) {
+        subject = carpentryStylePrompts['carpintaria-tipos-madeira'].subject;
+        console.log('[ImageGen] Replacing construction-biased mainSubject with wood-types fallback subject');
+      } else {
+        subject = effectiveMainSubject;
+        console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
+      }
     } else if (isCarpentrySubject && matchedCarpentryStyle) {
       // Carpentry fallback: use static style prompts only when no article data
       subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
@@ -357,12 +394,13 @@ serve(async (req) => {
     // For carpentry: use static details as enrichment, but article data drives the main subject
     const carpentryDetails = matchedCarpentryStyle ? carpentryStylePrompts[matchedCarpentryStyle].details : '';
 
-    console.log(`[ImageGen] Category: "${effectiveCategory}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}, articleSpecific: ${hasArticleSpecificData}`);
+    console.log(`[ImageGen] Category: "${effectiveCategory}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}, isWoodTypes: ${isWoodTypesTopic}, articleSpecific: ${hasArticleSpecificData}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
     const carpentrySetting = 'American residential construction site, suburban neighborhood, natural daylight, professional construction photography';
-    
+    const woodTypesSetting = 'professional lumberyard and woodworking studio, organized wood species samples, natural daylight, editorial materials photography';
+
     const resolvedVisualContext = effectiveVisualContext || '';
 
     // Detect garden/outdoor categories
@@ -378,7 +416,12 @@ serve(async (req) => {
         setting = exteriorSetting;
       }
     } else if (isCarpentrySubject) {
-      setting = resolvedVisualContext || carpentrySetting;
+      if (isWoodTypesTopic) {
+        const canUseContext = resolvedVisualContext && !isConstructionFocusedText(resolvedVisualContext);
+        setting = canUseContext ? resolvedVisualContext : woodTypesSetting;
+      } else {
+        setting = resolvedVisualContext || carpentrySetting;
+      }
     } else if (isGardenCategory) {
       setting = resolvedVisualContext || gardenSetting;
     } else {
@@ -387,10 +430,12 @@ serve(async (req) => {
     const antiTextClause = "no text, no words, no letters, no typography, no watermarks, no logos";
 
     let prompt: string;
-    const photoStyle = isArchitectureSubject 
-      ? 'Professional exterior architectural photography, building facade, outdoor perspective' 
+    const photoStyle = isArchitectureSubject
+      ? 'Professional exterior architectural photography, building facade, outdoor perspective'
       : isCarpentrySubject
-        ? 'Professional construction photography, American residential building, realistic detailed'
+        ? (isWoodTypesTopic
+          ? 'Professional material and woodworking photography, wood grain texture focus, editorial close-up'
+          : 'Professional construction photography, American residential building, realistic detailed')
         : 'Professional interior photography';
     
     if (type === 'cover') {
@@ -398,7 +443,11 @@ serve(async (req) => {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
         // Use article-specific subject enriched with carpentry details
-        prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
+        if (isWoodTypesTopic) {
+          prompt = `${subject}, ${carpentryDetails}, premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
+        } else {
+          prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
+        }
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
@@ -424,7 +473,12 @@ serve(async (req) => {
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
         const carpentryGallery = translatePromptTerms(galleryDetail);
-        prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+        if (isWoodTypesTopic) {
+          const sanitizedGallery = sanitizeWoodTypesPrompt(carpentryGallery) || 'comparative close-up of different wood species, grain textures, and board finishes';
+          prompt = `${subject}, ${carpentryDetails}, ${sanitizedGallery}. Setting: ${setting}. ${photoStyle}, species differentiation focus, no house framing skeleton, sharp focus. ${antiTextClause}.`;
+        } else {
+          prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+        }
       } else {
         // CRITICAL FIX: Use customPrompt as PRIMARY driver when available
         // This ensures each gallery image is UNIQUE and article-specific
