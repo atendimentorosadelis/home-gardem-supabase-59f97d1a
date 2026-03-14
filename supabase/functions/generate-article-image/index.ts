@@ -473,7 +473,12 @@ serve(async (req) => {
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
         const carpentryGallery = translatePromptTerms(galleryDetail);
-        prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+        if (isWoodTypesTopic) {
+          const sanitizedGallery = sanitizeWoodTypesPrompt(carpentryGallery) || 'comparative close-up of different wood species, grain textures, and board finishes';
+          prompt = `${subject}, ${carpentryDetails}, ${sanitizedGallery}. Setting: ${setting}. ${photoStyle}, species differentiation focus, no house framing skeleton, sharp focus. ${antiTextClause}.`;
+        } else {
+          prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+        }
       } else {
         // CRITICAL FIX: Use customPrompt as PRIMARY driver when available
         // This ensures each gallery image is UNIQUE and article-specific
