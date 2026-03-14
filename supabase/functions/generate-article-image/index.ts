@@ -399,7 +399,8 @@ serve(async (req) => {
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
     const carpentrySetting = 'American residential construction site, suburban neighborhood, natural daylight, professional construction photography';
-    
+    const woodTypesSetting = 'professional lumberyard and woodworking studio, organized wood species samples, natural daylight, editorial materials photography';
+
     const resolvedVisualContext = effectiveVisualContext || '';
 
     // Detect garden/outdoor categories
@@ -415,7 +416,12 @@ serve(async (req) => {
         setting = exteriorSetting;
       }
     } else if (isCarpentrySubject) {
-      setting = resolvedVisualContext || carpentrySetting;
+      if (isWoodTypesTopic) {
+        const canUseContext = resolvedVisualContext && !isConstructionFocusedText(resolvedVisualContext);
+        setting = canUseContext ? resolvedVisualContext : woodTypesSetting;
+      } else {
+        setting = resolvedVisualContext || carpentrySetting;
+      }
     } else if (isGardenCategory) {
       setting = resolvedVisualContext || gardenSetting;
     } else {
@@ -424,10 +430,12 @@ serve(async (req) => {
     const antiTextClause = "no text, no words, no letters, no typography, no watermarks, no logos";
 
     let prompt: string;
-    const photoStyle = isArchitectureSubject 
-      ? 'Professional exterior architectural photography, building facade, outdoor perspective' 
+    const photoStyle = isArchitectureSubject
+      ? 'Professional exterior architectural photography, building facade, outdoor perspective'
       : isCarpentrySubject
-        ? 'Professional construction photography, American residential building, realistic detailed'
+        ? (isWoodTypesTopic
+          ? 'Professional material and woodworking photography, wood grain texture focus, editorial close-up'
+          : 'Professional construction photography, American residential building, realistic detailed')
         : 'Professional interior photography';
     
     if (type === 'cover') {
