@@ -128,7 +128,7 @@ serve(async (req) => {
       try {
         const lang = subscriber.language || "pt-BR";
         const t = getTranslation(lang);
-        const articleUrl = `${siteUrl}/article/${articleSlug || articleId}`;
+        const articleUrl = `${siteUrl}/${articleCategorySlug}/${articleSlug || articleId}`;
         const trackedArticleUrl = historyId ? `${trackClickUrl}?id=${historyId}&url=${encodeURIComponent(articleUrl)}` : articleUrl;
         const unsubscribeUrl = `${siteUrl}/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
         const openPixelUrl = historyId ? `${trackOpenUrl}?id=${historyId}` : "";
