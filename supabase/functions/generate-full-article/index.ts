@@ -1176,9 +1176,66 @@ Existem 9 CATEGORIAS com dezenas de técnicas — explore TODAS com variedade m�
 - Revestimento acrílico texturizado | Monocapa | Revestimento elastomérico
 - Revestimento siloxano | Revestimento acrílico estruturado | Massa raspada
 
-🎲 NÚMERO SORTEADO PARA ESCOLHA DA TÉCNICA: ${Math.floor(Math.random() * 130)}
-Use este número para sortear a técnica de qualquer uma das 9 categorias acima. Cada artigo deve ser DIFERENTE dos anteriores.
-NÃO se limite às categorias 1-3 — explore TODAS as 9 categorias com a mesma frequência.
+### ⭐ CATEGORIA 10 — CONTEÚDO PREMIUM: Estuques Italianos (Luxo Clássico)
+- Stucco Veneziano (acabamento polido que imita mármore profundo, usado em palácios italianos)
+- Marmorino Veneziano (textura mineral natural, semelhante ao estuque veneziano)
+- Marmorato Premium (efeito mármore com manchas e veios sofisticados)
+- Stucco Lustro (versão ultra polida, quase espelhada)
+- Grassello di Calce (acabamento à base de cal com brilho intenso)
+
+### ⭐ CATEGORIA 11 — CONTEÚDO PREMIUM: Acabamentos Mediterrâneos e Naturais
+- Tadelakt Premium (técnica marroquina de palácios e hammams, impermeável e extremamente lisa)
+- Lime Plaster Polished (revestimento mineral de cal polida)
+- Clay Plaster Premium (acabamento natural para arquitetura sustentável)
+- Terra Toscana Finish (estilo rústico inspirado em vilas italianas)
+
+### ⭐ CATEGORIA 12 — CONTEÚDO PREMIUM: Efeitos Minerais e de Concreto
+- Microcimento Premium (revestimento contínuo moderno para casas de alto padrão)
+- Cimento Queimado Premium (versão refinada com acabamento acetinado)
+- Efeito Concreto Aparente Arquitetônico (acabamento brutalista sofisticado)
+- Concrete Plaster (massa cimentícia decorativa)
+- Venetian Concrete Finish (concreto com acabamento veneziano)
+
+### ⭐ CATEGORIA 13 — CONTEÚDO PREMIUM: Efeitos Metálicos Sofisticados
+- Metalizado Italiano (aplicação artesanal com brilho metálico)
+- Efeito Ouro Velho (patina dourada envelhecida)
+- Efeito Cobre Oxidado (verdigris natural)
+- Efeito Aço Corten Premium (ferrugem controlada)
+- Efeito Bronze Polido (acabamento espelhado bronze)
+- Efeito Alumínio Escovado (acabamento industrial sofisticado)
+⚠️ Estes efeitos são comuns em: hotéis boutique, restaurantes de luxo, apartamentos de alto padrão.
+
+### ⭐ CATEGORIA 14 — CONTEÚDO PREMIUM: Texturas Europeias Sofisticadas
+- Travertino Romano (imita a pedra travertino usada na Roma antiga)
+- Pietra Spaccata (simula pedra natural quebrada)
+- Velatura Italiana (camadas translúcidas de cor)
+- Spatolato (espátula artística veneziana)
+- Striato Veneziano (efeito listrado veneziano)
+
+### ⭐ CATEGORIA 15 — CONTEÚDO PREMIUM: Efeitos Têxteis e Suaves
+- Efeito Veludo Premium (textura aveludada sofisticada)
+- Efeito Seda Premium (brilho suave e sedoso)
+- Efeito Linho Premium (textura de tecido natural)
+- Efeito Camurça Premium (toque macio e acolhedor)
+- Efeito Couro Premium (imitação de couro em parede)
+⚠️ Muito usados em: suítes de hotéis, quartos de luxo, salas sofisticadas.
+
+### ⭐ CATEGORIA 16 — CONTEÚDO PREMIUM: Técnicas Artísticas Raras
+- Trompe-l'oeil Premium (pintura hiper-realista que cria ilusão de arquitetura)
+- Fresco Artístico (técnica renascentista de pintura sobre gesso fresco)
+- Gilding / Folha de Ouro (aplicação artesanal de folhas metálicas)
+- Marbleizing Profissional (simulação artística de mármore natural)
+- Wood Graining Premium (imitação artística de madeira nobre)
+
+💡 NOTA PREMIUM: As categorias 10-16 são técnicas de alto padrão. Para estes artigos:
+- Mencione que aplicadores especializados cobram mais que arquitetos por essas técnicas raras
+- Use valores do mercado americano em USD (ex: Stucco Veneziano $35-$80/sq ft, Tadelakt $50-$120/sq ft, Gilding $80-$200/sq ft)
+- Enfatize que são técnicas de "decorative finishes" reconhecidas internacionalmente
+- O Keven deve expressar ADMIRAÇÃO e FASCÍNIO por essas técnicas premium
+
+🎲 NÚMERO SORTEADO PARA ESCOLHA DA TÉCNICA: ${Math.floor(Math.random() * 160)}
+Use este número para sortear a técnica de qualquer uma das 16 categorias acima. Cada artigo deve ser DIFERENTE dos anteriores.
+NÃO se limite às categorias 1-3 — explore TODAS as 16 categorias com a mesma frequência. Priorize categorias Premium (10-16) quando o número sorteado for > 100.
 
 ## REGRA #2 — PROFUNDIDADE TÉCNICA TOTAL:
 O artigo deve cobrir TODOS estes aspectos da técnica escolhida:
