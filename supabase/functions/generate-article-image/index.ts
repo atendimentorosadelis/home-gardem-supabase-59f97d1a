@@ -443,7 +443,11 @@ serve(async (req) => {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
         // Use article-specific subject enriched with carpentry details
-        prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
+        if (isWoodTypesTopic) {
+          prompt = `${subject}, ${carpentryDetails}, premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
+        } else {
+          prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
+        }
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
