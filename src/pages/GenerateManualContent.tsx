@@ -44,6 +44,8 @@ import {
   PaintBucket,
   Hammer,
   Axe,
+  Crown,
+  Gem,
   type LucideIcon
 } from 'lucide-react';
 import { AIIcon } from '@/components/AIIcon';
