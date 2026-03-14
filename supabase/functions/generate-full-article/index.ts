@@ -950,7 +950,7 @@ O resumo DEVE:
 
 Retorne APENAS JSON válido (sem markdown code blocks):
 {
-  "title": "Título ÚNICO seguindo o estilo sorteado acima (máximo 70 caracteres)",
+  "title": "Título ÚNICO seguindo o estilo sorteado acima (45-80 caracteres, frase COMPLETA)",
   "excerpt": "Resumo pessoal e envolvente (100-155 caracteres)",
   "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Dicas de Pintura, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico, Carpintaria - História, Carpintaria - Wood Framing, Carpintaria - Tipos de Madeira, Carpintaria - Isolamento Térmico, Carpintaria - Aquecimento & Piso Aquecido, Carpintaria - Manutenção & Conservação, Carpintaria - Eficiência Energética, Carpintaria - Técnicas Tradicionais vs Modernas",
   "tags": ["5", "a", "7", "tags"],
