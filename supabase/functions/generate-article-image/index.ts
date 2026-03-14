@@ -457,6 +457,7 @@ serve(async (req) => {
     const {
       title, type = 'cover', customPrompt, visualContext, mainSubject,
       slug, articleId, imageIndex = 0, regenerate = false, category,
+      articleBody, articleExcerpt,
     } = await req.json();
 
     if (!title && !customPrompt) throw new Error("Title or customPrompt is required");
@@ -464,7 +465,7 @@ serve(async (req) => {
     const { data: articleContext } = articleId
       ? await supabase
           .from('content_articles')
-          .select('title, category, category_slug, main_subject, visual_context, excerpt, body')
+          .select('title, category, category_slug, main_subject, visual_context, excerpt, body, gallery_prompts')
           .eq('id', articleId)
           .maybeSingle()
       : { data: null as any };
