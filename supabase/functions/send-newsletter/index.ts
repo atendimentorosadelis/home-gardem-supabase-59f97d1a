@@ -26,7 +26,7 @@ const translations: Record<string, {
   },
   en: {
     greeting: "Hello",
-    defaultName: "Garden lover",
+    defaultName: "Reader",
     tagline: "Your guide to home, garden, decor and architecture",
     readMore: "Read more →",
     footer: "Your guide to home, garden, decor and architecture",
