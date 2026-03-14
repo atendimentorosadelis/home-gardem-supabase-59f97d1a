@@ -104,7 +104,7 @@ serve(async (req) => {
         ${coverImage ? `<!-- Cover Image --><tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ""}
         <!-- Content -->
         <tr><td style="padding:40px 30px;">
-          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}! 🌱</p>
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}!</p>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ""}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
           <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>
@@ -142,7 +142,7 @@ serve(async (req) => {
         ${coverImage ? `<!-- Cover Image --><tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ""}
         <!-- Content -->
         <tr><td style="padding:40px 30px;">
-          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}! 🌱</p>
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}!</p>
           <span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">Piloto Automático</span>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;margin-left:8px;">${articleCategory}</span>` : ""}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>

@@ -17,7 +17,7 @@ const translations: Record<string, {
 }> = {
   "pt-BR": {
     greeting: "Olá",
-    defaultName: "Amante da jardinagem",
+    defaultName: "Leitor(a)",
     tagline: "Seu guia de casa, jardim, decoração e arquitetura",
     readMore: "Ler mais →",
     footer: "Seu guia de casa, jardim, decoração e arquitetura",
@@ -26,7 +26,7 @@ const translations: Record<string, {
   },
   en: {
     greeting: "Hello",
-    defaultName: "Garden lover",
+    defaultName: "Reader",
     tagline: "Your guide to home, garden, decor and architecture",
     readMore: "Read more →",
     footer: "Your guide to home, garden, decor and architecture",
@@ -35,7 +35,7 @@ const translations: Record<string, {
   },
   es: {
     greeting: "Hola",
-    defaultName: "Amante de la jardinería",
+    defaultName: "Lector(a)",
     tagline: "Tu guía de hogar, jardín, decoración y arquitectura",
     readMore: "Leer más →",
     footer: "Tu guía de hogar, jardín, decoración y arquitectura",
@@ -150,7 +150,7 @@ serve(async (req) => {
         ${coverImage ? `<tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ''}
         <!-- Content -->
         <tr><td style="padding:40px 30px;">
-          <p style="color:#666;font-size:15px;margin:0 0 20px;">${t.greeting}, ${subscriberName}! 🌱</p>
+          <p style="color:#666;font-size:15px;margin:0 0 20px;">${t.greeting}, ${subscriberName}!</p>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
           <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
           ${articleExcerpt ? `<p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ''}
