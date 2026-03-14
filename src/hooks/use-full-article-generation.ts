@@ -156,6 +156,7 @@ export function useFullArticleGeneration() {
   const cancelGeneration = useCallback(() => {
     cancelledRef.current = true;
     setIsGenerating(false);
+    sessionStorage.removeItem('lovable_generation_active');
 
     // Mark loading steps as cancelled
     setSteps(prev => prev.map(step =>
