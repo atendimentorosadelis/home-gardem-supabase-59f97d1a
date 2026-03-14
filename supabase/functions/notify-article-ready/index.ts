@@ -76,6 +76,7 @@ serve(async (req) => {
 
         const articleCategorySlug = articleData?.category_slug || "jardim";
         const articleUrl = `${siteUrl}/${articleCategorySlug}/${articleSlug || articleId}`;
+        const editorUrl = `${siteUrl}/admin/articles`;
 
         const coverImage = articleData?.cover_image || "";
         const excerpt = articleData?.excerpt || "";
