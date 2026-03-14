@@ -31,7 +31,7 @@ const translations: Record<string, {
     readMore: "Read more →",
     footer: "Your guide to home, garden, decor and architecture",
     unsubscribe: "Unsubscribe",
-    subject: (title) => `🌿 ${title}`,
+    subject: (title) => title,
   },
   es: {
     greeting: "Hola",
