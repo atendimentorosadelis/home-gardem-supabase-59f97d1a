@@ -24,16 +24,24 @@ serve(async (req) => {
 
     // Verify the user is an admin
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Not authenticated");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("Not authenticated");
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-    if (userError || !user) throw new Error("Not authenticated");
+    
+    // Use anon client to validate the JWT
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const anonClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: claimsData, error: claimsError } = await anonClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) throw new Error("Not authenticated");
+    
+    const userId = claimsData.claims.sub as string;
 
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
 
@@ -49,7 +57,7 @@ serve(async (req) => {
     const { data: profile } = await supabase
       .from("profiles")
       .select("username")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .maybeSingle();
 
     const userName = profile?.username || "Admin";
