@@ -83,8 +83,9 @@ function EmailTemplatesManagerContent() {
   };
 
   const sendTestEmail = async (type: 'newsletter' | 'admin-notification') => {
-    if (!testEmail.trim()) {
-      toast.error('Informe um e-mail de destino');
+    const emails = [testEmail.trim(), testEmail2.trim()].filter(Boolean);
+    if (emails.length === 0) {
+      toast.error('Informe pelo menos um e-mail de destino');
       return;
     }
 
@@ -94,7 +95,7 @@ function EmailTemplatesManagerContent() {
     try {
       const { data, error } = await invokeEdgeFunction<{ success: boolean; error?: string }>(
         'send-test-email',
-        { type, recipientEmail: testEmail.trim() }
+        { type, recipientEmails: emails }
       );
 
       if (error) throw error;
@@ -102,8 +103,8 @@ function EmailTemplatesManagerContent() {
 
       toast.success(
         type === 'newsletter'
-          ? `E-mail de teste da newsletter enviado para ${testEmail}`
-          : `E-mail de teste de notificação admin enviado para ${testEmail}`
+          ? `Newsletter de teste enviada para ${emails.join(', ')}`
+          : `Notificação admin de teste enviada para ${emails.join(', ')}`
       );
     } catch (error) {
       console.error('Error sending test email:', error);
