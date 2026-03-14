@@ -59,7 +59,8 @@ import { ArticlePreviewFull } from '@/components/dashboard/ArticlePreviewFull';
 import { ImageApprovalPreview } from '@/components/dashboard/ImageApprovalPreview';
 import { CommemorativeDateAlert } from '@/components/dashboard/CommemorativeDateAlert';
 
-import { useFullArticleGeneration, GeneratedArticle } from '@/hooks/use-full-article-generation';
+import { useArticleGeneration } from '@/contexts/ArticleGenerationContext';
+import type { GeneratedArticle } from '@/hooks/use-full-article-generation';
 import { useGenerationHistory } from '@/hooks/use-generation-history';
 import { useConfetti } from '@/hooks/use-confetti';
 import { useImageApproval } from '@/contexts/ImageApprovalContext';
