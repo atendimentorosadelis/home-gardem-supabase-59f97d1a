@@ -1086,22 +1086,21 @@ Ele pesquisou a fundo, assistiu documentários, leu livros e artigos sobre como 
 - Inclua dados técnicos reais: R-values, dimensões de lumber (2x4, 2x6, 4x4), BTU ratings, etc.
 
 ## REGRAS DE TÍTULO E RESUMO (CARPINTARIA):
-⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA — como o Keven contando uma descoberta.
-⚠️ REGRA CRÍTICA: NÃO copie os exemplos abaixo literalmente! Crie um título ORIGINAL e ÚNICO a cada geração.
-⚠️ Use o seed aleatório ${Math.floor(Math.random() * 99999)} para garantir variação criativa.
-❌ PROIBIDO títulos formais como: "Guia Completo de Wood Framing", "Tudo Sobre Carpintaria Americana"
-❌ PROIBIDO começar com "Eu Estudei" - esse padrão já foi usado demais!
-❌ PROIBIDO reutilizar qualquer título dos exemplos abaixo - eles são APENAS referência de estilo.
+⚠️ O título DEVE ser em PORTUGUÊS, PESSOAL e em PRIMEIRA PESSOA, mas sem frases prontas repetidas.
+⚠️ REGRA CRÍTICA: comece com um detalhe concreto (material, peça, textura, ferramenta ou situação real), não com fórmulas genéricas.
+⚠️ Use o seed aleatório ${Math.floor(Math.random() * 99999)} para variar radicalmente a estrutura.
+❌ PROIBIDO título genérico como "Confesso que a Carpintaria Americana mudou minha perspectiva" (ou variações próximas).
+❌ PROIBIDO começar com "Confesso que" quando isso gerar frases vagas sem detalhe técnico.
+❌ PROIBIDO usar apenas "carpintaria americana" sem citar um elemento específico do subtema.
 
-Use um destes ESTILOS (não copie o texto, crie algo novo sobre o subtema "${topic}"):
-  Estilo Confissão: "Confesso que [algo inesperado sobre o tema]"
-  Estilo Pergunta: "Você sabia que [fato surpreendente]?"
-  Estilo Descoberta: "[Algo específico] me fez repensar tudo sobre [tema]"
-  Estilo Opinião: "Digo sem medo: [opinião forte sobre o tema]"
-  Estilo Narrativa: "O dia que [experiência pessoal marcante com o tema]"
-  Estilo Comparação: "[Método brasileiro] vs [Método americano]: o que ninguém te conta"
+ESTILOS PERMITIDOS (use só como DIREÇÃO, nunca copie):
+  - Cena real de obra/oficina com detalhe material
+  - Comparação Brasil x EUA com objeto concreto
+  - Descoberta técnica aplicada no dia a dia
+  - Opinião forte com exemplo prático
+  - Micro-história com material/ferramenta específica
 
-⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal, conversacional e DIFERENTE a cada geração. Não repita o padrão "Como estudante de arquitetura brasileiro...".
+⚠️ O resumo (excerpt) DEVE ser em PORTUGUÊS, pessoal, conversacional e diferente a cada geração.
 
 ## ASSINATURA FINAL (OBRIGATÓRIO):
 ---
@@ -1111,16 +1110,26 @@ Use um destes ESTILOS (não copie o texto, crie algo novo sobre o subtema "${top
 📅 Publicado em: [date]
 ---
 
-- mainSubject DEVE ser em INGLÊS com pelo menos 8 palavras descrevendo o foco do artigo (ex: "American wood frame house construction with exposed lumber framing and structural connections")
-- visualContext DEVE ser em INGLÊS com pelo menos 15 palavras (ex: "American residential wood frame house under construction in suburban neighborhood, exposed framing members, clear sky, natural daylight")
-- CADA galleryPrompt DEVE ter NO MÍNIMO 20 palavras em INGLÊS e DEVE começar com o mainSubject. Exemplos:
-  1. "American wood frame house construction wide-angle view showing entire skeletal structure of beams and joists under construction, suburban lot, clear sky, natural daylight"
-  2. "American wood frame house construction close-up of wood framing joints showing nails, metal brackets, and structural connections between wall studs"
-  3. "American wood frame house construction interior view showing wall cavity with fiberglass insulation installed between wood studs and electrical rough-in"
-  4. "American wood frame house construction detail of floor joists and roof trusses system from low angle showing structural engineering"
-  5. "American wood frame house construction exterior view of finished wood-sided home with landscaping, driveway, and front porch"
-  6. "American wood frame house construction site showing stacked dimensional lumber, power tools, and building materials organized on job site"
-- CADA gallery prompt DEVE incluir "wood frame", "carpentry" ou "American construction"
+- mainSubject DEVE ser em INGLÊS, específico ao SUBTEMA escolhido (mínimo 8 palavras) e sem generalizações.
+- visualContext DEVE ser em INGLÊS, com no mínimo 15 palavras, descrevendo o cenário real do subtema.
+- CADA galleryPrompt DEVE ter NO MÍNIMO 20 palavras em INGLÊS e começar com o mainSubject.
+
+### REGRA ESPECIAL — SUBTEMA "Carpintaria - Tipos de Madeira" (OBRIGATÓRIA)
+- mainSubject DEVE focar em espécies, corte e textura de madeira (ex: Douglas fir, Southern pine, cedar, grain pattern, kiln-dried lumber).
+- visualContext DEVE ser lumberyard, marcenaria/oficina ou bancada técnica de materiais.
+- PROIBIDO em mainSubject/visualContext/galleryPrompts: "house under construction", "skeletal structure", "roof trusses", "wall studs", "building frame", "construction site".
+- Os 6 galleryPrompts DEVEM mostrar comparação de espécies e acabamentos da madeira:
+  1. visão geral das tábuas de espécies diferentes
+  2. close-up de veios e nós
+  3. corte transversal comparando densidade/cor
+  4. teste de acabamento (verniz/selador)
+  5. identificação e etiquetagem técnica das peças
+  6. composição editorial com ferramentas e madeira organizada
+
+### REGRA PARA DEMAIS SUBTEMAS DE CARPINTARIA
+- Os prompts podem mostrar estrutura/construção SOMENTE quando o subtema for framing/isolamento/aquecimento/técnicas estruturais.
+- Sempre priorize fidelidade ao conteúdo real do artigo, nunca um template único para todos os subtemas.
+
 - category DEVE ser uma das categorias de Carpintaria (ex: "Carpintaria - Wood Framing", "Carpintaria - Isolamento Térmico")
 ` : '';
 
