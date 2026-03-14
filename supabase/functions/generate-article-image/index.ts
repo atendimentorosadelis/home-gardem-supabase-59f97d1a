@@ -340,16 +340,25 @@ serve(async (req) => {
     const effectiveMainSubject = mainSubject || articleContext?.main_subject || '';
     const effectiveVisualContext = visualContext || articleContext?.visual_context || '';
     const hasArticleSpecificData = effectiveMainSubject.trim().length > 10;
-    
+    const carpentryContextText = `${effectiveCategory} ${title || ''} ${effectiveMainSubject} ${articleContext?.main_subject || ''}`.toLowerCase();
+    const isWoodTypesTopic =
+      matchedCarpentryStyle === 'carpintaria-tipos-madeira' ||
+      /tipos?.*madeira|wood\s+species|douglas\s+fir|southern\s+pine|cedar|redwood|grain\s+pattern|lumber\s+grade/.test(carpentryContextText);
+
     // For architecture or carpentry: use article-specific data FIRST, static mappings as FALLBACK
     let subject: string;
     if (isArchitectureSubject && matchedArchStyle) {
       // Architecture always uses style-specific prompts (exterior facades)
       subject = architectureStylePrompts[matchedArchStyle].subject;
     } else if (isCarpentrySubject && hasArticleSpecificData) {
-      // Carpentry: PRIORITIZE article-specific mainSubject (reflects the actual article content)
-      subject = effectiveMainSubject;
-      console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
+      const isInvalidForWoodTypes = isWoodTypesTopic && isConstructionFocusedText(effectiveMainSubject);
+      if (isInvalidForWoodTypes) {
+        subject = carpentryStylePrompts['carpintaria-tipos-madeira'].subject;
+        console.log('[ImageGen] Replacing construction-biased mainSubject with wood-types fallback subject');
+      } else {
+        subject = effectiveMainSubject;
+        console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
+      }
     } else if (isCarpentrySubject && matchedCarpentryStyle) {
       // Carpentry fallback: use static style prompts only when no article data
       subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
