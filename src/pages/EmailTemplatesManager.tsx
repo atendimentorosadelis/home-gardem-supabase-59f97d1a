@@ -44,6 +44,7 @@ function EmailTemplatesManagerContent() {
 
   // Test email state
   const [testEmail, setTestEmail] = useState('');
+  const [testEmail2, setTestEmail2] = useState('');
   const [sendingNewsletter, setSendingNewsletter] = useState(false);
   const [sendingAdmin, setSendingAdmin] = useState(false);
 
