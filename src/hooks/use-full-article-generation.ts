@@ -666,7 +666,7 @@ export function useFullArticleGeneration() {
     } finally {
       if (!cancelledRef.current) {
         setIsGenerating(false);
-        // Force-persist final state synchronously using functional updaters
+        sessionStorage.removeItem('lovable_generation_active');
         // to capture the CURRENT values (not stale closure values)
         setSteps(prev => {
           // Use a microtask to persist after React has batched updates
