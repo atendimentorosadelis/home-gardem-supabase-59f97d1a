@@ -503,7 +503,7 @@ serve(async (req) => {
           .from('content_articles')
           .select('title')
           .order('created_at', { ascending: false })
-          .limit(30);
+          .limit(120);
         recentTitles = (recentArticles || []).map((a) => a.title).filter(Boolean);
         console.log(`[AntiDuplicate] Loaded ${recentTitles.length} recent titles for anti-repetition`);
       } catch (e) {
