@@ -65,11 +65,13 @@ export function useArticleImages({ postId, title, category, tags, count = 6 }: U
       const generatedImages: GeneratedImage[] = [];
 
       try {
-        const { data: articleContext } = await supabase
+        const { data } = await supabase
           .from('content_articles')
           .select('title, slug, category_slug, tags, main_subject, visual_context, gallery_prompts, excerpt, body')
           .eq('id', postId)
-          .maybeSingle<ArticleContextForImages>();
+          .maybeSingle();
+
+        const articleContext = data as ArticleContextForImages | null;
 
         for (let i = 0; i < count; i++) {
           try {
