@@ -185,23 +185,33 @@ function EmailTemplatesManagerContent() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="test-email">E-mail Admin 1</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="test-email">E-mail Admin 1</Label>
+                  <Switch checked={email1Enabled} onCheckedChange={setEmail1Enabled} />
+                </div>
                 <Input
                   id="test-email"
                   type="email"
                   placeholder="admin1@email.com"
                   value={testEmail}
                   onChange={(e) => setTestEmail(e.target.value)}
+                  disabled={!email1Enabled}
+                  className={!email1Enabled ? 'opacity-50' : ''}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="test-email-2">E-mail Admin 2 (opcional)</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="test-email-2">E-mail Admin 2</Label>
+                  <Switch checked={email2Enabled} onCheckedChange={setEmail2Enabled} />
+                </div>
                 <Input
                   id="test-email-2"
                   type="email"
                   placeholder="admin2@email.com"
                   value={testEmail2}
                   onChange={(e) => setTestEmail2(e.target.value)}
+                  disabled={!email2Enabled}
+                  className={!email2Enabled ? 'opacity-50' : ''}
                 />
               </div>
             </div>
