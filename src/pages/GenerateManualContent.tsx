@@ -44,6 +44,8 @@ import {
   PaintBucket,
   Hammer,
   Axe,
+  Crown,
+  Gem,
   type LucideIcon
 } from 'lucide-react';
 import { AIIcon } from '@/components/AIIcon';
@@ -148,6 +150,16 @@ const CARPINTARIA_SUBNICHES: SubnicheItem[] = [
   { id: 'carpintaria-tecnicas', label: 'Técnicas Tradicionais vs Modernas', icon: Axe },
 ];
 
+const PINTURA_PREMIUM_SUBNICHES: SubnicheItem[] = [
+  { id: 'premium-estuques-italianos', label: 'Estuques Italianos', icon: Crown },
+  { id: 'premium-acabamentos-mediterraneos', label: 'Acabamentos Mediterrâneos', icon: Gem },
+  { id: 'premium-efeitos-minerais-concreto', label: 'Efeitos Minerais e Concreto', icon: Building2 },
+  { id: 'premium-efeitos-metalicos', label: 'Efeitos Metálicos Sofisticados', icon: Sparkles },
+  { id: 'premium-texturas-europeias', label: 'Texturas Europeias Sofisticadas', icon: Landmark },
+  { id: 'premium-efeitos-texteis', label: 'Efeitos Têxteis e Suaves', icon: Layers },
+  { id: 'premium-tecnicas-artisticas-raras', label: 'Técnicas Artísticas Raras', icon: Palette },
+];
+
 function GenerateManualContentPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [showImageApproval, setShowImageApproval] = useState(false);
@@ -155,6 +167,7 @@ function GenerateManualContentPage() {
   const [jardimSelected, setJardimSelected] = useState<string[]>([]);
   const [arquiteturaSelected, setArquiteturaSelected] = useState<string[]>([]);
   const [carpintariaSelected, setCarpintariaSelected] = useState<string[]>([]);
+  const [pinturaPremiumSelected, setPinturaPremiumSelected] = useState<string[]>([]);
   const [commemorativeSelected, setCommemorativeSelected] = useState<string | null>(null);
   const [articleSaved, setArticleSaved] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -312,6 +325,10 @@ function GenerateManualContentPage() {
     setCarpintariaSelected(prev => prev.includes(id) ? [] : [id]);
   };
 
+  const togglePinturaPremium = (id: string) => {
+    setPinturaPremiumSelected(prev => prev.includes(id) ? [] : [id]);
+  };
+
   const buildDesignTopic = () => {
     const allDesignSubniches = [...DESIGN_AREAS_SOCIAIS, ...DESIGN_AREAS_INTIMAS, ...DESIGN_AREAS_SERVICO];
     const labels = designSelected.map(id => allDesignSubniches.find(s => s.id === id)?.label).filter(Boolean);
@@ -337,6 +354,21 @@ function GenerateManualContentPage() {
     return selected
       ? `Carpintaria americana: ${selected.label.toLowerCase()}`
       : 'Carpintaria americana: construção em madeira nos Estados Unidos';
+  };
+
+  const PREMIUM_TOPIC_MAP: Record<string, string> = {
+    'premium-estuques-italianos': 'Dicas de pintura premium: técnicas de estuques italianos de luxo — Stucco Veneziano, Marmorino, Grassello di Calce',
+    'premium-acabamentos-mediterraneos': 'Dicas de pintura premium: acabamentos mediterrâneos e naturais — Tadelakt marroquino, Lime Plaster, Clay Plaster, Terra Toscana',
+    'premium-efeitos-minerais-concreto': 'Dicas de pintura premium: efeitos minerais e de concreto sofisticado — Microcimento, Cimento Queimado Premium, Venetian Concrete Finish',
+    'premium-efeitos-metalicos': 'Dicas de pintura premium: efeitos metálicos sofisticados — Metalizado Italiano, Ouro Velho, Cobre Oxidado, Aço Corten, Bronze Polido',
+    'premium-texturas-europeias': 'Dicas de pintura premium: texturas europeias sofisticadas — Travertino Romano, Pietra Spaccata, Velatura Italiana, Spatolato, Striato Veneziano',
+    'premium-efeitos-texteis': 'Dicas de pintura premium: efeitos têxteis e suaves — Efeito Veludo, Seda, Linho, Camurça, Couro em paredes',
+    'premium-tecnicas-artisticas-raras': 'Dicas de pintura premium: técnicas artísticas raras — Trompe-l\'oeil, Fresco Artístico, Gilding com Folha de Ouro, Marbleizing Profissional',
+  };
+
+  const buildPinturaPremiumTopic = () => {
+    const id = pinturaPremiumSelected[0];
+    return PREMIUM_TOPIC_MAP[id] || 'Dicas de pintura premium: técnicas sofisticadas de acabamento';
   };
 
   const handleGenerationComplete = async (result: GeneratedArticle | null, topic: string) => {
@@ -379,6 +411,16 @@ function GenerateManualContentPage() {
     setShowImageApproval(false);
     setArticleSaved(false);
     const topic = buildArquiteturaTopic();
+    setCurrentTopic(topic);
+    const result = await generateArticle(topic);
+    await handleGenerationComplete(result, topic);
+  };
+
+  const handleGeneratePinturaPremium = async () => {
+    setShowPreview(false);
+    setShowImageApproval(false);
+    setArticleSaved(false);
+    const topic = buildPinturaPremiumTopic();
     setCurrentTopic(topic);
     const result = await generateArticle(topic);
     await handleGenerationComplete(result, topic);
@@ -479,6 +521,7 @@ function GenerateManualContentPage() {
     setJardimSelected([]);
     setArquiteturaSelected([]);
     setCarpintariaSelected([]);
+    setPinturaPremiumSelected([]);
     setCommemorativeSelected(null);
     setShowPreview(false);
     setShowImageApproval(false);
@@ -526,7 +569,7 @@ function GenerateManualContentPage() {
   };
 
   const showCategorySelection = !showPreview && !showImageApproval;
-  const hasAnySelection = designSelected.length > 0 || jardimSelected.length > 0 || arquiteturaSelected.length > 0 || carpintariaSelected.length > 0 || commemorativeSelected !== null;
+  const hasAnySelection = designSelected.length > 0 || jardimSelected.length > 0 || arquiteturaSelected.length > 0 || carpintariaSelected.length > 0 || pinturaPremiumSelected.length > 0 || commemorativeSelected !== null;
 
   return (
     <DashboardLayout>
@@ -553,6 +596,7 @@ function GenerateManualContentPage() {
                   else if (jardimSelected.length > 0) handleGenerateJardim();
                   else if (arquiteturaSelected.length > 0) handleGenerateArquitetura();
                   else if (carpintariaSelected.length > 0) handleGenerateCarpintaria();
+                  else if (pinturaPremiumSelected.length > 0) handleGeneratePinturaPremium();
                   else if (commemorativeSelected) handleGenerateCommemorativeDate();
                 }}
               >
@@ -722,6 +766,39 @@ function GenerateManualContentPage() {
                   </div>
                   <Button className="w-full rounded-xl" onClick={handleGenerateCarpintaria} disabled={isGenerating || carpintariaSelected.length === 0}>
                     {isGenerating ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>) : (<><AIIcon size="sm" className="mr-2" />Gerar Artigo</>)}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Pintura Premium Card */}
+              <Card className="border-amber-500/30 hover:border-amber-500/50 transition-colors bg-gradient-to-br from-amber-500/5 to-transparent">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                      <Crown className="h-4 w-4 text-amber-500" />
+                    </div>
+                    <span>Pintura Premium</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">Premium</span>
+                  </CardTitle>
+                  <CardDescription className="text-sm">Técnicas sofisticadas de alto padrão — estuques, efeitos metálicos, texturas europeias</CardDescription>
+                  {pinturaPremiumSelected.length > 0 && (() => {
+                    const selected = PINTURA_PREMIUM_SUBNICHES.find(s => s.id === pinturaPremiumSelected[0]);
+                    if (!selected) return null;
+                    const IconComp = selected.icon;
+                    return (
+                      <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                        <IconComp className="h-4 w-4 text-amber-500" />
+                        <span className="text-sm font-medium text-amber-600 dark:text-amber-400">{selected.label}</span>
+                      </div>
+                    );
+                  })()}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {PINTURA_PREMIUM_SUBNICHES.map((item) => renderSubnicheCard(item, pinturaPremiumSelected, togglePinturaPremium, 'pintura-premium'))}
+                  </div>
+                  <Button className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white" onClick={handleGeneratePinturaPremium} disabled={isGenerating || pinturaPremiumSelected.length === 0}>
+                    {isGenerating ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>) : (<><Crown className="mr-2 h-4 w-4" />Gerar Artigo Premium</>)}
                   </Button>
                 </CardContent>
               </Card>
