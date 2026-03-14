@@ -56,12 +56,28 @@ serve(async (req) => {
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
     const siteUrl = "https://homegardenmanual.com";
 
+    // Fetch a real published article to use as sample data (with cover image)
+    const { data: sampleArticle } = await supabase
+      .from("content_articles")
+      .select("id, title, slug, excerpt, category, cover_image")
+      .eq("status", "published")
+      .not("cover_image", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const articleTitle = sampleArticle?.title || "Como Cultivar um Jardim Vertical em Casa: Guia Completo";
+    const articleExcerpt = sampleArticle?.excerpt || "Descubra como transformar qualquer espaço em um jardim vertical exuberante com dicas práticas e inspirações de design para sua casa.";
+    const articleCategory = sampleArticle?.category || "Jardim";
+    const coverImage = sampleArticle?.cover_image || "";
+    const articleSlug = sampleArticle?.slug || "";
+    const articleUrl = articleSlug ? `${siteUrl}/article/${articleSlug}` : siteUrl;
+
     let subject = "";
     let htmlContent = "";
 
     if (type === "newsletter") {
-      // Test newsletter email - same template as send-newsletter
-      subject = "🌿 [TESTE] Exemplo de Newsletter - HomeGarden";
+      subject = `🌿 [TESTE] ${articleTitle}`;
       htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -70,17 +86,21 @@ serve(async (req) => {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f0;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+        <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#2d5016,#4a7c28);padding:30px;text-align:center;">
           <img src="${logoUrl}" alt="HomeGarden" width="160" style="display:block;margin:0 auto 12px;" />
           <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">Seu guia de casa, jardim, decoração e arquitetura</p>
         </td></tr>
+        ${coverImage ? `<!-- Cover Image --><tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ""}
+        <!-- Content -->
         <tr><td style="padding:40px 30px;">
           <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}! 🌱</p>
-          <span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">Jardim</span>
-          <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">Como Cultivar um Jardim Vertical em Casa: Guia Completo</h2>
-          <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">Descubra como transformar qualquer espaço em um jardim vertical exuberante com dicas práticas e inspirações de design para sua casa.</p>
-          <a href="${siteUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Ler mais →</a>
+          ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ""}
+          <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
+          <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>
+          <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Ler mais →</a>
         </td></tr>
+        <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
           <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">
             © ${new Date().getFullYear()} HomeGarden — Seu guia de casa, jardim, decoração e arquitetura
@@ -95,8 +115,7 @@ serve(async (req) => {
 </body>
 </html>`;
     } else if (type === "admin-notification") {
-      // Test admin notification email - same template as notify-article-ready
-      subject = "🌿 [TESTE] Novo artigo gerado: Como Cultivar um Jardim Vertical";
+      subject = `🌿 [TESTE] Novo artigo gerado: ${articleTitle}`;
       htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -105,20 +124,23 @@ serve(async (req) => {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f0;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+        <!-- Header with logo -->
         <tr><td style="background:linear-gradient(135deg,#2d5016,#4a7c28);padding:30px;text-align:center;">
           <img src="${logoUrl}" alt="HomeGarden" width="160" style="display:block;margin:0 auto 12px;" />
           <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">Notificação para Administradores</p>
         </td></tr>
+        ${coverImage ? `<!-- Cover Image --><tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ""}
+        <!-- Content -->
         <tr><td style="padding:40px 30px;">
           <p style="color:#666;font-size:15px;margin:0 0 20px;">Olá, ${userName}! 🌱</p>
           <span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">Piloto Automático</span>
-          <span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;margin-left:8px;">Jardim</span>
-          <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">Como Cultivar um Jardim Vertical em Casa: Guia Completo</h2>
-          <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">Descubra como transformar qualquer espaço em um jardim vertical exuberante com dicas práticas e inspirações de design.</p>
+          ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;margin-left:8px;">${articleCategory}</span>` : ""}
+          <h2 style="color:#2d5016;font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
+          <p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>
           <table cellpadding="0" cellspacing="0" style="margin:28px 0;">
             <tr>
               <td style="padding-right:12px;">
-                <a href="${siteUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Ver artigo →</a>
+                <a href="${articleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Ver artigo →</a>
               </td>
               <td>
                 <a href="${siteUrl}/admin/articles" style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">Gerenciar artigos</a>
@@ -126,6 +148,7 @@ serve(async (req) => {
             </tr>
           </table>
         </td></tr>
+        <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
           <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">
             © ${new Date().getFullYear()} HomeGarden — Seu guia de casa, jardim, decoração e arquitetura
@@ -164,7 +187,7 @@ serve(async (req) => {
     console.log(`[send-test-email] Test ${type} email sent to ${recipientEmail}:`, resData.id);
 
     return new Response(
-      JSON.stringify({ success: true, emailId: resData.id }),
+      JSON.stringify({ success: true, emailId: resData.id, usedArticle: sampleArticle?.title || null }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
