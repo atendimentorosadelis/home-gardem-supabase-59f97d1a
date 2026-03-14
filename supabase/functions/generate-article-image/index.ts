@@ -533,11 +533,15 @@ serve(async (req) => {
 
     const isCarpentrySubject = !!matchedCarpentryStyle;
 
+    const effectiveTitle = title || articleContext?.title || '';
+    const effectiveExcerpt = articleExcerpt || articleContext?.excerpt || '';
+    const effectiveBody = articleBody || articleContext?.body || '';
+
     // Resolve the effective mainSubject from article data (priority) or request params
     const effectiveMainSubject = mainSubject || articleContext?.main_subject || '';
     const effectiveVisualContext = visualContext || articleContext?.visual_context || '';
     const hasArticleSpecificData = effectiveMainSubject.trim().length > 10;
-    const carpentryContextText = `${effectiveCategory} ${title || ''} ${effectiveMainSubject} ${articleContext?.main_subject || ''}`.toLowerCase();
+    const carpentryContextText = `${effectiveCategory} ${effectiveTitle} ${effectiveMainSubject} ${articleContext?.main_subject || ''}`.toLowerCase();
     const isWoodTypesTopic =
       matchedCarpentryStyle === 'carpintaria-tipos-madeira' ||
       /tipos?.*madeira|wood\s+species|douglas\s+fir|southern\s+pine|cedar|redwood|grain\s+pattern|lumber\s+grade/.test(carpentryContextText);
@@ -548,10 +552,17 @@ serve(async (req) => {
       // Architecture always uses style-specific prompts (exterior facades)
       subject = architectureStylePrompts[matchedArchStyle].subject;
     } else if (isCarpentrySubject && hasArticleSpecificData) {
-      const isInvalidForWoodTypes = isWoodTypesTopic && isConstructionFocusedText(effectiveMainSubject);
-      if (isInvalidForWoodTypes) {
-        subject = carpentryStylePrompts['carpintaria-tipos-madeira'].subject;
-        console.log('[ImageGen] Replacing construction-biased mainSubject with wood-types fallback subject');
+      const carpentryMainSubjectLooksGeneric =
+        hasGenericCarpentryBias(effectiveMainSubject) ||
+        isConstructionFocusedText(effectiveMainSubject);
+
+      const forceStyleFallback =
+        (isWoodTypesTopic && isConstructionFocusedText(effectiveMainSubject)) ||
+        (!!matchedCarpentryStyle && matchedCarpentryStyle !== 'carpintaria-wood-framing' && carpentryMainSubjectLooksGeneric);
+
+      if (forceStyleFallback && matchedCarpentryStyle) {
+        subject = carpentryStylePrompts[matchedCarpentryStyle].subject;
+        console.log(`[ImageGen] Replacing generic carpentry subject with style fallback: ${matchedCarpentryStyle}`);
       } else {
         subject = effectiveMainSubject;
         console.log(`[ImageGen] Using article-specific subject for carpentry: "${subject.substring(0, 80)}..."`);
@@ -565,21 +576,21 @@ serve(async (req) => {
       const mainSubjectTranslated = translatedMainSubject && translatedMainSubject !== effectiveMainSubject
         ? translatedMainSubject
         : null;
-      subject = mainSubjectTranslated || extractSubjectFromTitle(title || articleContext?.title || '');
+      subject = mainSubjectTranslated || extractSubjectFromTitle(effectiveTitle);
     }
 
     const combinedContext = [
       mainSubject,
       visualContext,
       customPrompt,
-      title,
+      effectiveTitle,
       articleContext?.main_subject,
       articleContext?.visual_context,
-      articleContext?.excerpt,
-      articleContext?.body,
+      effectiveExcerpt,
+      effectiveBody,
     ].filter(Boolean).join(' | ');
 
-    const articleHeadingHints = extractMarkdownHeadings(articleContext?.body, 6);
+    const articleHeadingHints = extractMarkdownHeadings(effectiveBody, 6);
 
     const isPaintingCategory = categoryLower.includes('pintura') || categoryLower.includes('dicas-de-pintura');
     if (isPaintingCategory) {
