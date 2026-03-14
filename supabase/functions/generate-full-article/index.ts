@@ -889,14 +889,25 @@ Tons possíveis (NÃO copie os exemplos, apenas use o TOM):
 - "O Segredo de/do/da ..." — BANIDO
 - "Cansei de Ver ... Sem Personalidade" — BANIDO
 - "O Dia Que Entendi ..." — BANIDO (já usado)
+- "O Dia Que Eu Aprendi ..." — BANIDO PERMANENTEMENTE (repetido demais)
+- "O Dia Que ..." (qualquer variação começando com "O Dia Que") — BANIDO PERMANENTEMENTE
 - "Aquele Cantinho de ... Que Faz ..." — BANIDO (já usado)
 - "[Tema] Minimalista vs. Clássico" — BANIDO
 - "Eu Quase Desisti de ..." — BANIDO (já usado)
 - "Meu Maior Erro Com ..." — BANIDO (já usado)
 - "Vem Ver o Que Fiz" — BANIDO (já usado)
 - "Preciso Te Mostrar" — BANIDO (já usado)
+- "Confesso Que ..." — BANIDO (repetido demais)
+- "Eu Nunca Imaginei Que ..." — BANIDO (repetido demais)
+- QUALQUER título que comece com as mesmas 4 primeiras palavras de um título recente — BANIDO
 - QUALQUER FRASE que já apareceu em títulos anteriores — BANIDO
 - Títulos que só trocam o nome do cômodo mas mantêm a mesma estrutura — BANIDO
+
+⚠️ REGRA ANTI-REPETIÇÃO ESTRUTURAL (CRÍTICA):
+- NÃO comece o título com "O dia que...", "Eu aprendi...", "Confesso que...", "Eu nunca imaginei..."
+- As 3 primeiras palavras do título NÃO podem ser iguais às de nenhum título recente
+- Varie RADICALMENTE a estrutura: ora comece com um objeto, ora com uma ação, ora com uma pergunta, ora com uma declaração
+- O título DEVE ser uma frase COMPLETA e gramaticalmente correta — nunca cortado no meio
 
 ✅ O TÍTULO DEVE:
 - Ser 100% ORIGINAL — nunca antes usado neste blog
