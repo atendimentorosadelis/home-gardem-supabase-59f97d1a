@@ -174,6 +174,7 @@ export function useFullArticleGeneration() {
     }
 
     setIsGenerating(true);
+    sessionStorage.setItem('lovable_generation_active', 'true');
     setCurrentTopic(topic);
     resetGeneration();
     setCurrentTopic(topic); // Set again after reset
