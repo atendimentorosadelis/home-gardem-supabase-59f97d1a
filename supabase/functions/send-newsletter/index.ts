@@ -48,6 +48,52 @@ function getTranslation(lang: string) {
   return translations[lang] || translations["pt-BR"];
 }
 
+function detectPrimaryColor(templateName: string): { color: string; bg: string } {
+  const colorMap: Record<string, { color: string; bg: string }> = {
+    "Clássico Verde": { color: "#2d5016", bg: "#e8f5e9" },
+    "Elegante Escuro": { color: "#9ca3af", bg: "rgba(255,255,255,0.1)" },
+    "Aurora Botânica": { color: "#5eead4", bg: "rgba(94,234,212,0.15)" },
+    "Moderno Minimalista": { color: "#333333", bg: "#f0f0f0" },
+    "Natureza Vibrante": { color: "#22d3ee", bg: "rgba(34,211,238,0.15)" },
+    "Jardim Floral": { color: "#92400e", bg: "#fef3c7" },
+  };
+  return colorMap[templateName] || { color: "#2d5016", bg: "#e8f5e9" };
+}
+
+function removeOriginalMessageBlock(html: string): string {
+  return html.replace(/<div[^>]*>[\s\S]*?Sua mensagem original:[\s\S]*?<\/div>\s*<\/div>/gi, "")
+    .replace(/<div[^>]*>[\s\S]*?Your original message:[\s\S]*?<\/div>\s*<\/div>/gi, "")
+    .replace(/\{\{original_message\}\}/g, "");
+}
+
+function applyTemplateReplacements(html: string, replacements: Record<string, string>): string {
+  let result = html;
+  for (const [key, value] of Object.entries(replacements)) {
+    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
+  }
+  return result;
+}
+
+function buildNewsletterContentBlock(params: {
+  coverImage: string;
+  articleTitle: string;
+  articleCategory: string;
+  articleExcerpt: string;
+  articleUrl: string;
+  readMoreText: string;
+  primaryColor: string;
+  primaryBg: string;
+}) {
+  const { coverImage, articleTitle, articleCategory, articleExcerpt, articleUrl, readMoreText, primaryColor, primaryBg } = params;
+  return `
+    ${coverImage ? `<img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;border-radius:8px;margin-bottom:20px;" />` : ""}
+    ${articleCategory ? `<span style="display:inline-block;background:${primaryBg};color:${primaryColor};padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ""}
+    <h2 style="color:${primaryColor};font-size:22px;line-height:1.3;margin:8px 0 16px;">${articleTitle}</h2>
+    ${articleExcerpt ? `<p style="font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ""}
+    <a href="${articleUrl}" style="display:inline-block;background:${primaryColor};color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">${readMoreText}</a>
+  `;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -98,6 +144,19 @@ serve(async (req) => {
 
     console.log(`[send-newsletter] Found ${subscribers.length} active subscribers`);
 
+    // Fetch the active/default template
+    const { data: activeTemplate } = await supabase
+      .from("email_templates")
+      .select("name, html_template")
+      .eq("is_default", true)
+      .eq("category", "contact_reply")
+      .maybeSingle();
+
+    const templateName = activeTemplate?.name || "Clássico Verde";
+    const { color: primaryColor, bg: primaryBg } = detectPrimaryColor(templateName);
+
+    console.log(`[send-newsletter] Using template: ${templateName}`);
+
     // Create send history record
     const { data: historyRecord, error: historyError } = await supabase
       .from("newsletter_send_history")
@@ -134,7 +193,43 @@ serve(async (req) => {
         const openPixelUrl = historyId ? `${trackOpenUrl}?id=${historyId}` : "";
         const subscriberName = subscriber.name || t.defaultName;
 
-        const htmlContent = `
+        let htmlContent = "";
+
+        if (activeTemplate?.html_template) {
+          // Use the active template from DB
+          const contentBlock = buildNewsletterContentBlock({
+            coverImage: coverImage || "",
+            articleTitle,
+            articleCategory: articleCategory || "",
+            articleExcerpt: articleExcerpt || "",
+            articleUrl: trackedArticleUrl,
+            readMoreText: t.readMore,
+            primaryColor,
+            primaryBg,
+          });
+
+          let templateHtml = activeTemplate.html_template;
+          templateHtml = removeOriginalMessageBlock(templateHtml);
+
+          htmlContent = applyTemplateReplacements(templateHtml, {
+            logo_url: logoUrl,
+            site_name: "HomeGarden",
+            name: `${t.greeting}, ${subscriberName}!`,
+            user_name: `${t.greeting}, ${subscriberName}!`,
+            content: contentBlock,
+            year: new Date().getFullYear().toString(),
+            email: subscriber.email,
+            unsubscribe_url: unsubscribeUrl,
+            social_icons: "",
+          });
+
+          // Add open tracking pixel
+          if (openPixelUrl) {
+            htmlContent = htmlContent.replace("</body>", `<img src="${openPixelUrl}" width="1" height="1" alt="" style="display:none;" /></body>`);
+          }
+        } else {
+          // Fallback: hardcoded classic green template
+          htmlContent = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -142,13 +237,11 @@ serve(async (req) => {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f0;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
-        <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#2d5016,#4a7c28);padding:30px;text-align:center;">
           <img src="${logoUrl}" alt="HomeGarden" width="160" style="display:block;margin:0 auto 12px;" />
           <p style="color:rgba(255,255,255,0.8);margin:0;font-size:14px;">${t.tagline}</p>
         </td></tr>
         ${coverImage ? `<tr><td><img src="${coverImage}" alt="${articleTitle}" style="width:100%;height:auto;display:block;" /></td></tr>` : ''}
-        <!-- Content -->
         <tr><td style="padding:40px 30px;">
           <p style="color:#666;font-size:15px;margin:0 0 20px;">${t.greeting}, ${subscriberName}!</p>
           ${articleCategory ? `<span style="display:inline-block;background:#e8f5e9;color:#2d5016;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px;">${articleCategory}</span>` : ''}
@@ -156,14 +249,9 @@ serve(async (req) => {
           ${articleExcerpt ? `<p style="color:#555;font-size:15px;line-height:1.7;margin:0 0 28px;">${articleExcerpt}</p>` : ''}
           <a href="${trackedArticleUrl}" style="display:inline-block;background:linear-gradient(135deg,#2d5016,#4a7c28);color:#ffffff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:13px;">${t.readMore}</a>
         </td></tr>
-        <!-- Footer -->
         <tr><td style="background:#2d5016;padding:25px;text-align:center;">
-          <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">
-            © ${new Date().getFullYear()} HomeGarden — ${t.footer}
-          </p>
-          <p style="margin:8px 0 0;">
-            <a href="${unsubscribeUrl}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">${t.unsubscribe}</a>
-          </p>
+          <p style="color:rgba(255,255,255,0.7);margin:0;font-size:12px;">© ${new Date().getFullYear()} HomeGarden — ${t.footer}</p>
+          <p style="margin:8px 0 0;"><a href="${unsubscribeUrl}" style="color:rgba(255,255,255,0.5);font-size:11px;text-decoration:underline;">${t.unsubscribe}</a></p>
         </td></tr>
       </table>
     </td></tr>
@@ -171,6 +259,7 @@ serve(async (req) => {
   ${openPixelUrl ? `<img src="${openPixelUrl}" width="1" height="1" alt="" style="display:none;" />` : ''}
 </body>
 </html>`;
+        }
 
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -211,7 +300,7 @@ serve(async (req) => {
         .eq("id", historyRecord.id);
     }
 
-    console.log(`[send-newsletter] Done: ${sent} sent, ${failed} failed`);
+    console.log(`[send-newsletter] Done: ${sent} sent, ${failed} failed, template: ${templateName}`);
 
     return new Response(
       JSON.stringify({ sent, failed, total: subscribers.length }),
