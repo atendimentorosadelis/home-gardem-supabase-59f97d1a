@@ -87,7 +87,7 @@ serve(async (req) => {
     let htmlContent = "";
 
     if (type === "newsletter") {
-      subject = `🌿 [TESTE] ${articleTitle}`;
+      subject = `[TESTE] ${articleTitle}`;
       htmlContent = `
 <!DOCTYPE html>
 <html>
