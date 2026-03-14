@@ -1125,22 +1125,60 @@ INSTRUÇÕES ESPECIAIS OBRIGATÓRIAS PARA ESTE TEMA (Dicas de Pintura):
 ❌ PROIBIDO fazer um artigo genérico que fale superficialmente de várias técnicas.
 ❌ PROIBIDO misturar cimento queimado + grafiato + verniz + esponjado no mesmo artigo.
 
-A IA deve ESCOLHER ALEATORIAMENTE UMA dessas técnicas específicas e escrever o artigo INTEIRO sobre ela:
-- Efeito Cimento Queimado (passo a passo completo, materiais, acabamento, selador)
-- Grafiato e Texturas de Parede (tipos: rústica, lisa, riscada; ferramentas; aplicação)
-- Verniz para Madeira (tipos: marítimo, copal, poliuretano; preparação; demãos)
-- Pintura com Rolo — Técnica Profissional (movimentos em W, demãos, secagem)
-- Esponjado e Pátina (efeito envelhecido, materiais, passo a passo)
-- Stencil e Parede Geométrica (fita crepe, padrões, planejamento)
-- Preparação de Parede (massa corrida, fundo preparador, selador, lixamento)
-- Pintura de Teto (técnicas específicas, ergonomia, rolo extensível)
-- Tinta Epóxi para Pisos e Banheiros (aplicação, preparação, cura)
-- Degradê e Ombré em Parede (técnica de transição de cores)
-- Pintura de Portas e Janelas (esmalte sintético, lixa, primer)
-- Cores e Psicologia: Como Escolher a Cor Certa para Cada Cômodo
+A IA deve ESCOLHER ALEATORIAMENTE UMA dessas técnicas específicas e escrever o artigo INTEIRO sobre ela.
+Existem 9 CATEGORIAS com dezenas de técnicas — explore TODAS com variedade máxima:
 
-🎲 NÚMERO SORTEADO PARA ESCOLHA DA TÉCNICA: ${Math.floor(Math.random() * 100)}
-Use este número para escolher a técnica. Cada artigo deve ser DIFERENTE dos anteriores.
+### CATEGORIA 1 — Pinturas Básicas de Acabamento
+- Pintura látex PVA | Pintura acrílica | Pintura esmalte sintético | Pintura epóxi
+- Pintura poliuretano (PU) | Pintura elastomérica | Pintura com cal (caiação)
+- Pintura com tinta mineral | Pintura com tinta silicato | Pintura com tinta cerâmica térmica
+- Pintura anticorrosiva | Pintura intumescente (anti-incêndio)
+
+### CATEGORIA 2 — Texturas Decorativas de Parede
+- Grafiato | Textura rolada | Textura projetada | Textura arranhada | Textura riscada
+- Textura espatulada | Textura travertino | Textura rústica | Textura chapiscada
+- Textura arrastada | Textura batida | Textura ondulada | Textura efeito areia
+- Textura efeito pedra | Textura granulada | Textura mediterrânea | Textura rústica italiana
+
+### CATEGORIA 3 — Efeitos Decorativos Sofisticados
+- Cimento queimado | Microcimento | Marmorato | Stucco veneziano (estuque veneziano)
+- Stucco lustro | Efeito mármore | Efeito granito | Efeito pedra natural
+- Efeito concreto aparente | Efeito metalizado | Efeito oxidado (ferrugem) | Efeito aço corten
+- Efeito cobre | Efeito bronze | Efeito ouro | Efeito perolado | Efeito veludo
+- Efeito seda | Efeito linho | Efeito camurça | Efeito couro
+- Efeito areia do deserto | Efeito nuvem | Efeito aquarela
+
+### CATEGORIA 4 — Técnicas Artísticas de Pintura Decorativa
+- Esponjado | Pátina | Pátina envelhecida | Pátina provençal | Decapê
+- Trompe-l'oeil (ilusão óptica) | Faux finish (acabamento falso)
+- Marbleizing (imitação de mármore) | Wood graining (imitação de madeira)
+- Rag rolling (efeito com pano) | Color washing | Strié (efeito listrado com pincel)
+- Dragging (arraste com escova) | Scumbling
+
+### CATEGORIA 5 — Técnicas de Rolo e Ferramentas
+- Rolagem simples | Rolagem cruzada | Rolagem com rolo texturizado | Rolagem com rolo estampado
+- Pintura com brocha | Pintura com pincel artístico | Pintura com desempenadeira
+- Pintura com espátula | Pintura com escova decorativa
+
+### CATEGORIA 6 — Pintura por Projeção
+- Airless | Spray HVLP | Pistola convencional | Textura projetada | Goteado (splatter)
+
+### CATEGORIA 7 — Pinturas Especiais Funcionais
+- Pintura térmica | Pintura refletiva solar | Pintura impermeabilizante
+- Pintura antibacteriana | Pintura antimofo | Pintura anti-pichação
+- Pintura fotocatalítica | Pintura autolimpante | Pintura antiestática | Pintura isolante acústica
+
+### CATEGORIA 8 — Revestimentos Minerais e Tradicionais
+- Estuque tradicional | Estuque veneziano | Estuque romano | Tadelakt marroquino
+- Lime plaster | Venetian plaster | Clay paint (argila) | Terra cruda finish
+
+### CATEGORIA 9 — Pinturas Industriais de Fachada
+- Revestimento acrílico texturizado | Monocapa | Revestimento elastomérico
+- Revestimento siloxano | Revestimento acrílico estruturado | Massa raspada
+
+🎲 NÚMERO SORTEADO PARA ESCOLHA DA TÉCNICA: ${Math.floor(Math.random() * 130)}
+Use este número para sortear a técnica de qualquer uma das 9 categorias acima. Cada artigo deve ser DIFERENTE dos anteriores.
+NÃO se limite às categorias 1-3 — explore TODAS as 9 categorias com a mesma frequência.
 
 ## REGRA #2 — PROFUNDIDADE TÉCNICA TOTAL:
 O artigo deve cobrir TODOS estes aspectos da técnica escolhida:
