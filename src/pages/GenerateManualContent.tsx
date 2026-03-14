@@ -380,8 +380,14 @@ function GenerateManualContentPage() {
       }
       fireConfetti();
       setArticleSaved(true);
+      // Auto-scroll to preview/approval after a short delay
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 300);
       await addToHistory(topic, result.title || null, null, 'success');
     } else {
+      // Even on error, scroll to top so user sees the error state
+      toast.error('Erro ao gerar o artigo. Tente novamente.');
       await addToHistory(topic, null, null, 'error');
     }
   };
