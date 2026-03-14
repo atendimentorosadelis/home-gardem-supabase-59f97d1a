@@ -67,7 +67,7 @@ serve(async (req) => {
     // Fetch a real published article to use as sample data (with cover image)
     const { data: sampleArticle } = await supabase
       .from("content_articles")
-      .select("id, title, slug, excerpt, category, cover_image")
+      .select("id, title, slug, excerpt, category, category_slug, cover_image")
       .eq("status", "published")
       .not("cover_image", "is", null)
       .order("published_at", { ascending: false })
@@ -79,7 +79,8 @@ serve(async (req) => {
     const articleCategory = sampleArticle?.category || "Jardim";
     const coverImage = sampleArticle?.cover_image || "";
     const articleSlug = sampleArticle?.slug || "";
-    const articleUrl = articleSlug ? `${siteUrl}/article/${articleSlug}` : siteUrl;
+    const articleCategorySlug = sampleArticle?.category_slug || "jardim";
+    const articleUrl = articleSlug ? `${siteUrl}/${articleCategorySlug}/${articleSlug}` : siteUrl;
 
     let subject = "";
     let htmlContent = "";

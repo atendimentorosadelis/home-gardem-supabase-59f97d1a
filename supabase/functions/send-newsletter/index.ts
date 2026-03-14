@@ -66,6 +66,14 @@ serve(async (req) => {
 
     const { articleId, articleTitle, articleSlug, articleExcerpt, articleCategory, coverImage } = await req.json();
 
+    // Fetch category_slug from DB for correct URL
+    const { data: articleRecord } = await supabase
+      .from("content_articles")
+      .select("category_slug")
+      .eq("id", articleId)
+      .maybeSingle();
+    const articleCategorySlug = articleRecord?.category_slug || "jardim";
+
     if (!articleId || !articleTitle) {
       throw new Error("articleId and articleTitle are required");
     }
