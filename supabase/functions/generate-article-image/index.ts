@@ -215,6 +215,34 @@ function isGenericPaintingSubject(text: string): boolean {
   );
 }
 
+function isConstructionFocusedText(text: string): boolean {
+  const normalized = (text || '').toLowerCase();
+  const constructionMarkers = [
+    'house under construction',
+    'construction site',
+    'skeletal structure',
+    'roof trusses',
+    'wall studs',
+    'building frame',
+    'wood frame house',
+    'residential framing',
+  ];
+  return constructionMarkers.some((marker) => normalized.includes(marker));
+}
+
+function sanitizeWoodTypesPrompt(prompt: string): string {
+  return (prompt || '')
+    .replace(/house under construction/gi, 'wood species comparison')
+    .replace(/construction site/gi, 'lumberyard scene')
+    .replace(/skeletal structure/gi, 'organized wood samples')
+    .replace(/roof trusses?/gi, 'grain texture details')
+    .replace(/wall studs?/gi, 'finished and raw boards')
+    .replace(/building frame/gi, 'material bench layout')
+    .replace(/american construction/gi, 'woodworking editorial')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
