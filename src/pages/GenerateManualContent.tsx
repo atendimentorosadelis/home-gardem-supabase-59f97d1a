@@ -521,6 +521,7 @@ function GenerateManualContentPage() {
     setJardimSelected([]);
     setArquiteturaSelected([]);
     setCarpintariaSelected([]);
+    setPinturaPremiumSelected([]);
     setCommemorativeSelected(null);
     setShowPreview(false);
     setShowImageApproval(false);
