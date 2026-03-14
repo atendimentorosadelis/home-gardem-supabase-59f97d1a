@@ -125,7 +125,7 @@ serve(async (req) => {
 </body>
 </html>`;
     } else if (type === "admin-notification") {
-      subject = `🌿 [TESTE] Novo artigo gerado: ${articleTitle}`;
+      subject = `[TESTE] Novo artigo gerado: ${articleTitle}`;
       htmlContent = `
 <!DOCTYPE html>
 <html>
