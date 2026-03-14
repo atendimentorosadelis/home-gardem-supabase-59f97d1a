@@ -889,20 +889,31 @@ Tons possíveis (NÃO copie os exemplos, apenas use o TOM):
 - "O Segredo de/do/da ..." — BANIDO
 - "Cansei de Ver ... Sem Personalidade" — BANIDO
 - "O Dia Que Entendi ..." — BANIDO (já usado)
+- "O Dia Que Eu Aprendi ..." — BANIDO PERMANENTEMENTE (repetido demais)
+- "O Dia Que ..." (qualquer variação começando com "O Dia Que") — BANIDO PERMANENTEMENTE
 - "Aquele Cantinho de ... Que Faz ..." — BANIDO (já usado)
 - "[Tema] Minimalista vs. Clássico" — BANIDO
 - "Eu Quase Desisti de ..." — BANIDO (já usado)
 - "Meu Maior Erro Com ..." — BANIDO (já usado)
 - "Vem Ver o Que Fiz" — BANIDO (já usado)
 - "Preciso Te Mostrar" — BANIDO (já usado)
+- "Confesso Que ..." — BANIDO (repetido demais)
+- "Eu Nunca Imaginei Que ..." — BANIDO (repetido demais)
+- QUALQUER título que comece com as mesmas 4 primeiras palavras de um título recente — BANIDO
 - QUALQUER FRASE que já apareceu em títulos anteriores — BANIDO
 - Títulos que só trocam o nome do cômodo mas mantêm a mesma estrutura — BANIDO
+
+⚠️ REGRA ANTI-REPETIÇÃO ESTRUTURAL (CRÍTICA):
+- NÃO comece o título com "O dia que...", "Eu aprendi...", "Confesso que...", "Eu nunca imaginei..."
+- As 3 primeiras palavras do título NÃO podem ser iguais às de nenhum título recente
+- Varie RADICALMENTE a estrutura: ora comece com um objeto, ora com uma ação, ora com uma pergunta, ora com uma declaração
+- O título DEVE ser uma frase COMPLETA e gramaticalmente correta — nunca cortado no meio
 
 ✅ O TÍTULO DEVE:
 - Ser 100% ORIGINAL — nunca antes usado neste blog
 - Mencionar um DETALHE CONCRETO (ex: "a parede cinza", "o varal retrátil", "a prateleira de canto", "aquela pia de granito")
 - Soar como algo que uma pessoa REAL postaria no Instagram ou falaria num café
-- Ter entre 45 e 70 caracteres
+- Ter entre 45 e 80 caracteres (NUNCA cortar a frase — o título deve ser COMPLETO)
 - Ser impossível de confundir com outro artigo do blog
 - Provocar curiosidade ou emoção GENUÍNA
 
@@ -939,7 +950,7 @@ O resumo DEVE:
 
 Retorne APENAS JSON válido (sem markdown code blocks):
 {
-  "title": "Título ÚNICO seguindo o estilo sorteado acima (máximo 70 caracteres)",
+  "title": "Título ÚNICO seguindo o estilo sorteado acima (45-80 caracteres, frase COMPLETA)",
   "excerpt": "Resumo pessoal e envolvente (100-155 caracteres)",
   "category": "DEVE ser EXATAMENTE uma destas: Sala, Sala de Jantar, Lareira, Área Gourmet, Quarto, Banheiro, Escritório, Cozinha, Varanda, Área de Serviço, Piscina, Dicas de Pintura, Jardim, Decoração de Jardim, Cuidados com Plantação, Jardim Vertical, Suculentas e Cactos, Horta de Ervas, Flores Ornamentais, Paisagismo, Hidroponia, Jardim Sustentável, Decoração de Halloween, Nomes e Cuidados Plantas e Flores, Hortas, Ervas e Cuidados, Colonial, Industrial, Moderno, Neolítico, Europeu, Nórdico, Neo Clássico, Carpintaria - História, Carpintaria - Wood Framing, Carpintaria - Tipos de Madeira, Carpintaria - Isolamento Térmico, Carpintaria - Aquecimento & Piso Aquecido, Carpintaria - Manutenção & Conservação, Carpintaria - Eficiência Energética, Carpintaria - Técnicas Tradicionais vs Modernas",
   "tags": ["5", "a", "7", "tags"],

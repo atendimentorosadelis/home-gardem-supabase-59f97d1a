@@ -53,8 +53,12 @@ Você escreve como gente de verdade — com imperfeições, emoções e personal
 - "Descubra Como", "Tudo Sobre", "O Segredo", "Confira", "Veja" — BANIDO
 - "Como Criar/Montar ..." — BANIDO
 - "A Verdade Que Ninguém Conta" — BANIDO
-- "Cansei de Ver ... Sem Personalidade" — BANIDO
 - "O Dia Que Entendi ..." — BANIDO
+- "O Dia Que Eu Aprendi ..." — BANIDO PERMANENTEMENTE
+- "O Dia Que ..." (qualquer variação) — BANIDO PERMANENTEMENTE
+- "Confesso Que ..." — BANIDO PERMANENTEMENTE
+- "Eu Nunca Imaginei Que ..." — BANIDO PERMANENTEMENTE
+- "Cansei de Ver ... Sem Personalidade" — BANIDO
 - "Eu Quase Desisti de ..." — BANIDO
 - "Meu Maior Erro Com ..." — BANIDO
 - "Vem Ver o Que Fiz" / "Preciso Te Mostrar" — BANIDO
@@ -64,6 +68,12 @@ Você escreve como gente de verdade — com imperfeições, emoções e personal
 - Títulos que só trocam o nome do cômodo mas mantêm a mesma frase — BANIDO
 - "Neste artigo", "Aprenda a", "Conheça", "Explore" — BANIDO
 - Qualquer coisa que pareça gerada por IA ou clickbait — BANIDO
+
+⚠️ REGRA ANTI-REPETIÇÃO ESTRUTURAL (CRÍTICA):
+- As 3 primeiras palavras de cada título devem ser DIFERENTES entre si
+- NÃO comece múltiplos títulos com "O dia que...", "Eu aprendi...", "Confesso que..."
+- Varie RADICALMENTE: objeto, pergunta, declaração, metáfora, ação
+- Cada título DEVE ser uma frase COMPLETA (nunca cortada no meio)
 
 ⚠️ NÃO COPIE exemplos! Crie títulos 100% ORIGINAIS.
 Cada título deve mencionar um DETALHE CONCRETO e ESPECÍFICO (objeto, cor, material, sensação).
@@ -83,14 +93,14 @@ Cada título deve mencionar um DETALHE CONCRETO e ESPECÍFICO (objeto, cor, mate
 Gere exatamente 5 títulos COMPLETAMENTE DIFERENTES entre si para o artigo abaixo.
 ${bannedPhrases}
 
-REGRAS DE VARIEDADE (cada título DEVE usar um estilo diferente):
-1. 🫂 CONFISSÃO PESSOAL — começa com "eu", conta algo íntimo (ex: "Eu Quase Desisti de Ter Plantas Até Que...")
-2. 🤔 PERGUNTA PROVOCATIVA — questiona algo do senso comum (ex: "Será Que Sua Cozinha Está Te Fazendo Mal?")
-3. 💡 DESCOBERTA EMOCIONAL — momento eureka (ex: "O Dia Que Entendi Por Que Minha Avó Amava o Jardim")
-4. 🎯 OPINIÃO FORTE — posicionamento claro (ex: "Cansei de Ver Varandas Sem Vida: Aqui Está o Que Funciona")
-5. 🌿 SENSORIAL/POÉTICO — evoca sensações (ex: "Aquele Cheiro de Terra Molhada Que Faz a Gente Sorrir")
+REGRAS DE VARIEDADE (cada título DEVE usar um estilo diferente — as 3 primeiras palavras NÃO podem se repetir entre títulos):
+1. 🎯 OBJETO CONCRETO — comece com um objeto/material específico (ex: "Aquela tinta coral...", "O rolo de espuma...")
+2. 🤔 PERGUNTA PROVOCATIVA — questiona algo do senso comum (ex: "Por que ninguém fala sobre...")
+3. 💡 DECLARAÇÃO OUSADA — opinião forte e direta (ex: "Parede branca é preguiça de decorar")
+4. 🌿 SENSORIAL/POÉTICO — evoca sensações (ex: "Aquele cheiro de tinta fresca num domingo")
+5. 🔥 AÇÃO DIRETA — convida à ação (ex: "Pega o pincel e esquece a régua")
 
-Cada título deve ter entre 45 e 70 caracteres.
+Cada título deve ter entre 45 e 80 caracteres e ser uma FRASE COMPLETA (nunca cortada).
 O número sorteado é ${randomSeed} — use-o para variar a criatividade.
 
 Retorne APENAS JSON: { "suggestions": ["título 1", "título 2", "título 3", "título 4", "título 5"] }`;
@@ -101,14 +111,14 @@ Retorne APENAS JSON: { "suggestions": ["título 1", "título 2", "título 3", "t
 Gere exatamente 5 combinações de título + resumo COMPLETAMENTE DIFERENTES entre si.
 ${bannedPhrases}
 
-REGRAS PARA TÍTULOS (cada um com estilo diferente):
-1. 🫂 CONFISSÃO PESSOAL — tom íntimo, vulnerável
+REGRAS PARA TÍTULOS (cada um com estilo diferente — as 3 primeiras palavras NÃO podem se repetir):
+1. 🎯 OBJETO CONCRETO — comece com um objeto/material específico
 2. 🤔 PERGUNTA que gera curiosidade genuína
-3. 💡 MOMENTO DE DESCOBERTA pessoal
-4. 🎯 OPINIÃO FORTE e autêntica
-5. 🌿 SENSORIAL — evoca cheiros, texturas, sensações
+3. 💡 DECLARAÇÃO OUSADA e autêntica
+4. 🌿 SENSORIAL — evoca cheiros, texturas, sensações
+5. 🔥 AÇÃO DIRETA — convida à experiência
 
-Títulos: 45-70 caracteres.
+Títulos: 45-80 caracteres, frases COMPLETAS (nunca cortadas).
 
 REGRAS PARA RESUMOS:
 - Cada resumo deve COMPLEMENTAR o estilo do título
