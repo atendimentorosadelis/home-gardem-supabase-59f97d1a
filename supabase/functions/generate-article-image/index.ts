@@ -579,18 +579,18 @@ serve(async (req) => {
       if (isArchitectureSubject) {
         prompt = `${subject}, ${archDetails}, stunning exterior facade photograph for architecture magazine. Environment: ${setting}. Wide 16:9 cinematic composition, building front view, outdoor perspective, ultra high resolution, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        // Use article-specific subject enriched with carpentry details
+        const carpentryCoverHint = articleHeadingHints[0] || articleContext?.excerpt || title || '';
+        const coverHintSegment = carpentryCoverHint ? `article context: ${carpentryCoverHint}, ` : '';
         if (isWoodTypesTopic) {
-          prompt = `${subject}, ${carpentryDetails}, premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
+          prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}premium material photography for wood selection editorial. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, macro texture accents, no house framing skeleton, sharp focus. ${antiTextClause}.`;
         } else {
-          prompt = `${subject}, ${carpentryDetails}, professional photograph for American home building magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic construction scene. ${antiTextClause}.`;
+          prompt = `${subject}, ${carpentryDetails}, ${coverHintSegment}professional photograph for American carpentry article. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus, realistic technical scene. ${antiTextClause}.`;
         }
       } else {
         prompt = `${subject}, professional hero photograph for home design magazine. Environment: ${setting}. Wide 16:9 cinematic composition, ultra high resolution, sharp focus. ${antiTextClause}.`;
       }
     } else {
       let galleryDetail = customPrompt || 'detailed professional photography';
-      // Translate Portuguese terms in gallery prompts to English
       galleryDetail = translatePromptTerms(galleryDetail);
 
       const paintingTechniqueDetail = isPaintingCategory ? detectPaintingTechniqueFromText(`${galleryDetail} | ${combinedContext}`) : null;
@@ -598,7 +598,6 @@ serve(async (req) => {
         subject = paintingTechniqueDetail;
       }
       if (isArchitectureSubject) {
-        // Strip any interior keywords from the gallery detail
         const cleanedDetail = galleryDetail
           .replace(/\binterior\b/gi, 'exterior')
           .replace(/\bindoor\b/gi, 'outdoor')
@@ -609,17 +608,23 @@ serve(async (req) => {
           .replace(/\bkitchen\b/gi, 'entrance');
         prompt = `${subject}, ${archDetails}, ${cleanedDetail}, outdoor architectural perspective. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
       } else if (isCarpentrySubject) {
-        const carpentryGallery = translatePromptTerms(galleryDetail);
+        const carpentryDetail = resolveCarpentryGalleryDetail({
+          style: matchedCarpentryStyle,
+          customPrompt: galleryDetail,
+          imageIndex,
+          articleTitle: articleContext?.title || title,
+          articleExcerpt: articleContext?.excerpt || '',
+          articleBody: articleContext?.body || '',
+          isWoodTypesTopic,
+        });
+
         if (isWoodTypesTopic) {
-          const sanitizedGallery = sanitizeWoodTypesPrompt(carpentryGallery) || 'comparative close-up of different wood species, grain textures, and board finishes';
+          const sanitizedGallery = sanitizeWoodTypesPrompt(carpentryDetail) || 'comparative close-up of different wood species, grain textures, and board finishes';
           prompt = `${subject}, ${carpentryDetails}, ${sanitizedGallery}. Setting: ${setting}. ${photoStyle}, species differentiation focus, no house framing skeleton, sharp focus. ${antiTextClause}.`;
         } else {
-          prompt = `${carpentryGallery}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic American construction scene. ${antiTextClause}.`;
+          prompt = `${subject}, ${carpentryDetails}, ${carpentryDetail}. Setting: ${setting}. ${photoStyle}, sharp focus, realistic technical carpentry scene. ${antiTextClause}.`;
         }
       } else {
-        // CRITICAL FIX: Use customPrompt as PRIMARY driver when available
-        // This ensures each gallery image is UNIQUE and article-specific
-        // Only prepend subject when no customPrompt was provided
         if (customPrompt && customPrompt.trim().length > 20) {
           const translatedPrompt = translatePromptTerms(customPrompt);
           prompt = `${translatedPrompt}. Setting: ${setting}. ${photoStyle}, sharp focus. ${antiTextClause}.`;
