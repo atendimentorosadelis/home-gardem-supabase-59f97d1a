@@ -47,10 +47,12 @@ serve(async (req) => {
 
     if (!roleData) throw new Error("Not authorized");
 
-    const { type, recipientEmail } = await req.json();
+    const { type, recipientEmail, recipientEmails } = await req.json();
 
-    if (!type || !recipientEmail) {
-      throw new Error("type and recipientEmail are required");
+    // Support both single email and array of emails
+    const emails: string[] = recipientEmails || (recipientEmail ? [recipientEmail] : []);
+    if (!type || emails.length === 0) {
+      throw new Error("type and at least one recipient email are required");
     }
 
     // Get user profile for name
