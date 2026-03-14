@@ -334,6 +334,67 @@ function hasGenericCarpentryBias(text: string): boolean {
   return hits >= 2;
 }
 
+const GENERIC_THEME_PROMPT_MARKERS = [
+  'same room same decor same lighting',
+  'wide-angle front view establishing shot',
+  'close-up macro shot',
+  'side perspective view',
+  'low angle dramatic shot',
+  'high angle bird eye overview',
+  'under construction',
+  'suburban lot',
+  'house under construction',
+  'building materials organized',
+];
+
+function isThemeDrivenPrompt(prompt: string): boolean {
+  const normalized = (prompt || '').toLowerCase();
+  if (!normalized) return false;
+  return GENERIC_THEME_PROMPT_MARKERS.some((marker) => normalized.includes(marker));
+}
+
+function buildSectionDrivenDetail(params: {
+  customPrompt?: string;
+  headingHints: string[];
+  excerpt?: string;
+  title?: string;
+  imageIndex: number;
+  regenerate: boolean;
+}): string {
+  const { customPrompt, headingHints, excerpt, title, imageIndex, regenerate } = params;
+
+  const headingHint =
+    headingHints[imageIndex] ||
+    headingHints[0] ||
+    (excerpt || '').trim() ||
+    (title || '').trim() ||
+    '';
+
+  const translatedPrompt = translatePromptTerms(customPrompt || '').trim();
+  const promptIsGeneric = isThemeDrivenPrompt(translatedPrompt);
+
+  if (regenerate) {
+    if (headingHint) {
+      if (!translatedPrompt || promptIsGeneric) {
+        return `article section focus: ${headingHint}`;
+      }
+      if (!translatedPrompt.toLowerCase().includes(headingHint.toLowerCase())) {
+        return `${translatedPrompt}, article section focus: ${headingHint}`;
+      }
+    }
+
+    if (!translatedPrompt || promptIsGeneric) {
+      return 'article-driven visual detail with emphasis on the generated content section';
+    }
+
+    return translatedPrompt;
+  }
+
+  if (translatedPrompt) return translatedPrompt;
+  if (headingHint) return `article section focus: ${headingHint}`;
+  return 'detailed professional photography';
+}
+
 function resolveCarpentryGalleryDetail(params: {
   style: string | null;
   customPrompt?: string;
