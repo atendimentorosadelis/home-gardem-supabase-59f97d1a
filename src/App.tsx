@@ -150,6 +150,7 @@ const App = () => (
             <ConsentManager />
           </BrowserRouter>
         </TooltipProvider>
+        </ArticleGenerationProvider>
         </NavigationBlockProvider>
         </ImageApprovalProvider>
         </OnlinePresenceProvider>
