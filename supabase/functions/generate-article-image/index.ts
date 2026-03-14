@@ -394,7 +394,7 @@ serve(async (req) => {
     // For carpentry: use static details as enrichment, but article data drives the main subject
     const carpentryDetails = matchedCarpentryStyle ? carpentryStylePrompts[matchedCarpentryStyle].details : '';
 
-    console.log(`[ImageGen] Category: "${effectiveCategory}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}, articleSpecific: ${hasArticleSpecificData}`);
+    console.log(`[ImageGen] Category: "${effectiveCategory}", Subject: "${subject.substring(0, 80)}...", isArch: ${isArchitectureSubject}, isCarpentry: ${isCarpentrySubject}, isWoodTypes: ${isWoodTypesTopic}, articleSpecific: ${hasArticleSpecificData}`);
     
     const exteriorSetting = 'stunning building exterior facade, street view, clear sky, professional architectural photography, natural daylight';
     const interiorSetting = 'beautiful home interior, professional photography, warm lighting';
