@@ -611,6 +611,33 @@ serve(async (req) => {
       }
     }
 
+    // 11b. Notify admins via email and in-app notification
+    try {
+      const notifyUrl = `${SUPABASE_URL}/functions/v1/notify-article-ready`;
+      const notifyResponse = await fetch(notifyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+        body: JSON.stringify({
+          articleId,
+          articleTitle: article.title,
+          articleSlug: article.slug,
+          creationSource: 'autopilot',
+        }),
+      });
+
+      if (notifyResponse.ok) {
+        const notifyData = await notifyResponse.json();
+        console.log(`[AutoGenerate] Admin notifications: ${notifyData.notified} notified, ${notifyData.emailed} emailed`);
+      } else {
+        console.error('[AutoGenerate] Admin notification failed:', await notifyResponse.text());
+      }
+    } catch (notifyErr) {
+      console.error('[AutoGenerate] Admin notification error (non-fatal):', notifyErr);
+    }
+
     // 12. Update log as success
     const durationMs = Date.now() - startTime;
     if (logId) {

@@ -621,6 +621,7 @@ export function useFullArticleGeneration() {
               articleId: savedArticleId,
               articleTitle: generatedArticle.title,
               articleSlug: generatedArticle.slug,
+              creationSource: 'manual',
             });
 
             toast.success('Rascunho salvo automaticamente. Os administradores foram notificados.');
