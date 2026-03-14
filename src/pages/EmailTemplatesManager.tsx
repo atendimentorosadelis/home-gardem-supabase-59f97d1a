@@ -109,9 +109,12 @@ function EmailTemplatesManagerContent() {
   };
 
   const sendTestEmail = async (type: 'newsletter' | 'admin-notification') => {
-    const emails = [testEmail.trim(), testEmail2.trim()].filter(Boolean);
+    const emails = [
+      ...(email1Enabled && testEmail.trim() ? [testEmail.trim()] : []),
+      ...(email2Enabled && testEmail2.trim() ? [testEmail2.trim()] : []),
+    ];
     if (emails.length === 0) {
-      toast.error('Informe pelo menos um e-mail de destino');
+      toast.error('Ative e preencha pelo menos um e-mail de destino');
       return;
     }
 
