@@ -769,6 +769,39 @@ function GenerateManualContentPage() {
                   </Button>
                 </CardContent>
               </Card>
+
+              {/* Pintura Premium Card */}
+              <Card className="border-amber-500/30 hover:border-amber-500/50 transition-colors bg-gradient-to-br from-amber-500/5 to-transparent">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                      <Crown className="h-4 w-4 text-amber-500" />
+                    </div>
+                    <span>Pintura Premium</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">Premium</span>
+                  </CardTitle>
+                  <CardDescription className="text-sm">Técnicas sofisticadas de alto padrão — estuques, efeitos metálicos, texturas europeias</CardDescription>
+                  {pinturaPremiumSelected.length > 0 && (() => {
+                    const selected = PINTURA_PREMIUM_SUBNICHES.find(s => s.id === pinturaPremiumSelected[0]);
+                    if (!selected) return null;
+                    const IconComp = selected.icon;
+                    return (
+                      <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                        <IconComp className="h-4 w-4 text-amber-500" />
+                        <span className="text-sm font-medium text-amber-600 dark:text-amber-400">{selected.label}</span>
+                      </div>
+                    );
+                  })()}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {PINTURA_PREMIUM_SUBNICHES.map((item) => renderSubnicheCard(item, pinturaPremiumSelected, togglePinturaPremium, 'pintura-premium'))}
+                  </div>
+                  <Button className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white" onClick={handleGeneratePinturaPremium} disabled={isGenerating || pinturaPremiumSelected.length === 0}>
+                    {isGenerating ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" />Gerando...</>) : (<><Crown className="mr-2 h-4 w-4" />Gerar Artigo Premium</>)}
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Commemorative Dates Card */}
