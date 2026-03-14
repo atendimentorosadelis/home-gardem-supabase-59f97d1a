@@ -93,14 +93,14 @@ Cada título deve mencionar um DETALHE CONCRETO e ESPECÍFICO (objeto, cor, mate
 Gere exatamente 5 títulos COMPLETAMENTE DIFERENTES entre si para o artigo abaixo.
 ${bannedPhrases}
 
-REGRAS DE VARIEDADE (cada título DEVE usar um estilo diferente):
-1. 🫂 CONFISSÃO PESSOAL — começa com "eu", conta algo íntimo (ex: "Eu Quase Desisti de Ter Plantas Até Que...")
-2. 🤔 PERGUNTA PROVOCATIVA — questiona algo do senso comum (ex: "Será Que Sua Cozinha Está Te Fazendo Mal?")
-3. 💡 DESCOBERTA EMOCIONAL — momento eureka (ex: "O Dia Que Entendi Por Que Minha Avó Amava o Jardim")
-4. 🎯 OPINIÃO FORTE — posicionamento claro (ex: "Cansei de Ver Varandas Sem Vida: Aqui Está o Que Funciona")
-5. 🌿 SENSORIAL/POÉTICO — evoca sensações (ex: "Aquele Cheiro de Terra Molhada Que Faz a Gente Sorrir")
+REGRAS DE VARIEDADE (cada título DEVE usar um estilo diferente — as 3 primeiras palavras NÃO podem se repetir entre títulos):
+1. 🎯 OBJETO CONCRETO — comece com um objeto/material específico (ex: "Aquela tinta coral...", "O rolo de espuma...")
+2. 🤔 PERGUNTA PROVOCATIVA — questiona algo do senso comum (ex: "Por que ninguém fala sobre...")
+3. 💡 DECLARAÇÃO OUSADA — opinião forte e direta (ex: "Parede branca é preguiça de decorar")
+4. 🌿 SENSORIAL/POÉTICO — evoca sensações (ex: "Aquele cheiro de tinta fresca num domingo")
+5. 🔥 AÇÃO DIRETA — convida à ação (ex: "Pega o pincel e esquece a régua")
 
-Cada título deve ter entre 45 e 70 caracteres.
+Cada título deve ter entre 45 e 80 caracteres e ser uma FRASE COMPLETA (nunca cortada).
 O número sorteado é ${randomSeed} — use-o para variar a criatividade.
 
 Retorne APENAS JSON: { "suggestions": ["título 1", "título 2", "título 3", "título 4", "título 5"] }`;
