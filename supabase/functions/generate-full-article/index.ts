@@ -913,7 +913,7 @@ Tons possíveis (NÃO copie os exemplos, apenas use o TOM):
 - Ser 100% ORIGINAL — nunca antes usado neste blog
 - Mencionar um DETALHE CONCRETO (ex: "a parede cinza", "o varal retrátil", "a prateleira de canto", "aquela pia de granito")
 - Soar como algo que uma pessoa REAL postaria no Instagram ou falaria num café
-- Ter entre 45 e 70 caracteres
+- Ter entre 45 e 80 caracteres (NUNCA cortar a frase — o título deve ser COMPLETO)
 - Ser impossível de confundir com outro artigo do blog
 - Provocar curiosidade ou emoção GENUÍNA
 
