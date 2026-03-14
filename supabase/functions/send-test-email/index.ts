@@ -54,14 +54,19 @@ serve(async (req) => {
       throw new Error("type and at least one recipient email are required");
     }
 
-    // Get user profile for name
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("user_id", userId)
-      .maybeSingle();
+    // Fetch subscriber names for all recipient emails
+    const { data: subscribers } = await supabase
+      .from("newsletter_subscribers")
+      .select("email, name")
+      .in("email", emails);
 
-    const userName = profile?.username || "Admin";
+    const subscriberMap: Record<string, string> = {};
+    if (subscribers) {
+      for (const sub of subscribers) {
+        subscriberMap[sub.email] = sub.name || "Leitor(a)";
+      }
+    }
+
     const logoUrl = `${supabaseUrl}/storage/v1/object/public/site-assets/logo-email.png`;
     const siteUrl = "https://homegardenmanual.com";
 
