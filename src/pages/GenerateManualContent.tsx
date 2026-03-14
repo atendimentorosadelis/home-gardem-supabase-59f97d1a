@@ -177,7 +177,7 @@ function GenerateManualContentPage() {
     setArticle,
     clearPersistedArticle,
     setCurrentTopic,
-  } = useFullArticleGeneration();
+  } = useArticleGeneration();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
