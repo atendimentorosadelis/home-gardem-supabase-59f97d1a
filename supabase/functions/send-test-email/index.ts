@@ -28,15 +28,14 @@ serve(async (req) => {
 
     const token = authHeader.replace("Bearer ", "");
     
-    // Use anon client to validate the JWT
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const anonClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: claimsData, error: claimsError } = await anonClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) throw new Error("Not authenticated");
+    // Validate the JWT using getUser with the service role client
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !user) {
+      console.error("[send-test-email] Auth error:", userError?.message);
+      throw new Error("Not authenticated");
+    }
     
-    const userId = claimsData.claims.sub as string;
+    const userId = user.id;
 
     const { data: roleData } = await supabase
       .from("user_roles")
