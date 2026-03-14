@@ -5,11 +5,15 @@ import { PermissionGate } from '@/components/PermissionGate';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { invokeEdgeFunction } from '@/lib/edge-functions';
-import { Mail, Check, Eye, ArrowLeft, Sparkles, Palette, Leaf, Moon, Square, Sunrise } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { Mail, Check, Eye, ArrowLeft, Sparkles, Palette, Leaf, Moon, Square, Sunrise, Send, Loader2, Bell, Newspaper } from 'lucide-react';
 import React from 'react';
 
 interface EmailTemplate { id: string; name: string; description: string | null; category: string; html_template: string; is_active: boolean; is_default: boolean; created_at: string; updated_at: string; }
@@ -31,13 +35,32 @@ const lightTextTemplates = ['Minimalista Branco', 'Moderno Minimalista'];
 
 function EmailTemplatesManagerContent() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [socialSettings, setSocialSettings] = useState<Record<string, unknown>>({});
 
-  useEffect(() => { fetchTemplates(); }, []);
+  // Test email state
+  const [testEmail, setTestEmail] = useState('');
+  const [sendingNewsletter, setSendingNewsletter] = useState(false);
+  const [sendingAdmin, setSendingAdmin] = useState(false);
+
+  useEffect(() => {
+    fetchTemplates();
+    loadUserEmail();
+  }, []);
+
+  const loadUserEmail = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (data?.email) setTestEmail(data.email);
+  };
 
   const fetchTemplates = async () => {
     try {
@@ -56,6 +79,37 @@ function EmailTemplatesManagerContent() {
       if (!data?.success) throw new Error(data?.error || 'Failed to set default template');
       toast.success('Template definido como padrão!'); await fetchTemplates();
     } catch (error) { toast.error('Erro ao definir template padrão'); } finally { setUpdatingId(null); }
+  };
+
+  const sendTestEmail = async (type: 'newsletter' | 'admin-notification') => {
+    if (!testEmail.trim()) {
+      toast.error('Informe um e-mail de destino');
+      return;
+    }
+
+    const setter = type === 'newsletter' ? setSendingNewsletter : setSendingAdmin;
+    setter(true);
+
+    try {
+      const { data, error } = await invokeEdgeFunction<{ success: boolean; error?: string }>(
+        'send-test-email',
+        { type, recipientEmail: testEmail.trim() }
+      );
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Failed to send test email');
+
+      toast.success(
+        type === 'newsletter'
+          ? `E-mail de teste da newsletter enviado para ${testEmail}`
+          : `E-mail de teste de notificação admin enviado para ${testEmail}`
+      );
+    } catch (error) {
+      console.error('Error sending test email:', error);
+      toast.error(`Erro ao enviar e-mail de teste: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+    } finally {
+      setter(false);
+    }
   };
 
   const generateDynamicSocialIcons = () => {
@@ -84,6 +138,55 @@ function EmailTemplatesManagerContent() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between"><div className="flex items-center gap-4"><Button variant="ghost" size="icon" onClick={() => navigate('/admin/settings')} className="shrink-0"><ArrowLeft className="h-4 w-4" /></Button><div><h1 className="text-2xl font-bold text-foreground flex items-center gap-2"><Mail className="h-6 w-6 text-primary" />Templates de E-mail</h1><p className="text-muted-foreground">Escolha o template padrão para respostas de contato</p></div></div></div>
+
+        {/* Test Email Section */}
+        <Card className="border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Send className="h-5 w-5 text-primary" />
+              Enviar E-mail de Teste
+            </CardTitle>
+            <CardDescription>
+              Dispare um e-mail de teste para verificar como os templates estão chegando na sua caixa de entrada
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="test-email">E-mail de destino</Label>
+              <Input
+                id="test-email"
+                type="email"
+                placeholder="seu@email.com"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                className="max-w-md"
+              />
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={() => sendTestEmail('newsletter')}
+                disabled={sendingNewsletter || !testEmail.trim()}
+                variant="outline"
+                className="gap-2"
+              >
+                {sendingNewsletter ? <Loader2 className="h-4 w-4 animate-spin" /> : <Newspaper className="h-4 w-4" />}
+                Testar Newsletter
+              </Button>
+              <Button
+                onClick={() => sendTestEmail('admin-notification')}
+                disabled={sendingAdmin || !testEmail.trim()}
+                variant="outline"
+                className="gap-2"
+              >
+                {sendingAdmin ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
+                Testar Notificação Admin
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Os e-mails de teste usam o mesmo template utilizado nos envios reais de newsletter e notificações de artigos gerados.
+            </p>
+          </CardContent>
+        </Card>
 
         {loading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{[1, 2, 3, 4, 5].map((i) => <Card key={i} className="overflow-hidden"><Skeleton className="h-40 w-full" /><CardContent className="p-4 space-y-3"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-9 w-full" /></CardContent></Card>)}</div>
