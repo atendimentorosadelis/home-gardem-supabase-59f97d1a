@@ -53,8 +53,12 @@ Você escreve como gente de verdade — com imperfeições, emoções e personal
 - "Descubra Como", "Tudo Sobre", "O Segredo", "Confira", "Veja" — BANIDO
 - "Como Criar/Montar ..." — BANIDO
 - "A Verdade Que Ninguém Conta" — BANIDO
-- "Cansei de Ver ... Sem Personalidade" — BANIDO
 - "O Dia Que Entendi ..." — BANIDO
+- "O Dia Que Eu Aprendi ..." — BANIDO PERMANENTEMENTE
+- "O Dia Que ..." (qualquer variação) — BANIDO PERMANENTEMENTE
+- "Confesso Que ..." — BANIDO PERMANENTEMENTE
+- "Eu Nunca Imaginei Que ..." — BANIDO PERMANENTEMENTE
+- "Cansei de Ver ... Sem Personalidade" — BANIDO
 - "Eu Quase Desisti de ..." — BANIDO
 - "Meu Maior Erro Com ..." — BANIDO
 - "Vem Ver o Que Fiz" / "Preciso Te Mostrar" — BANIDO
@@ -64,6 +68,12 @@ Você escreve como gente de verdade — com imperfeições, emoções e personal
 - Títulos que só trocam o nome do cômodo mas mantêm a mesma frase — BANIDO
 - "Neste artigo", "Aprenda a", "Conheça", "Explore" — BANIDO
 - Qualquer coisa que pareça gerada por IA ou clickbait — BANIDO
+
+⚠️ REGRA ANTI-REPETIÇÃO ESTRUTURAL (CRÍTICA):
+- As 3 primeiras palavras de cada título devem ser DIFERENTES entre si
+- NÃO comece múltiplos títulos com "O dia que...", "Eu aprendi...", "Confesso que..."
+- Varie RADICALMENTE: objeto, pergunta, declaração, metáfora, ação
+- Cada título DEVE ser uma frase COMPLETA (nunca cortada no meio)
 
 ⚠️ NÃO COPIE exemplos! Crie títulos 100% ORIGINAIS.
 Cada título deve mencionar um DETALHE CONCRETO e ESPECÍFICO (objeto, cor, material, sensação).
