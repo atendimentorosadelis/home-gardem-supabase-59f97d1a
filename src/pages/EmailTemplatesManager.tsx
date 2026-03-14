@@ -117,7 +117,8 @@ function EmailTemplatesManagerContent() {
     try {
       const { data, error } = await invokeEdgeFunction<{ success: boolean; error?: string }>(
         'send-test-email',
-        { type, recipientEmails: emails }
+        { type, recipientEmails: emails },
+        true
       );
 
       if (error) throw error;
